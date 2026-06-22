@@ -21,8 +21,7 @@ const ALLOWED_TYPES = new Set([
 
 export function FileUploader() {
   const [selectedIdx, setSelectedIdx] = useState(null);
-  const { files, addFiles, removeFile, upload, uploading } =
-    usePDFUpload();
+  const { files, addFiles, removeFile, upload, uploading } = usePDFUpload();
 
   const handleAddFiles = useCallback(
     (newFiles, fileType) => {
@@ -61,7 +60,6 @@ export function FileUploader() {
 
   return (
     <>
-      {/* Single-column upload panel */}
       <div
         className="border border-gray-200 rounded-2xl overflow-hidden
                       bg-white shadow-sm"
@@ -77,7 +75,6 @@ export function FileUploader() {
         />
       </div>
 
-      {/* PDF popup modal - rendered via portal */}
       <FilePreviewPanel
         item={selectedItem}
         onClose={() => setSelectedIdx(null)}

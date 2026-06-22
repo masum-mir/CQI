@@ -7,20 +7,19 @@ export function usePDFUpload() {
   const [uploading, setUploading] = useState(false);
   const pollRefs = useRef({});
 
+  // ─── FIX 1 & 2: accept and store fileType, remove PDF filter ───
   const addFiles = useCallback(
-    (newFiles) => {
-      const MAX = 7;
-      const filtered = newFiles
-        .filter((f) => f.type === "application/pdf")
-        .slice(0, MAX - files.length);
-
-      if (filtered.length < newFiles.length)
-        toast.error("Only PDF files allowed. Max 7 files.");
-
+    (newFiles, fileType) => {
+      const MAX = 20; // enough for 14 categories + buffer
+      const allowedFiles = newFiles.slice(0, MAX - files.length);
+      if (allowedFiles.length < newFiles.length) {
+        toast.error(`Max ${MAX} files allowed.`);
+      }
       setFiles((prev) => [
         ...prev,
-        ...filtered.map((f) => ({
+        ...allowedFiles.map((f) => ({
           file: f,
+          fileType: fileType, // store the category
           id: null,
           status: "queued",
           progress: 0,
@@ -28,7 +27,7 @@ export function usePDFUpload() {
         })),
       ]);
     },
-    [files.length],
+    [files.length]
   );
 
   const removeFile = useCallback((idx) => {
@@ -43,8 +42,8 @@ export function usePDFUpload() {
           prev.map((f, i) =>
             i === idx
               ? { ...f, status: data.status, parsed_data: data.parsed_data }
-              : f,
-          ),
+              : f
+          )
         );
         if (["done", "failed"].includes(data.status)) {
           clearInterval(interval);
@@ -61,36 +60,59 @@ export function usePDFUpload() {
     pollRefs.current[uploadId] = interval;
   };
 
+  // ─── FIX 3: upload only files matching the given fileType ───
   const upload = useCallback(
     async (fileType) => {
-      if (!files.length) return;
+      // Find indices of files that belong to this category
+      const indices = files
+        .map((f, i) => (f.fileType === fileType ? i : -1))
+        .filter((i) => i !== -1);
+
+      if (indices.length === 0) {
+        toast.info(`No files to upload for ${fileType}`);
+        return;
+      }
+
+      const filesToUpload = indices.map((i) => files[i]);
+
       setUploading(true);
       try {
-        const rawFiles = files.map((f) => f.file);
-        const { data } = await uploadApi.upload( 
+        const rawFiles = filesToUpload.map((f) => f.file);
+        const { data } = await uploadApi.upload(
           fileType,
           rawFiles,
           (pct) => {
             setFiles((prev) => prev.map((f) => ({ ...f, progress: pct })));
-          },
+          }
         );
 
+        // Update status for uploaded files
         setFiles((prev) =>
-          prev.map((f, i) => ({
-            ...f,
-            id: data[i]?.id,
-            status: "processing",
-          })),
+          prev.map((f, i) => {
+            if (indices.includes(i)) {
+              const match = data.find((d, idx) => idx === indices.indexOf(i));
+              if (match) {
+                return { ...f, id: match.id, status: "processing" };
+              }
+            }
+            return f;
+          })
         );
-        data.forEach((d, i) => pollStatus(d.id, i));
+
+        // Start polling for each uploaded file
+        data.forEach((d, idx) => {
+          const originalIndex = indices[idx];
+          pollStatus(d.id, originalIndex);
+        });
+
         toast.success(`${data.length} file(s) uploaded. Processing...`);
       } catch (e) {
-        toast.error("Upload failed: " + e.response?.data?.detail);
+        toast.error("Upload failed: " + (e.response?.data?.detail || e.message));
       } finally {
         setUploading(false);
       }
     },
-    [files],
+    [files]
   );
 
   return { files, addFiles, removeFile, upload, uploading };
