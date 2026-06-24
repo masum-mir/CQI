@@ -14,49 +14,6 @@ import { usePDFUpload } from "@/hooks/usePDFUpload";
 import { FilePreviewPanel } from "@/components/uploads/FilePreviewPanel";
 import HelpBar from "@/components/layout/HelpBar";
 
-export default function UploadPage() {
-  const navigate = useNavigate();
-  const fileInputRef = useRef(null);
-  const targetCategoryRef = useRef(null);
-
-  const { files, addFiles, removeFile, upload, uploading } = usePDFUpload();
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [panelCollapsed, setPanelCollapsed] = useState(false);
-  const [activeCourse, setActiveCourse] = useState(FACULTY_COURSES[0]?.id);
-
-  // --- NEW: faculty and semester (placeholders) ---
-  const [faculty] = useState("CSE");          // TODO: replace with actual value from context/props
-  const [semester] = useState("Spring 2026"); // TODO: replace with actual value
-
-  // ... (rest of the code unchanged)
-
-  const handleCommit = async () => {
-    const queued = files.filter((f) => f.status === "queued");
-    if (!queued.length) {
-      toast.info("No files to upload.");
-      return;
-    }
-
-    const grouped = new Map();
-    queued.forEach((f) => {
-      const key = f.fileType;
-      if (!grouped.has(key)) grouped.set(key, []);
-      grouped.get(key).push(f);
-    });
-
-    for (const [cat, fileList] of grouped) {
-      try {
-        // Pass faculty and semester along with the category
-        await upload(cat, faculty, semester);
-        toast.success(`Uploaded ${cat} successfully`);
-      } catch (err) {
-        console.error(`Upload error for ${cat}:`, err);
-        toast.error(`Upload failed for ${cat}: ${err?.message || "Unknown error"}`);
-      }
-    }
-  };
-
-}
 // ── Category definitions ──
 const CATEGORIES = [
   { label: "Student Evaluation Data", fileType: "student_evaluation_data" },
@@ -117,6 +74,10 @@ export default function UploadPage() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [panelCollapsed, setPanelCollapsed] = useState(false);
   const [activeCourse, setActiveCourse] = useState(FACULTY_COURSES[0]?.id);
+
+  // ── Faculty and semester (placeholders – replace with real data later) ──
+  const [faculty] = useState("CSE");          // TODO: from context/props
+  const [semester] = useState("Spring 2026"); // TODO: from context/props
 
   // ── Build lookup map for category → file entry ──
   const fileMap = useMemo(() => {
@@ -219,7 +180,8 @@ export default function UploadPage() {
 
     for (const [cat, fileList] of grouped) {
       try {
-        await upload(cat);
+        // Pass faculty and semester along with the category
+        await upload(cat, faculty, semester);
         toast.success(`Uploaded ${cat} successfully`);
       } catch (err) {
         console.error(`Upload error for ${cat}:`, err);

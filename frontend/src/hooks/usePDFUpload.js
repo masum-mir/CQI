@@ -73,7 +73,7 @@ export function usePDFUpload() {
 
       const filesToUpload = indices.map((i) => files[i]);
       const rawFiles = filesToUpload.map((f) => f.file);
-      const categories = indices.map(() => fileType); // array of same category repeated
+      const categories = indices.map(() => fileType); // same category for all
 
       setUploading(true);
       try {
@@ -83,7 +83,6 @@ export function usePDFUpload() {
           rawFiles,
           categories,
           (pct) => {
-            // Update progress for all files in this batch
             setFiles((prev) =>
               prev.map((f, i) =>
                 indices.includes(i) ? { ...f, progress: pct } : f

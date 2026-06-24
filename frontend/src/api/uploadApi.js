@@ -2,22 +2,21 @@ import api from './axios'
 
 export const uploadApi = {
   /**
-   * Upload files with their categories
-   * @param {string} faculty - faculty name/code
-   * @param {string} semester - semester identifier
+   * Upload files with categories
+   * @param {string} faculty - e.g. "CSE"
+   * @param {string} semester - e.g. "Spring 2026"
    * @param {File[]} files - array of File objects
    * @param {string[]} categories - array of category strings (same length as files)
-   * @param {function} onProgress - callback for upload progress (percentage)
+   * @param {function} onProgress - progress callback (percentage)
    */
   upload: (faculty, semester, files, categories, onProgress) => {
     const form = new FormData()
     form.append('faculty', faculty)
     form.append('semester', semester)
 
-    // Append each file and its corresponding category
     files.forEach((file, index) => {
       form.append('files[]', file)
-      form.append('categories[]', categories[index] || '') // fallback
+      form.append('categories[]', categories[index] || '')
     })
 
     return api.post('/uploads/', form, {
