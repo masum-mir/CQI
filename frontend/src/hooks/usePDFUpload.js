@@ -7,10 +7,9 @@ export function usePDFUpload() {
   const [uploading, setUploading] = useState(false);
   const pollRefs = useRef({});
 
-  // ─── FIX 1 & 2: accept and store fileType, remove PDF filter ───
   const addFiles = useCallback(
     (newFiles, fileType) => {
-      const MAX = 20; // enough for 14 categories + buffer
+      const MAX = 20;
       const allowedFiles = newFiles.slice(0, MAX - files.length);
       if (allowedFiles.length < newFiles.length) {
         toast.error(`Max ${MAX} files allowed.`);
@@ -19,7 +18,7 @@ export function usePDFUpload() {
         ...prev,
         ...allowedFiles.map((f) => ({
           file: f,
-          fileType: fileType, // store the category
+          fileType: fileType,
           id: null,
           status: "queued",
           progress: 0,
@@ -60,10 +59,9 @@ export function usePDFUpload() {
     pollRefs.current[uploadId] = interval;
   };
 
-  // ─── FIX 3: upload only files matching the given fileType ───
   const upload = useCallback(
-    async (fileType) => {
-      // Find indices of files that belong to this category
+    async (fileType, faculty = "", semester = "") => {
+      // Find files for this category
       const indices = files
         .map((f, i) => (f.fileType === fileType ? i : -1))
         .filter((i) => i !== -1);
@@ -74,24 +72,33 @@ export function usePDFUpload() {
       }
 
       const filesToUpload = indices.map((i) => files[i]);
+      const rawFiles = filesToUpload.map((f) => f.file);
+      const categories = indices.map(() => fileType); // array of same category repeated
 
       setUploading(true);
       try {
-        const rawFiles = filesToUpload.map((f) => f.file);
         const { data } = await uploadApi.upload(
-          fileType,
+          faculty,
+          semester,
           rawFiles,
+          categories,
           (pct) => {
-            setFiles((prev) => prev.map((f) => ({ ...f, progress: pct })));
+            // Update progress for all files in this batch
+            setFiles((prev) =>
+              prev.map((f, i) =>
+                indices.includes(i) ? { ...f, progress: pct } : f
+              )
+            );
           }
         );
 
-        // Update status for uploaded files
+        // data is expected to be an array of { id, ... } for each file
         setFiles((prev) =>
           prev.map((f, i) => {
             if (indices.includes(i)) {
-              const match = data.find((d, idx) => idx === indices.indexOf(i));
-              if (match) {
+              const idxInResponse = indices.indexOf(i);
+              const match = data && data[idxInResponse];
+              if (match && match.id) {
                 return { ...f, id: match.id, status: "processing" };
               }
             }
@@ -102,11 +109,14 @@ export function usePDFUpload() {
         // Start polling for each uploaded file
         data.forEach((d, idx) => {
           const originalIndex = indices[idx];
-          pollStatus(d.id, originalIndex);
+          if (d && d.id) {
+            pollStatus(d.id, originalIndex);
+          }
         });
 
         toast.success(`${data.length} file(s) uploaded. Processing...`);
       } catch (e) {
+        console.error("Upload error:", e);
         toast.error("Upload failed: " + (e.response?.data?.detail || e.message));
       } finally {
         setUploading(false);
