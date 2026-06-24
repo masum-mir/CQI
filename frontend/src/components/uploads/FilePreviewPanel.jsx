@@ -37,7 +37,6 @@ function MimeIcon({ mime, size = 18 }) {
   return <File size={size} className="text-gray-400" />;
 }
 
-// Modal 
 export function FilePreviewPanel({ item, onClose, onRemove }) {
   const [objectUrl, setObjectUrl] = useState(null);
   const [numPages, setNumPages] = useState(null);
@@ -90,7 +89,6 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
   const ext = file.name.split(".").pop().toUpperCase();
 
   return createPortal(
-    /* Backdrop */
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{
@@ -101,13 +99,12 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      {/* Modal shell */}
       <div
         className="relative bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
         style={{ width: "820px", maxWidth: "95vw", height: "90vh" }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top bar  */}
+        {/* Top bar */}
         <div className="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 flex-shrink-0">
           <MimeIcon mime={file.type} size={17} />
           <span className="flex-1 text-sm font-medium text-gray-800 truncate min-w-0">
@@ -117,7 +114,6 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
             {fmtSize(file.size)} · {ext}
           </span>
 
-          {/* Open tab */}
           {objectUrl && (isPdf || isImage) && (
             <a
               href={objectUrl}
@@ -132,7 +128,6 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
             </a>
           )}
 
-          {/* Remove */}
           {status === "queued" && (
             <button
               onClick={() => {
@@ -148,7 +143,6 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
             </button>
           )}
 
-          {/* Close */}
           <button
             onClick={onClose}
             className="ml-1 p-1.5 rounded-lg hover:bg-gray-100 text-gray-400
@@ -159,7 +153,6 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
           </button>
         </div>
 
-        {/*  Content  */}
         <div className="flex-1 overflow-auto bg-gray-100 flex flex-col items-center min-h-0">
           {isPdf && objectUrl ? (
             pdfError ? (
@@ -189,14 +182,13 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
                   <div className="flex items-center justify-center py-24">
                     <span
                       className="w-6 h-6 rounded-full border-2 border-violet-500
-                                     border-t-transparent animate-spin"
+                                   border-t-transparent animate-spin"
                     />
                   </div>
                 }
                 error={null}
                 className="flex flex-col items-center py-6 gap-4 w-full"
               >
-                {/* render all pages stacked */}
                 {numPages ? (
                   Array.from({ length: numPages }, (_, i) => (
                     <Page
@@ -236,13 +228,11 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
           )}
         </div>
 
-        {/*  Bottom toolbar (PDF only)  */}
         {isPdf && !pdfError && (
           <div
             className="flex items-center justify-between gap-4 px-5 py-2.5
-                          border-t border-gray-100 bg-white flex-shrink-0"
+                       border-t border-gray-100 bg-white flex-shrink-0"
           >
-            {/* Page nav */}
             <div className="flex items-center gap-1.5">
               <button
                 onClick={prevPage}
@@ -265,7 +255,6 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
               </button>
             </div>
 
-            {/* Zoom */}
             <div className="flex items-center gap-1.5">
               <button
                 onClick={zoomOut}
@@ -291,6 +280,6 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
         )}
       </div>
     </div>,
-    document.body,
+    document.body
   );
 }
