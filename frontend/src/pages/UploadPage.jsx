@@ -14,22 +14,78 @@ import { usePDFUpload } from "@/hooks/usePDFUpload";
 import { FilePreviewPanel } from "@/components/uploads/FilePreviewPanel";
 import HelpBar from "@/components/layout/HelpBar";
 
-// ── Category definitions ──
+// ── Category structure with individual item IDs ──
 const CATEGORIES = [
-  { label: "Student Evaluation Data", fileType: "student_evaluation_data" },
-  { label: "Results Excel File", fileType: "results_excel" },
-  { label: "Course Outcomes", fileType: "course_outcomes" },
-  { label: "Instructor Feedback", fileType: "instructor_feedback" },
-  { label: "Administrative Suggestions", fileType: "admin_suggestions" },
-  { label: "Previous CQI Reports", fileType: "previous_cqi_reports" },
-  { label: "Assessment Data", fileType: "assessment_data" },
-  { label: "Attendance Records", fileType: "attendance_records" },
-  { label: "Student Academic History", fileType: "academic_history" },
-  { label: "Scholarship Data", fileType: "scholarship_data" },
-  { label: "Course Information", fileType: "course_info" },
-  { label: "Faculty Reflection Reports", fileType: "faculty_reflections" },
-  { label: "Accreditation/CQI Guidelines", fileType: "cqi_guidelines" },
-  { label: "Improvement Action Plans", fileType: "action_plans" },
+  {
+    label: "Academic Results",
+    items: [
+      { id: "final_grades", title: "Final grades (Tabulation Sheet)" },
+      { id: "obe_excel", title: "OBE Excel Sheet" },
+    ],
+  },
+  {
+    label: "Attainment Reports",
+    items: [
+      { id: "co_attainment", title: "CO Attainment Report" },
+      { id: "po_attainment", title: "PO Attainment Report" },
+    ],
+  },
+  {
+    label: "CQI Reports",
+    items: [
+      { id: "cqi_grade_summary", title: "Grade Summary with CQI Improvement Plan" },
+      { id: "instructor_feedback", title: "Instructor Feedback" },
+    ],
+  },
+  {
+    label: "Course Documents",
+    items: [{ id: "course_outline", title: "Course Outline" }],
+  },
+  {
+    label: "Class Test",
+    items: [
+      { id: "class_test_question", title: "Assessment Question" },
+      { id: "class_test_sample", title: "Representative Sample Answer Scripts" },
+    ],
+  },
+  {
+    label: "Midterm Exam",
+    items: [
+      { id: "midterm_question", title: "Assessment Question" },
+      { id: "midterm_sample", title: "Representative Sample Answer Scripts" },
+    ],
+  },
+  {
+    label: "Final Exam",
+    items: [
+      { id: "final_question", title: "Assessment Question" },
+      { id: "final_sample", title: "Representative Sample Answer Scripts" },
+    ],
+  },
+  {
+    label: "Projects & Assignments",
+    items: [
+      { id: "project_list", title: "Project/Assignment List" },
+      { id: "project_sample", title: "Representative Sample Project Reports" },
+    ],
+  },
+  {
+    label: "Laboratory",
+    items: [{ id: "lab_experiments", title: "List of Lab Experiments" }],
+  },
+  {
+    label: "Attendance Records",
+    items: [
+      { id: "class_attendance", title: "Class Attendance" },
+      { id: "lab_attendance", title: "Lab Attendance" },
+      { id: "midterm_attendance", title: "Midterm Exam Attendance" },
+      { id: "final_attendance", title: "Final Exam Attendance" },
+    ],
+  },
+  {
+    label: "Capstone",
+    items: [{ id: "capstone_report", title: "Capstone Project Report" }],
+  },
 ];
 
 // ── Constants ──
@@ -68,18 +124,18 @@ function getFileIcon(file) {
 export default function UploadPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const targetCategoryRef = useRef(null);
+  const targetItemIdRef = useRef(null);
 
   const { files, addFiles, removeFile, upload, uploading } = usePDFUpload();
   const [selectedItem, setSelectedItem] = useState(null);
   const [panelCollapsed, setPanelCollapsed] = useState(false);
   const [activeCourse, setActiveCourse] = useState(FACULTY_COURSES[0]?.id);
 
-  // ── Faculty and semester (placeholders – replace with real data later) ──
-  const [faculty] = useState("CSE");          // TODO: from context/props
-  const [semester] = useState("Spring 2026"); // TODO: from context/props
+  // ── Faculty and semester (placeholders) ──
+  const [faculty] = useState("CSE");
+  const [semester] = useState("Spring 2026");
 
-  // ── Build lookup map for category → file entry ──
+  // ── Build lookup map for itemId → file entry ──
   const fileMap = useMemo(() => {
     const map = new Map();
     files.forEach((f) => {
@@ -88,8 +144,8 @@ export default function UploadPage() {
     return map;
   }, [files]);
 
-  const getFileForCategory = useCallback(
-    (fileType) => fileMap.get(fileType) || null,
+  const getFileForItem = useCallback(
+    (itemId) => fileMap.get(itemId) || null,
     [fileMap]
   );
 
@@ -99,12 +155,12 @@ export default function UploadPage() {
   }, [files]);
 
   // ── Handlers ──
-  const handleSlotClick = (fileType) => {
-    const existing = getFileForCategory(fileType);
+  const handleSlotClick = (itemId) => {
+    const existing = getFileForItem(itemId);
     if (existing) {
       setSelectedItem(existing);
     } else {
-      targetCategoryRef.current = fileType;
+      targetItemIdRef.current = itemId;
       fileInputRef.current?.click();
     }
   };
@@ -114,13 +170,13 @@ export default function UploadPage() {
       const fileList = e.target.files;
       if (!fileList || fileList.length === 0) {
         e.target.value = "";
-        targetCategoryRef.current = null;
+        targetItemIdRef.current = null;
         return;
       }
 
-      const fileType = targetCategoryRef.current;
-      if (!fileType) {
-        toast.error("No category selected. Please try again.");
+      const itemId = targetItemIdRef.current;
+      if (!itemId) {
+        toast.error("No item selected. Please try again.");
         e.target.value = "";
         return;
       }
@@ -130,33 +186,34 @@ export default function UploadPage() {
       if (!ALLOWED_TYPES.has(file.type)) {
         toast.error(`${file.name}: unsupported format`);
         e.target.value = "";
-        targetCategoryRef.current = null;
+        targetItemIdRef.current = null;
         return;
       }
       if (file.size > MAX_SIZE_BYTES) {
         toast.error(`${file.name}: exceeds 10 MB`);
         e.target.value = "";
-        targetCategoryRef.current = null;
+        targetItemIdRef.current = null;
         return;
       }
 
-      const existing = getFileForCategory(fileType);
+      const existing = getFileForItem(itemId);
       if (existing) {
         const idx = files.indexOf(existing);
         removeFile(idx);
         if (selectedItem === existing) setSelectedItem(null);
       }
 
-      addFiles([file], fileType);
+      // Use itemId as fileType to store the file
+      addFiles([file], itemId);
 
       e.target.value = "";
-      targetCategoryRef.current = null;
+      targetItemIdRef.current = null;
     },
-    [files, addFiles, removeFile, selectedItem, getFileForCategory]
+    [files, addFiles, removeFile, selectedItem, getFileForItem]
   );
 
-  const handleRemoveFile = (fileType) => {
-    const existing = getFileForCategory(fileType);
+  const handleRemoveFile = (itemId) => {
+    const existing = getFileForItem(itemId);
     if (existing) {
       const idx = files.indexOf(existing);
       removeFile(idx);
@@ -180,7 +237,6 @@ export default function UploadPage() {
 
     for (const [cat, fileList] of grouped) {
       try {
-        // Pass faculty and semester along with the category
         await upload(cat, faculty, semester);
         toast.success(`Uploaded ${cat} successfully`);
       } catch (err) {
@@ -191,15 +247,16 @@ export default function UploadPage() {
   };
 
   // ── Counts ──
+  const totalItems = CATEGORIES.reduce((acc, cat) => acc + cat.items.length, 0);
   const totalFiles = files.length;
   const queuedCount = files.filter((f) => f.status === "queued").length;
 
   return (
     <div className="w-full h-full flex flex-col px-4 py-8">
-      <h2 className="sr-only">CQI Upload Page — category file slots</h2>
+      <h2 className="sr-only">CQI Upload Page — grouped upload cards</h2>
 
       <div className="flex-1 min-h-0 bg-gray-50 rounded-xl overflow-hidden border border-gray-200 flex">
-        {/* Main content (full width, no left sidebar) */}
+        {/* Main content */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Faculty Course Navigation */}
           <nav className="flex overflow-x-auto whitespace-nowrap border-b border-gray-200 bg-white px-4 shrink-0">
@@ -220,64 +277,84 @@ export default function UploadPage() {
 
           {/* Content area */}
           <div className="flex-1 min-h-0 flex overflow-hidden">
-            {/* File grid */}
+            {/* Grouped Categories */}
             <div className="flex-1 p-4 overflow-y-auto">
-              <div className="grid grid-cols-3 gap-2.5">
-                {CATEGORIES.map((cat) => {
-                  const fileEntry = getFileForCategory(cat.fileType);
-                  const hasFile = !!fileEntry;
-                  const rawFile = hasFile ? fileEntry.file : null;
-                  const { Icon, color } = rawFile ? getFileIcon(rawFile) : { Icon: null, color: null };
+              <div className="max-w-5xl mx-auto">
+                {CATEGORIES.map((category) => (
+                  <div key={category.label} className="mb-6 last:mb-0">
+                    {/* Category Title */}
+                    <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                      {category.label}
+                    </h3>
+                    <div className="border-b border-gray-200 mb-3" />
 
-                  return (
-                    <div
-                      key={cat.fileType}
-                      onClick={() => handleSlotClick(cat.fileType)}
-                      className="bg-white border border-gray-200 rounded-lg aspect-square flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group hover:border-gray-300 transition-all"
-                    >
-                      {hasFile ? (
-                        <>
-                          <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 rounded-lg">
-                            {Icon && <Icon size={28} style={{ color }} />}
-                            <span className="text-[10px] font-medium text-gray-400 uppercase mt-1">
-                              {rawFile.name.split(".").pop()?.toUpperCase() || "FILE"}
-                            </span>
+                    {/* Items grid - max 4 columns */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                      {category.items.map((item) => {
+                        const fileEntry = getFileForItem(item.id);
+                        const hasFile = !!fileEntry;
+                        const rawFile = hasFile ? fileEntry.file : null;
+                        const { Icon, color } = rawFile ? getFileIcon(rawFile) : { Icon: null, color: null };
+
+                        return (
+                          <div key={item.id}>
+                            {/* Item title */}
+                            <p className="text-xs text-gray-500 mb-1 truncate text-center" title={item.title}>
+                              {item.title}
+                            </p>
+
+                            {/* Upload card - square, fills column width */}
+                            <div
+                              onClick={() => handleSlotClick(item.id)}
+                              className="bg-white border border-gray-200 rounded-lg aspect-square w-full flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group hover:border-gray-300 transition-all"
+                            >
+                              {hasFile ? (
+                                <>
+                                  <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50">
+                                    {Icon && <Icon size={24} style={{ color }} />}
+                                    <span className="text-[9px] font-medium text-gray-400 uppercase mt-0.5">
+                                      {rawFile.name.split(".").pop()?.toUpperCase() || "FILE"}
+                                    </span>
+                                  </div>
+                                  <span className="absolute bottom-1 left-0 right-0 text-center text-[8px] text-gray-400 truncate px-1">
+                                    {rawFile.name}
+                                  </span>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRemoveFile(item.id);
+                                    }}
+                                    className="absolute top-1 left-1 w-4 h-4 rounded-full bg-red-100 text-red-500 text-[8px] hidden group-hover:flex items-center justify-center"
+                                    title="Remove"
+                                  >
+                                    <X size={8} />
+                                  </button>
+                                  <div
+                                    className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${fileEntry.status === "done"
+                                        ? "bg-green-500"
+                                        : fileEntry.status === "uploading" || fileEntry.status === "processing"
+                                          ? "bg-blue-500"
+                                          : fileEntry.status === "failed"
+                                            ? "bg-red-500"
+                                            : "bg-gray-300"
+                                      }`}
+                                  />
+                                </>
+                              ) : (
+                                <>
+                                  <Plus size={24} className="text-[#534AB7] mb-0.5" />
+                                  <span className="text-[9px] text-center text-gray-400 px-0.5">
+                                    Upload
+                                  </span>
+                                </>
+                              )}
+                            </div>
                           </div>
-                          <span className="absolute bottom-1.5 left-0 right-0 text-center text-[9px] text-gray-400 truncate px-1">
-                            {rawFile.name}
-                          </span>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemoveFile(cat.fileType);
-                            }}
-                            className="absolute top-[5px] left-[5px] w-[18px] h-[18px] rounded-full bg-red-100 text-red-500 text-[10px] hidden group-hover:flex items-center justify-center"
-                            title="Remove"
-                          >
-                            <X size={10} />
-                          </button>
-                          <div
-                            className={`absolute top-2 right-2 w-[7px] h-[7px] rounded-full ${fileEntry.status === "done"
-                              ? "bg-green-500"
-                              : fileEntry.status === "uploading" || fileEntry.status === "processing"
-                                ? "bg-blue-500"
-                                : fileEntry.status === "failed"
-                                  ? "bg-red-500"
-                                  : "bg-gray-300"
-                              }`}
-                          />
-                        </>
-                      ) : (
-                        <>
-                          <Plus size={28} className="text-[#534AB7] mb-1" />
-                          <span className="text-[10px] text-center text-gray-400 px-2 leading-tight">
-                            {cat.label}
-                          </span>
-                        </>
-                      )}
+                        );
+                      })}
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -297,7 +374,7 @@ export default function UploadPage() {
             </button>
 
             <span className="text-[11px] text-gray-400">
-              {totalFiles} of {CATEGORIES.length} files uploaded{queuedCount > 0 && ` (${queuedCount} queued)`}
+              {totalFiles} of {totalItems} files uploaded{queuedCount > 0 && ` (${queuedCount} queued)`}
             </span>
 
             <button
