@@ -6,7 +6,12 @@ import { useUIStore } from "@/store/uiStore";
 const NAV_MAIN = [
   { to: "/", icon: Home, label: "Home", exact: true },
   { to: "/upload", icon: FileText, label: "Course Materials", exact: false },
-];
+  { to: "/courses", icon: FileText, label: "Course List", exact: false },
+  { to: "/admin/users", icon: FileText, label: "Users List", exact: false },
+  { to: "/catalog", icon: FileText, label: "catalog", exact: false },
+  { to: "/courses/import", icon: FileText, label: "Course import", exact: false },
+
+  ];
 
 const MIN_WIDTH = 64; // collapsed width
 const DEFAULT_WIDTH = 224; // w-56

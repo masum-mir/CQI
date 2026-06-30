@@ -3,11 +3,11 @@ import { useUIStore } from "@/store/uiStore";
 import { useAuthContext } from "@/context/AuthContext";
 
 export function Navbar() {
-  // const auth = useAuthContext();
-  // console.log(auth);
+  const auth = useAuthContext();
+  console.log(auth);
 
   const { toggleSidebar } = useUIStore();
-  // const { logout } = useAuthContext();
+  const { logout } = useAuthContext();
 
   return (
     <header
@@ -35,7 +35,7 @@ export function Navbar() {
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2 pl-2 border-l border-gray-100">
           <button
-            // onClick={logout}
+            onClick={logout}
             className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500
                        transition-colors ml-1"
             aria-label="Sign out"
