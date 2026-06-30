@@ -1,0 +1,302 @@
+"""Authentication business logic: registration, login, token rotation, Google
+sign-in, email verification, and password reset.
+
+Token model
+-----------
+On login we issue an access token (short-lived) and a refresh token (longer).
+The refresh token's SHA-256 hash is stored in `refresh_tokens` keyed by `jti`.
+On /auth/refresh we verify the JWT, match the stored hash, then ROTATE: the old
+record is revoked (its `replaced_by` set) and a new pair is issued. Presenting an
+already-revoked refresh token triggers reuse detection -> revoke all the user's
+tokens.
+"""
+import logging
+import secrets
+import hashlib
+from django.conf import settings
+from django.contrib.auth.hashers import make_password, check_password
+
+from core.utils import now, ensure_aware
+from core.utils.response import ApiError
+from core.utils.validators import require_fields
+from core import constants as C
+from core import audit
+from apps.users.repositories import user_repo, refresh_token_repo, one_time_token_repo
+from apps.users.api.serializers import user_dict
+from apps.users import authentication as auth
+
+log = logging.getLogger('cqi')
+
+
+# --------------------------------------------------------------------------- #
+#  Token issuing
+# --------------------------------------------------------------------------- #
+def _issue_tokens(user_doc, request=None):
+    access = auth.create_access_token(user_doc['_id'], user_doc['role'])
+    refresh = auth.create_refresh_token(user_doc['_id'])
+    refresh_token_repo.insert({
+        'user': user_doc['_id'],
+        'jti': refresh['jti'],
+        'token_hash': auth.hash_token(refresh['raw']),
+        'expires_at': refresh['expires_at'],
+        'revoked': False,
+        'replaced_by': None,
+        'user_agent': (request.META.get('HTTP_USER_AGENT') if request else None),
+        'ip': (audit.client_ip(request) if request else None),
+        'created_at': now(),
+    })
+    return {'accessToken': access, 'refreshToken': refresh['raw']}
+
+
+def _auth_payload(user_doc, request=None):
+    return {'user': user_dict(user_doc), **_issue_tokens(user_doc, request)}
+
+
+# --------------------------------------------------------------------------- #
+#  Register / login
+# --------------------------------------------------------------------------- #
+def register(data, request=None):
+    """Public self-registration — always faculty."""
+    require_fields(data, ['name', 'email', 'password'])
+    email = data['email'].lower().strip()
+    if user_repo.find_by_email(email):
+        raise ApiError('Email already registered', status=409)
+    doc = user_repo.insert({
+        'name': data['name'],
+        'email': email,
+        'password': make_password(data['password']),
+        'auth_provider': C.AUTH_LOCAL,
+        'google_id': None,
+        'profile_image': None,
+        'role': C.ROLE_FACULTY,
+        'short_code': (data.get('shortCode') or None),
+        'department': data.get('department', 'CSE'),
+        'designation': data.get('designation'),
+        'employee_id': data.get('employeeId'),
+        'status': C.STATUS_ACTIVE,
+        'is_email_verified': False,
+        'last_login_at': None,
+        'created_by': None,
+        'created_at': now(),
+        'updated_at': now(),
+    })
+    audit.record('user.register', actor=doc['_id'], target_type='user', target_id=doc['_id'],
+                 ip=audit.client_ip(request) if request else None)
+    result = _auth_payload(doc, request)
+    _attach_email_verification(doc, result)
+    return result
+
+
+def login(data, request=None):
+    require_fields(data, ['email', 'password'])
+    doc = user_repo.find_by_email(data['email'].lower().strip())
+    if not doc or not doc.get('password') or not check_password(data['password'], doc['password']):
+        raise ApiError('Invalid credentials', status=401)
+    if doc.get('status') != C.STATUS_ACTIVE:
+        raise ApiError('Account is not active', status=403)
+    user_repo.update(doc['_id'], {'last_login_at': now()})
+    audit.record('user.login', actor=doc['_id'], target_type='user', target_id=doc['_id'],
+                 ip=audit.client_ip(request) if request else None)
+    return _auth_payload(doc, request)
+
+
+# --------------------------------------------------------------------------- #
+#  Refresh rotation / logout
+# --------------------------------------------------------------------------- #
+def refresh(data, request=None):
+    raw = data.get('refreshToken')
+    if not raw:
+        raise ApiError('refreshToken is required', status=400)
+    payload = auth.decode_token(raw, expected_type='refresh')  # raises on invalid/expired
+    record = refresh_token_repo.find_by_jti(payload.get('jti'))
+    if not record:
+        raise ApiError('Invalid refresh token', status=401)
+
+    # Reuse detection: a revoked token presented again => possible theft.
+    if record.get('revoked'):
+        refresh_token_repo.revoke_all_for_user(record['user'])
+        audit.record('auth.refresh_reuse_detected', actor=record['user'],
+                     target_type='user', target_id=record['user'])
+        raise ApiError('Refresh token reuse detected. Please log in again.', status=401)
+
+    if record.get('token_hash') != auth.hash_token(raw):
+        raise ApiError('Invalid refresh token', status=401)
+
+    user = user_repo.find_by_id(record['user'])
+    if not user or user.get('status') != C.STATUS_ACTIVE:
+        raise ApiError('Account is not active', status=403)
+
+    # Rotate: issue new pair, then revoke the old, chaining replaced_by.
+    tokens = _issue_tokens(user, request)
+    new_payload = auth.decode_token(tokens['refreshToken'], expected_type='refresh')
+    refresh_token_repo.revoke(record['jti'], replaced_by=new_payload.get('jti'))
+    return {'user': user_dict(user), **tokens}
+
+
+def logout(data, request=None):
+    raw = data.get('refreshToken')
+    if not raw:
+        raise ApiError('refreshToken is required', status=400)
+    try:
+        payload = auth.decode_token(raw, expected_type='refresh')
+        refresh_token_repo.revoke(payload.get('jti'))
+    except Exception:
+        pass  # logout is best-effort / idempotent
+    return {'message': 'Logged out'}
+
+
+# --------------------------------------------------------------------------- #
+#  Google OAuth
+# --------------------------------------------------------------------------- #
+def google_auth(data, request=None):
+    """Sign in / up with a Google ID token.
+
+    In production the frontend obtains a Google ID token and posts it as
+    `idToken`; we verify it with google-auth. In DEBUG, a pre-decoded
+    `profile` ({email, sub, name, picture}) may be posted to test the flow
+    without Google credentials.
+    """
+    profile = _resolve_google_profile(data)
+    email = profile['email'].lower()
+    google_id = profile['sub']
+
+    doc = user_repo.find_by_google_id(google_id) or user_repo.find_by_email(email)
+    if doc:
+        updates = {'last_login_at': now()}
+        if not doc.get('google_id'):  # link Google to an existing local account
+            updates['google_id'] = google_id
+            updates['auth_provider'] = C.AUTH_GOOGLE
+        if profile.get('picture') and not doc.get('profile_image'):
+            updates['profile_image'] = {'url': profile['picture'], 'public_id': None,
+                                        'provider': 'google'}
+        user_repo.update(doc['_id'], updates)
+        doc = user_repo.find_by_id(doc['_id'])
+    else:
+        doc = user_repo.insert({
+            'name': profile.get('name') or email.split('@')[0],
+            'email': email,
+            'password': None,
+            'auth_provider': C.AUTH_GOOGLE,
+            'google_id': google_id,
+            'profile_image': ({'url': profile['picture'], 'public_id': None, 'provider': 'google'}
+                              if profile.get('picture') else None),
+            'role': C.ROLE_FACULTY,
+            'short_code': None,
+            'department': 'CSE',
+            'designation': None,
+            'employee_id': None,
+            'status': C.STATUS_ACTIVE,
+            'is_email_verified': True,  # Google emails are pre-verified
+            'last_login_at': now(),
+            'created_by': None,
+            'created_at': now(),
+            'updated_at': now(),
+        })
+    audit.record('user.login_google', actor=doc['_id'], target_type='user', target_id=doc['_id'])
+    return _auth_payload(doc, request)
+
+
+def _resolve_google_profile(data):
+    id_token = data.get('idToken')
+    if id_token:
+        try:
+            from google.oauth2 import id_token as g_id_token
+            from google.auth.transport import requests as g_requests
+            info = g_id_token.verify_oauth2_token(
+                id_token, g_requests.Request(), settings.GOOGLE_CLIENT_ID or None)
+            if not info.get('email_verified', True):
+                raise ApiError('Google email not verified', status=401)
+            return {'email': info['email'], 'sub': info['sub'],
+                    'name': info.get('name'), 'picture': info.get('picture')}
+        except ImportError:
+            raise ApiError('Google verification unavailable (install google-auth)', status=501)
+        except ApiError:
+            raise
+        except Exception:
+            raise ApiError('Invalid Google token', status=401)
+    if settings.DEBUG and isinstance(data.get('profile'), dict):
+        p = data['profile']
+        require_fields(p, ['email', 'sub'])
+        return {'email': p['email'], 'sub': str(p['sub']),
+                'name': p.get('name'), 'picture': p.get('picture')}
+    raise ApiError('idToken is required', status=400)
+
+
+# --------------------------------------------------------------------------- #
+#  Email verification
+# --------------------------------------------------------------------------- #
+def _new_raw_token():
+    return secrets.token_urlsafe(32)
+
+
+def _attach_email_verification(user_doc, result):
+    """Create an email-verify token; in DEBUG return it so the flow is testable."""
+    raw = _new_raw_token()
+    one_time_token_repo.invalidate_for_user(user_doc['_id'], C.OTT_EMAIL_VERIFY)
+    one_time_token_repo.insert({
+        'user': user_doc['_id'],
+        'purpose': C.OTT_EMAIL_VERIFY,
+        'token_hash': hashlib.sha256(raw.encode()).hexdigest(),
+        'expires_at': now() + __import__('datetime').timedelta(hours=settings.EMAIL_VERIFY_TTL_HOURS),
+        'used_at': None,
+        'created_at': now(),
+    })
+    link = f"{settings.FRONTEND_URL}/verify-email?token={raw}"
+    log.info('Email verification link for %s: %s', user_doc['email'], link)
+    if settings.EXPOSE_DEV_TOKENS:
+        result['emailVerifyToken'] = raw  # DEV ONLY
+
+
+def verify_email(data):
+    raw = data.get('token')
+    if not raw:
+        raise ApiError('token is required', status=400)
+    h = hashlib.sha256(raw.encode()).hexdigest()
+    rec = one_time_token_repo.find_active_by_hash(h, C.OTT_EMAIL_VERIFY)
+    if not rec or ensure_aware(rec['expires_at']) < now():
+        raise ApiError('Invalid or expired token', status=400)
+    one_time_token_repo.mark_used(rec['_id'], now())
+    user_repo.update(rec['user'], {'is_email_verified': True})
+    audit.record('user.email_verified', actor=rec['user'], target_type='user', target_id=rec['user'])
+    return {'message': 'Email verified'}
+
+
+# --------------------------------------------------------------------------- #
+#  Password reset
+# --------------------------------------------------------------------------- #
+def request_password_reset(data):
+    email = (data.get('email') or '').lower().strip()
+    doc = user_repo.find_by_email(email)
+    # Always respond the same way (don't leak which emails exist).
+    result = {'message': 'If the account exists, a reset link has been sent'}
+    if doc and doc.get('auth_provider') == C.AUTH_LOCAL:
+        raw = _new_raw_token()
+        one_time_token_repo.invalidate_for_user(doc['_id'], C.OTT_PASSWORD_RESET)
+        one_time_token_repo.insert({
+            'user': doc['_id'],
+            'purpose': C.OTT_PASSWORD_RESET,
+            'token_hash': hashlib.sha256(raw.encode()).hexdigest(),
+            'expires_at': now() + __import__('datetime').timedelta(
+                minutes=settings.PASSWORD_RESET_TTL_MINUTES),
+            'used_at': None,
+            'created_at': now(),
+        })
+        link = f"{settings.FRONTEND_URL}/reset-password?token={raw}"
+        log.info('Password reset link for %s: %s', email, link)
+        if settings.EXPOSE_DEV_TOKENS:
+            result['resetToken'] = raw  # DEV ONLY
+    return result
+
+
+def reset_password(data):
+    require_fields(data, ['token', 'password'])
+    h = hashlib.sha256(data['token'].encode()).hexdigest()
+    rec = one_time_token_repo.find_active_by_hash(h, C.OTT_PASSWORD_RESET)
+    if not rec or ensure_aware(rec['expires_at']) < now():
+        raise ApiError('Invalid or expired token', status=400)
+    one_time_token_repo.mark_used(rec['_id'], now())
+    user_repo.update(rec['user'], {'password': make_password(data['password'])})
+    # Security: revoke all sessions after a password change.
+    refresh_token_repo.revoke_all_for_user(rec['user'])
+    audit.record('user.password_reset', actor=rec['user'], target_type='user', target_id=rec['user'])
+    return {'message': 'Password updated. Please log in again.'}

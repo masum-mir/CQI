@@ -1,0 +1,9 @@
+Working directory: /home/masum/Documents/Tuhin Sir/CQI/backend
+
+Script: /home/masum/Documents/Tuhin-Sir/CQI/backend/manage.py
+
+Script parameters: runserver
+
+path-env: /home/masum/Documents/Tuhin-Sir/CQI/backend/.env
+
+Python Interpreter: /home/masum/Documents/Tuhin-Sir/CQI/backend/.venv/bin/python

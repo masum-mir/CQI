@@ -4,3 +4,15 @@ frontend/dist/
 dist/
 .vite/
 *.log
+
+
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+.vite/
+*.log
+
+
+backend/config/__pycache__/
+backend/core/__pycache__/
