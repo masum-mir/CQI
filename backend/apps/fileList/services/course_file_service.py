@@ -62,6 +62,7 @@ def build_completeness(course, course_file_id):
 # --- workflow --------------------------------------------------------------
 def create_course_file(user, data):
     course = course_repo.find_by_id(ensure_object_id(data.get('courseId'), name='courseId'))
+    print ( course )
     if not course:
         raise ApiError('Course not found', status=404)
     if user.role == C.ROLE_FACULTY and str(course.get('faculty')) != str(user.id):

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { UploadCloud, CheckSquare, ClipboardList, Users, Library, ShieldCheck, BookOpen } from 'lucide-react'
+import { UploadCloud, CheckSquare, ClipboardList, ListChecks, Users, Library, ShieldCheck, BookOpen } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth' 
 import { useState } from 'react'
 import { useAuthContext } from '@/context/AuthContext'
@@ -61,6 +61,15 @@ const ACTIONS = [
     color: 'bg-cyan-50 text-cyan-600',
     roles: ['chairperson', 'admin', 'faculty'],
   },
+    {
+    icon: ListChecks,
+    title: 'Required items',
+    desc: 'Manage the master CQI checklist (1–17)',
+    to: '/admin/items',
+    color: 'bg-teal-50 text-teal-600',
+       roles: ['chairperson', 'admin', 'faculty'],
+  },
+
 ]
 
 const ROLE_LABEL = {

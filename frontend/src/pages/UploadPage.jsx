@@ -8,13 +8,19 @@ import {
   ClipboardList,
   Check,
   FileSpreadsheet,
+  Filter,
+  ChevronDown,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { usePDFUpload } from "@/hooks/usePDFUpload";
 import { FilePreviewPanel } from "@/components/uploads/FilePreviewPanel";
 import HelpBar from "@/components/layout/HelpBar";
+// Real API modules (adjust the folder if yours differs, e.g. "@/api/courseApi")
+import { courseApi } from "@/api/courseApi";
+import { itemApi } from "@/api/itemApi";
+import { courseFileApi } from "@/api/courseFileApi";
+import { useAuth } from "@/hooks/useAuth";
 
-// ── Category structure with individual item IDs ──
+//  Category structure with individual item IDs 
 const CATEGORIES = [
   {
     label: "Academic Results",
@@ -88,7 +94,32 @@ const CATEGORIES = [
   },
 ];
 
-// ── Constants ──
+//  Slot id → backend { itemNo, subItem } (matches required_items 1–17) 
+const SLOT_MAP = {
+  final_grades: { itemNo: 1 },
+  obe_excel: { itemNo: 2 },
+  co_attainment: { itemNo: 3 },
+  po_attainment: { itemNo: 4 },
+  cqi_grade_summary: { itemNo: 5 },
+  instructor_feedback: { itemNo: 6 },
+  course_outline: { itemNo: 7 },
+  class_test_question: { itemNo: 8, subItem: "question" },
+  class_test_sample: { itemNo: 8, subItem: "samples" },
+  midterm_question: { itemNo: 9, subItem: "question" },
+  midterm_sample: { itemNo: 9, subItem: "samples" },
+  final_question: { itemNo: 10, subItem: "question" },
+  final_sample: { itemNo: 10, subItem: "samples" },
+  project_list: { itemNo: 11, subItem: "list" },
+  project_sample: { itemNo: 11, subItem: "samples" },
+  lab_experiments: { itemNo: 12 },
+  class_attendance: { itemNo: 13 },
+  lab_attendance: { itemNo: 14 },
+  midterm_attendance: { itemNo: 15 },
+  final_attendance: { itemNo: 16 },
+  capstone_report: { itemNo: 17 },
+};
+
+//  Constants 
 const MAX_SIZE_BYTES = 10 * 1024 * 1024;
 const ALLOWED_TYPES = new Set([
   "application/pdf",
@@ -102,16 +133,7 @@ const ALLOWED_TYPES = new Set([
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 ]);
 
-// ── Mock faculty courses ──
-const FACULTY_COURSES = [
-  { id: "c1", label: "CSE101-A", active: true },
-  { id: "c2", label: "CSE101-B", active: false },
-  { id: "c3", label: "CSE102-A", active: false },
-  { id: "c4", label: "CSE203-LAB", active: false },
-  { id: "c5", label: "CSE301-A", active: false },
-];
-
-// ── UI helpers ──
+//  UI helpers 
 function getFileIcon(file) {
   const ext = file.name.split(".").pop()?.toLowerCase();
   if (ext === "pdf") return { Icon: FileText, color: "#534AB7" };
@@ -120,22 +142,114 @@ function getFileIcon(file) {
   return { Icon: FileText, color: "#6B7280" };
 }
 
-// ── Main component ──
+// One locally-queued file entry (same shape FilePreviewPanel already consumes)
+function makeEntry(file, itemId) {
+  return {
+    id: `${itemId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    file,
+    fileType: itemId,
+    status: "queued", // queued | uploading | done | failed
+  };
+}
+
+//  Main component 
 export default function UploadPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const targetItemIdRef = useRef(null);
 
-  const { files, addFiles, removeFile, upload, uploading } = usePDFUpload();
+  const { user } = useAuth();
   const [selectedItem, setSelectedItem] = useState(null);
   const [panelCollapsed, setPanelCollapsed] = useState(false);
-  const [activeCourse, setActiveCourse] = useState(FACULTY_COURSES[0]?.id);
 
-  // ── Faculty and semester (placeholders) ──
-  const [faculty] = useState("CSE");
-  const [semester] = useState("Spring 2026");
+  //  Dynamic courses / items / semester 
+  const [items, setItems] = useState([]);
+  const [allCourses, setAllCourses] = useState([]);
+  const [loadingShell, setLoadingShell] = useState(true);
+  const [activeSemester, setActiveSemester] = useState(null);
+  const [activeCourseId, setActiveCourseId] = useState(null);
+  const [semesterMenuOpen, setSemesterMenuOpen] = useState(false);
 
-  // ── Build lookup map for itemId → file entry ──
+  //  PER-COURSE local file store: { [courseId]: entry[] } 
+  // Files live here (locally) until committed; each course keeps its own list.
+  const [courseFiles, setCourseFiles] = useState({});
+  const [committing, setCommitting] = useState(false);
+
+  // Files of the ACTIVE course only — this is what the grid renders.
+  const files = useMemo(
+    () => (activeCourseId ? courseFiles[activeCourseId] || [] : []),
+    [courseFiles, activeCourseId]
+  );
+
+  const updateActiveCourseFiles = useCallback(
+    (updater) => {
+      if (!activeCourseId) return;
+      setCourseFiles((prev) => ({
+        ...prev,
+        [activeCourseId]: updater(prev[activeCourseId] || []),
+      }));
+    },
+    [activeCourseId]
+  );
+
+  useEffect(() => {
+    Promise.all([itemApi.list(), courseApi.list()])
+      .then(([iRes, cRes]) => {
+        // Both endpoints use the { success, data } envelope.
+        setItems(iRes.data.data.items || []);
+
+        const all = cRes.data.data.courses || [];
+        const mine = all.filter(
+                (c) =>
+                  c.facultyCode &&
+                  user?.shortCode &&
+                  c.facultyCode.trim().toLowerCase() ===
+                    user.shortCode.trim().toLowerCase()
+              );
+
+        setAllCourses(mine);
+
+        // Default to the most recent semester
+        const sems = [...new Set(mine.map((c) => c.semester).filter(Boolean))].sort(
+          (a, b) => b.localeCompare(a)
+        );
+        if (sems.length) {
+          setActiveSemester(sems[0]);
+          const first = mine.find((c) => c.semester === sems[0]);
+          if (first) setActiveCourseId(first.id);
+        }
+      })
+      .catch(() => toast.error("Failed to load courses or required items"))
+      .finally(() => setLoadingShell(false));
+  }, [user?.shortCode, user?.role]);
+
+  // Close any open preview when the course changes (it belongs to the old course).
+  useEffect(() => {
+    setSelectedItem(null);
+  }, [activeCourseId]);
+
+  //  Semesters (newest first) and courses visible for the active semester 
+  const semesters = useMemo(
+    () =>
+      [...new Set(allCourses.map((c) => c.semester).filter(Boolean))].sort((a, b) =>
+        b.localeCompare(a)
+      ),
+    [allCourses]
+  );
+
+  const visibleCourses = useMemo(
+    () => allCourses.filter((c) => !activeSemester || c.semester === activeSemester),
+    [allCourses, activeSemester]
+  );
+
+  const handleSemesterSelect = (sem) => {
+    setActiveSemester(sem);
+    setSemesterMenuOpen(false);
+    const first = allCourses.find((c) => c.semester === sem);
+    setActiveCourseId(first ? first.id : null);
+  };
+
+  //  Lookup: itemId → file entry (of the ACTIVE course) 
   const fileMap = useMemo(() => {
     const map = new Map();
     files.forEach((f) => {
@@ -149,13 +263,12 @@ export default function UploadPage() {
     [fileMap]
   );
 
-  // ── Debug logs ──
-  useEffect(() => {
-    console.log("Files in hook:", files.map((f) => ({ name: f.file.name, fileType: f.fileType, status: f.status })));
-  }, [files]);
-
-  // ── Handlers ──
+  //  Handlers 
   const handleSlotClick = (itemId) => {
+    if (!activeCourseId) {
+      toast.error("Select a course first.");
+      return;
+    }
     const existing = getFileForItem(itemId);
     if (existing) {
       setSelectedItem(existing);
@@ -196,60 +309,84 @@ export default function UploadPage() {
         return;
       }
 
-      const existing = getFileForItem(itemId);
-      if (existing) {
-        const idx = files.indexOf(existing);
-        removeFile(idx);
-        if (selectedItem === existing) setSelectedItem(null);
-      }
-
-      // Use itemId as fileType to store the file
-      addFiles([file], itemId);
+      // Replace any existing entry in THIS course's slot, then add the new one.
+      updateActiveCourseFiles((list) => [
+        ...list.filter((f) => f.fileType !== itemId),
+        makeEntry(file, itemId),
+      ]);
+      if (selectedItem?.fileType === itemId) setSelectedItem(null);
 
       e.target.value = "";
       targetItemIdRef.current = null;
     },
-    [files, addFiles, removeFile, selectedItem, getFileForItem]
+    [updateActiveCourseFiles, selectedItem]
   );
 
   const handleRemoveFile = (itemId) => {
-    const existing = getFileForItem(itemId);
-    if (existing) {
-      const idx = files.indexOf(existing);
-      removeFile(idx);
-      if (selectedItem === existing) setSelectedItem(null);
-    }
+    updateActiveCourseFiles((list) => list.filter((f) => f.fileType !== itemId));
+    if (selectedItem?.fileType === itemId) setSelectedItem(null);
   };
 
+  //  Commit: uploads ONLY the active course's queued files 
   const handleCommit = async () => {
-    const queued = files.filter((f) => f.status === "queued");
+    if (!activeCourseId) {
+      toast.error("Select a course first.");
+      return;
+    }
+    const courseId = activeCourseId; // capture: user may switch tabs mid-upload
+    const queued = (courseFiles[courseId] || []).filter(
+      (f) => f.status === "queued" || f.status === "failed"
+    );
     if (!queued.length) {
-      toast.info("No files to upload.");
+      toast("No files to upload for this course.");
       return;
     }
 
-    const grouped = new Map();
-    queued.forEach((f) => {
-      const key = f.fileType;
-      if (!grouped.has(key)) grouped.set(key, []);
-      grouped.get(key).push(f);
-    });
+    const setStatus = (fileType, status) =>
+      setCourseFiles((prev) => ({
+        ...prev,
+        [courseId]: (prev[courseId] || []).map((f) =>
+          f.fileType === fileType ? { ...f, status } : f
+        ),
+      }));
 
-    for (const [cat, fileList] of grouped) {
-      try {
-        await upload(cat, faculty, semester);
-        toast.success(`Uploaded ${cat} successfully`);
-      } catch (err) {
-        console.error(`Upload error for ${cat}:`, err);
-        toast.error(`Upload failed for ${cat}: ${err?.message || "Unknown error"}`);
+    setCommitting(true);
+    queued.forEach((f) => setStatus(f.fileType, "uploading"));
+    try {
+      // Idempotent: returns the existing course file if one already exists.
+      const cfRes = await courseFileApi.create(courseId);
+      const cfId = cfRes.data.data.courseFile.id;
+
+      let ok = 0;
+      for (const f of queued) {
+        const meta = SLOT_MAP[f.fileType] || { isAdditional: true };
+        try {
+          await courseFileApi.upload(cfId, f.file, meta);
+          setStatus(f.fileType, "done");
+          ok += 1;
+        } catch (err) {
+          setStatus(f.fileType, "failed");
+          const msg = err?.response?.data?.message || err?.message || "Unknown error";
+          console.error(`Upload error for ${f.fileType}:`, err);
+          toast.error(`${f.file.name}: ${msg}`);
+        }
       }
+      if (ok) toast.success(`Uploaded ${ok} file${ok > 1 ? "s" : ""} ✓`);
+    } catch (err) {
+      queued.forEach((f) => setStatus(f.fileType, "queued"));
+      const msg = err?.response?.data?.message || err?.message || "Unknown error";
+      toast.error(`Could not open course file: ${msg}`);
+    } finally {
+      setCommitting(false);
     }
   };
 
-  // ── Counts ──
+  //  Counts (active course only) 
   const totalItems = CATEGORIES.reduce((acc, cat) => acc + cat.items.length, 0);
   const totalFiles = files.length;
-  const queuedCount = files.filter((f) => f.status === "queued").length;
+  const queuedCount = files.filter(
+    (f) => f.status === "queued" || f.status === "failed"
+  ).length;
 
   return (
     <div className="w-full h-full flex flex-col px-4 py-8">
@@ -258,21 +395,86 @@ export default function UploadPage() {
       <div className="flex-1 min-h-0 bg-gray-50 rounded-xl overflow-hidden border border-gray-200 flex">
         {/* Main content */}
         <div className="flex-1 flex flex-col min-w-0">
-          {/* Faculty Course Navigation */}
-          <nav className="flex overflow-x-auto whitespace-nowrap border-b border-gray-200 bg-white px-4 shrink-0">
-            {FACULTY_COURSES.map((course) => (
+          {/* Faculty Course Navigation.
+              The filter lives OUTSIDE the scrolling strip: an overflow container
+              clips absolutely-positioned children, which is why the dropdown
+              wasn't opening properly before. Only the tabs scroll now. */}
+          <nav className="flex items-center border-b border-gray-200 bg-white px-4 shrink-0">
+            {/* Semester filter (left side, non-scrolling) */}
+            <div className="relative shrink-0 flex items-center pr-3 mr-2 border-r border-gray-200">
               <button
-                key={course.id}
-                onClick={() => setActiveCourse(course.id)}
-                className={`px-3.5 py-2.5 text-xs font-medium border-b-2 transition-all shrink-0
-                  ${activeCourse === course.id
-                    ? "text-gray-900 border-[#534AB7]"
-                    : "text-gray-400 border-transparent hover:text-gray-500"
-                  }`}
+                onClick={() => setSemesterMenuOpen((o) => !o)}
+                className="flex items-center gap-1 text-xs text-gray-500 px-2.5 py-1.5 my-1.5 rounded-md border border-gray-200 hover:bg-gray-50 transition-colors"
+                title="Filter by semester"
               >
-                {course.label}
+                <Filter size={12} />
+                {activeSemester || "Semester"}
+                <ChevronDown size={12} />
               </button>
-            ))}
+
+              {semesterMenuOpen && (
+                <>
+                  {/* click-away layer */}
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setSemesterMenuOpen(false)}
+                  />
+                  <div className="absolute left-0 top-full z-20 bg-white border border-gray-200 rounded-md shadow-sm min-w-[150px] py-1">
+                    {semesters.length === 0 && (
+                      <span className="block px-3 py-1.5 text-xs text-gray-400">
+                        No semesters
+                      </span>
+                    )}
+                    {semesters.map((sem) => (
+                      <button
+                        key={sem}
+                        onClick={() => handleSemesterSelect(sem)}
+                        className={`w-full flex items-center justify-between px-3 py-1.5 text-xs text-left hover:bg-gray-50 transition-colors
+                          ${sem === activeSemester ? "text-gray-900 font-medium" : "text-gray-500"}`}
+                      >
+                        {sem}
+                        {sem === activeSemester && (
+                          <Check size={12} className="text-[#534AB7]" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Course tabs (dynamic, scrollable) */}
+            <div className="flex flex-1 min-w-0 overflow-x-auto whitespace-nowrap">
+              {loadingShell ? (
+                <span className="px-3.5 py-2.5 text-xs text-gray-400">Loading courses…</span>
+              ) : visibleCourses.length === 0 ? (
+                <span className="px-3.5 py-2.5 text-xs text-gray-400">
+                  No courses{activeSemester ? ` for ${activeSemester}` : ""}
+                </span>
+              ) : (
+                visibleCourses.map((course) => {
+                  const pending = (courseFiles[course.id] || []).filter(
+                    (f) => f.status === "queued" || f.status === "failed"
+                  ).length;
+                  return (
+                    <button
+                      key={course.id}
+                      onClick={() => setActiveCourseId(course.id)}
+                      className={`px-3.5 py-2.5 text-xs font-medium border-b-2 transition-all shrink-0
+                        ${activeCourseId === course.id
+                          ? "text-gray-900 border-[#534AB7]"
+                          : "text-gray-400 border-transparent hover:text-gray-500"
+                        }`}
+                    >
+                      {course.label}
+                      {pending > 0 && course.id !== activeCourseId && (
+                        <span className="ml-1 text-[9px] text-[#534AB7]">•{pending}</span>
+                      )}
+                    </button>
+                  );
+                })
+              )}
+            </div>
           </nav>
 
           {/* Content area */}
@@ -379,12 +581,12 @@ export default function UploadPage() {
 
             <button
               onClick={handleCommit}
-              disabled={uploading || queuedCount === 0}
+              disabled={committing || queuedCount === 0}
               className={`flex items-center gap-1.5 px-[18px] py-[7px] bg-[#534AB7] text-[#EEEDFE] rounded-md text-xs font-medium transition-colors border-none cursor-pointer
-                ${uploading || queuedCount === 0 ? "opacity-60 cursor-not-allowed" : "hover:bg-[#3C3489]"}`}
+                ${committing || queuedCount === 0 ? "opacity-60 cursor-not-allowed" : "hover:bg-[#3C3489]"}`}
             >
               <Check size={14} />
-              {uploading ? "Uploading…" : "Commit ↗"}
+              {committing ? "Uploading…" : "Commit ↗"}
             </button>
           </div>
         </div>
