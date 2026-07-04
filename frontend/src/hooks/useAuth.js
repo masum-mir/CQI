@@ -61,5 +61,5 @@ const _persistSession = ({ user, accessToken, refreshToken }) => {
     [user]
   )
 
-  return { user, loading, login, register, logout, hasRole }
+  return { user, loading, login, register, googleLogin, logout, hasRole }
 }
