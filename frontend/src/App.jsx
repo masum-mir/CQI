@@ -30,7 +30,7 @@ export default function App() {
         {/* Any authenticated user */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={ <AppLayout> <HomePage /> </AppLayout>} />
-            <Route path="/courses" element={ <AppLayout> <CoursesPage /> </AppLayout>} /> 
+            {/* <Route path="/courses" element={ <AppLayout> <CoursesPage /> </AppLayout>} />  */}
             <Route path="/cqi-plans" element={<AppLayout> <CqiPlansPage /> </AppLayout>} />
             <Route path="/cqi-plans/:id" element={<AppLayout> <CourseFileDetailPage /> </AppLayout>} />
 
@@ -40,8 +40,9 @@ export default function App() {
             <Route path="/upload" element={<AppLayout> <UploadPage /> </AppLayout>} />
           </Route>
  
-          <Route element={<ProtectedRoute roles={['chairperson','faculty', 'admin', 'faculty']} />}>
-            <Route path="/review" element={<AppLayout><ReviewPage /> </AppLayout>} />
+          <Route element={<ProtectedRoute roles={['chairperson','faculty', 'admin']} />}>
+            {/* <Route path="/review" element={<AppLayout><ReviewPage /> </AppLayout>} /> */}
+            <Route path="/courses" element={ <AppLayout> <CoursesPage /> </AppLayout>} />
           </Route>
  
           <Route element={<ProtectedRoute roles={['chairperson', 'admin', 'faculty']} />}>

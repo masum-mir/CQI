@@ -27,6 +27,7 @@ def list_users(role=None, status=None):
 def create_user(data, admin_id):
     """Admin creates a user of any role (e.g. a chairperson)."""
     require_fields(data, ['name', 'email', 'password'])
+    print('Data:: ', data)
     role = data.get('role', C.ROLE_FACULTY)
     validate_choice(role, C.ROLES, name='role')
     email = data['email'].lower().strip()

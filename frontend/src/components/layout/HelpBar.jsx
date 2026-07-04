@@ -2,9 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const defaultHelpItems = [
-  "Upload course documents",
-  "Maximum file count: 7",
-  "Supported formats: PDF, images, Word, Excel",
+  "Upload course documents", 
 ];
 
 const defaultAiItems = ["AI Analysis", "Coming Soon"];
@@ -12,7 +10,7 @@ const defaultAiItems = ["AI Analysis", "Coming Soon"];
 const MIN_WIDTH = 40; // collapsed width
 const DEFAULT_WIDTH = 240; // w-60
 
-export default function HelpBar({
+export function HelpBar({
   title = "Help",
   helpItems = defaultHelpItems,
   aiItems = defaultAiItems,

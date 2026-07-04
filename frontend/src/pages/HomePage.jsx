@@ -13,62 +13,62 @@ const ACTIONS = [
     color: 'bg-sky-50 text-sky-600',
     roles: ['chairperson', 'admin', 'faculty']
   }, 
-  {
-    icon: ClipboardList,
-    title: 'CQI plans',
-    desc:  'Manage improvement action plans',
-    to:    '/cqi-plans',
-    color: 'bg-amber-50 text-amber-600',
-    roles: ['chairperson', 'admin', 'faculty']
-  },
-  {
-    icon: CheckSquare,
-    title: 'Review submissions',
-    desc: 'Approve or request changes on course files',
-    to: '/review',
-    color: 'bg-emerald-50 text-emerald-600',
-    roles: ['chairperson', 'admin', 'faculty'],
-  },
-  {
-    icon: Users,
-    title: 'Manage users',
-    desc: 'Create, edit, and assign roles to users',
-    to: '/admin/users',
-    color: 'bg-violet-50 text-violet-600',
-    roles: ['chairperson', 'admin', 'faculty'],
-  },
-  {
-    icon: BookOpen,
-    title: 'Courses',
-    desc: 'View course offerings',
-    to: '/courses',
-    color: 'bg-indigo-50 text-indigo-600',
-    roles: ['faculty', 'chairperson', 'admin'],
-  },
-  {
-    icon: Library,
-    title: 'Course catalog',
-    desc: 'Manage stable course definitions',
-    to: '/catalog',
-    color: 'bg-rose-50 text-rose-600',
-    roles: ['chairperson', 'admin', 'faculty'],
-  },
-  {
-    icon: UploadCloud,
-    title: 'Import courses',
-    desc: 'Import offerings from the semester PDF',
-    to: '/courses/import',
-    color: 'bg-cyan-50 text-cyan-600',
-    roles: ['chairperson', 'admin', 'faculty'],
-  },
-    {
-    icon: ListChecks,
-    title: 'Required items',
-    desc: 'Manage the master CQI checklist (1–17)',
-    to: '/admin/items',
-    color: 'bg-teal-50 text-teal-600',
-       roles: ['chairperson', 'admin', 'faculty'],
-  },
+  // {
+  //   icon: ClipboardList,
+  //   title: 'CQI plans',
+  //   desc:  'Manage improvement action plans',
+  //   to:    '/cqi-plans',
+  //   color: 'bg-amber-50 text-amber-600',
+  //   roles: ['chairperson', 'admin', 'faculty']
+  // },
+  // {
+  //   icon: CheckSquare,
+  //   title: 'Review submissions',
+  //   desc: 'Approve or request changes on course files',
+  //   to: '/review',
+  //   color: 'bg-emerald-50 text-emerald-600',
+  //   roles: ['chairperson', 'admin', 'faculty'],
+  // },
+  // {
+  //   icon: Users,
+  //   title: 'Manage users',
+  //   desc: 'Create, edit, and assign roles to users',
+  //   to: '/admin/users',
+  //   color: 'bg-violet-50 text-violet-600',
+  //   roles: ['chairperson', 'admin', 'faculty'],
+  // },
+  // {
+  //   icon: BookOpen,
+  //   title: 'Courses',
+  //   desc: 'View course offerings',
+  //   to: '/courses',
+  //   color: 'bg-indigo-50 text-indigo-600',
+  //   roles: ['faculty', 'chairperson', 'admin'],
+  // },
+  // {
+  //   icon: Library,
+  //   title: 'Course catalog',
+  //   desc: 'Manage stable course definitions',
+  //   to: '/catalog',
+  //   color: 'bg-rose-50 text-rose-600',
+  //   roles: ['chairperson', 'admin', 'faculty'],
+  // },
+  // {
+  //   icon: UploadCloud,
+  //   title: 'Import courses',
+  //   desc: 'Import offerings from the semester PDF',
+  //   to: '/courses/import',
+  //   color: 'bg-cyan-50 text-cyan-600',
+  //   roles: ['chairperson', 'admin', 'faculty'],
+  // },
+  //   {
+  //   icon: ListChecks,
+  //   title: 'Required items',
+  //   desc: 'Manage the master CQI checklist (1–17)',
+  //   to: '/admin/items',
+  //   color: 'bg-teal-50 text-teal-600',
+  //      roles: ['chairperson', 'admin', 'faculty'],
+  // },
 
 ]
 
@@ -77,54 +77,7 @@ const ROLE_LABEL = {
   chairperson: 'Chairperson',
   faculty: 'Faculty',
 }
-
-// export default function HomePage() {
-//   const { user }  = useAuth()
-//   console.log("user:", user);
-//   const navigate  = useNavigate() 
-//   const [query, setQuery] = useState('')
-
-//   const handleSearch = (e) => {
-//     e.preventDefault() 
-//   }
-
-//   return (
-//     <div className="max-w-3xl mx-auto py-8 px-4">
  
-//       <div className="mb-8">
-//         <h1 className="text-2xl font-semibold text-gray-900">
-//           {/* Welcome back{user?.username ? `, ${user.username}` : ''} */}
-//         </h1>
-//         <p className="text-sm text-gray-500 mt-1">
-//           CQI — Continuous Quality Improvement 
-//         </p>
-//       </div>
-  
-//       <div> 
-//         <div className="grid grid-cols-2 gap-3">
-//           {ACTIONS.map(({ icon: Icon, title, desc, to, color }) => (
-//             <button
-//               key={to}
-//               onClick={() => navigate(to)}
-//               className="flex items-start gap-3 p-4 bg-white border border-gray-100
-//                          rounded-xl hover:border-gray-200 hover:shadow-sm transition-all text-left"
-//             >
-//               <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${color}`}>
-//                 <Icon size={16} />
-//               </div>
-//               <div>
-//                 <p className="text-sm font-medium text-gray-800">{title}</p>
-//                 <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
-//               </div>
-//             </button>
-//           ))}
-//         </div>
-//       </div>
-
-//     </div>
-//   )
-// }
-
 
 export default function HomePage() {
   const { user } = useAuthContext()

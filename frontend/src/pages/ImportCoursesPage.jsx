@@ -187,7 +187,7 @@ export default function ImportCoursesPage() {
                     <th className="py-1.5 pr-3">Code</th>
                     <th className="py-1.5 pr-3">Section</th>
                     <th className="py-1.5 pr-3">Faculty</th>
-                    <th className="py-1.5 pr-3">Resolved</th>
+                    {/* <th className="py-1.5 pr-3">Resolved</th> */}
                   </tr>
                 </thead>
                 <tbody>
@@ -196,13 +196,13 @@ export default function ImportCoursesPage() {
                       <td className="py-1.5 pr-3 text-gray-700">{off.course_code}</td>
                       <td className="py-1.5 pr-3 text-gray-500">{off.section}</td>
                       <td className="py-1.5 pr-3 text-gray-500">{off.faculty_code || '—'}</td>
-                      <td className="py-1.5 pr-3">
+                      {/* <td className="py-1.5 pr-3">
                         {off._faculty_resolved ? (
                           <span className="text-emerald-600">✓</span>
                         ) : (
                           <span className="text-amber-600">unresolved</span>
                         )}
-                      </td>
+                      </td> */}
                     </tr>
                   ))}
                 </tbody>

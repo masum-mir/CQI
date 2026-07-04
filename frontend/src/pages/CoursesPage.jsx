@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Plus, Pencil, Trash2, Search, BookOpen } from 'lucide-react'
-import { courseApi } from '../api/courseApi'
-import { useAuthContext } from '../context/AuthContext'
-import CourseFormModal from '../components/CourseFormModal'
+import { courseApi } from '@/api/courseApi'
+import { useAuthContext } from '@/context/AuthContext'
+import CourseFormModal from '@/components/CourseFormModal'
+import Pagination from '@/components/Pagination'
+import { usePagination } from '@/hooks/usePagination'
+
 
 const TYPE_BADGE = {
   theory: 'bg-sky-100 text-sky-700',
@@ -53,6 +56,11 @@ export default function CoursesPage() {
       c.title?.toLowerCase().includes(q) ||
       c.facultyInfo?.name?.toLowerCase().includes(q)
     )
+  })
+
+    const { page, setPage, totalPages, paginated, pageSize } = usePagination(filtered, {
+    pageSize: 10,
+    resetDeps: [search, semesterFilter],
   })
 
   const openCreate = () => {
@@ -167,7 +175,7 @@ export default function CoursesPage() {
               </tr>
             )}
 
-            {!loading && filtered.length === 0 && (
+            {!loading && paginated ===0 === 0 && (
               <tr>
                 <td colSpan={7} className="px-4 py-12 text-center text-gray-400">
                   <BookOpen size={20} className="mx-auto mb-2 text-gray-300" />
@@ -177,7 +185,7 @@ export default function CoursesPage() {
             )}
 
             {!loading &&
-              filtered.map((c) => (
+              paginated.map((c) => (
                 <tr key={c.id} className="border-t border-gray-50 hover:bg-gray-50/50">
                   <td className="px-4 py-3 font-medium text-gray-800">{c.label}</td>
                   <td className="px-4 py-3 text-gray-500">{c.title || '—'}</td>
@@ -188,7 +196,7 @@ export default function CoursesPage() {
                   </td>
                   <td className="px-4 py-3 text-gray-500">{c.semester}</td>
                   <td className="px-4 py-3 text-gray-500">
-                    {c.facultyInfo?.name || (c.facultyCode ? `${c.facultyCode} (unresolved)` : 'Unassigned')}
+                    {c.facultyInfo?.name || (c.facultyCode ? `${c.facultyCode}` : 'Unassigned')}
                   </td>
                   <td className="px-4 py-3 text-gray-500">
                     {c.capacity ? `${c.capacity.enrolled ?? 0}/${c.capacity.total ?? '—'}` : '—'}
@@ -223,6 +231,14 @@ export default function CoursesPage() {
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        totalItems={filtered.length}
+        pageSize={pageSize}
+      />
 
       {modalOpen && (
         <CourseFormModal

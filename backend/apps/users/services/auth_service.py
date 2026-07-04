@@ -58,6 +58,7 @@ def _auth_payload(user_doc, request=None):
 def register(data, request=None):
     """Public self-registration — always faculty."""
     require_fields(data, ['name', 'email', 'password'])
+    print("data: ", data)
     email = data['email'].lower().strip()
     if user_repo.find_by_email(email):
         raise ApiError('Email already registered', status=409)
@@ -67,7 +68,8 @@ def register(data, request=None):
         'password': make_password(data['password']),
         'auth_provider': C.AUTH_LOCAL,
         'google_id': None,
-        'profile_image': None,
+        'profile_image': ({'url': data['profileImage'], 'public_id': None, 'provider': 'local'}
+                  if data.get('profileImage') else None),
         'role': C.ROLE_FACULTY,
         'short_code': (data.get('shortCode') or None),
         'department': data.get('department', 'CSE'),

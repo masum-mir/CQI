@@ -9,8 +9,8 @@ import api from './axios'
 
 
 export const authApi = {
-  register: ({ name, email, password, shortCode, department, designation, employeeId }) =>
-    api.post('/auth/register', { name, email, password, shortCode, department, designation, employeeId }),
+  register: ({ name, email, password, shortCode, department, designation, employeeId, profileImage }) =>
+    api.post('/auth/register', { name, email, password, shortCode, department, designation, employeeId, profileImage }),
 
   login: ({ email, password }) => api.post('/auth/login', { email, password }),
 

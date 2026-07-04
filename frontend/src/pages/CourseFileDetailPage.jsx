@@ -23,7 +23,7 @@ const DOC_STATUS_CONFIG = {
   rejected: { label: 'Rejected', cls: 'bg-red-100 text-red-600',         Icon: XCircle       },
 }
 
-// ─ Single document row ─
+//  Single document row 
 function DocumentRow({
   doc, canUpload, canReview, canDelete,
   onPreview, onDownload, onDelete, onReviewChange, onReplace,
@@ -170,7 +170,7 @@ function DocumentRow({
   )
 }
 
-// ─ Empty slot — faculty can upload directly here ─
+//  Empty slot — faculty can upload directly here 
 function EmptySlot({ onUpload, uploading }) {
   const inputRef = useRef(null)
   return (
@@ -197,7 +197,7 @@ function EmptySlot({ onUpload, uploading }) {
   )
 }
 
-// ─ Main page 
+//  Main page 
 export default function CourseFileDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()

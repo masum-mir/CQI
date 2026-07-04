@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { FilePreviewPanel } from "@/components/uploads/FilePreviewPanel";
-import HelpBar from "@/components/layout/HelpBar";
+// import HelpBar from "@/components/layout/HelpBar";
 // Real API modules (adjust the folder if yours differs, e.g. "@/api/courseApi")
 import { courseApi } from "@/api/courseApi";
 import { itemApi } from "@/api/itemApi";
@@ -124,13 +124,7 @@ const MAX_SIZE_BYTES = 10 * 1024 * 1024;
 const ALLOWED_TYPES = new Set([
   "application/pdf",
   "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/webp",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "application/vnd.ms-excel",
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "image/png", 
 ]);
 
 //  UI helpers 
@@ -206,7 +200,7 @@ export default function UploadPage() {
                   c.facultyCode.trim().toLowerCase() ===
                     user.shortCode.trim().toLowerCase()
               );
-
+        console.log("my course: ", mine)
         setAllCourses(mine);
 
         // Default to the most recent semester
@@ -562,7 +556,7 @@ export default function UploadPage() {
 
             {/* Right help panel */}
             <div className="shrink-0">
-              <HelpBar defaultOpen={!panelCollapsed} />
+              {/* <HelpBar defaultOpen={!panelCollapsed} /> */}
             </div>
           </div>
 

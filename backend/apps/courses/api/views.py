@@ -6,7 +6,7 @@ from core.permissions import IsAdmin, IsAdminOrChair
 from apps.courses.services import course_service, catalog_service, import_service
 
 
-# --- Course catalog --------------------------------------------------------
+#  Course catalog 
 class CatalogListCreateView(APIView):
     def get_permissions(self):
         return [IsAdmin()] if self.request.method == 'POST' else super().get_permissions()
@@ -28,7 +28,7 @@ class CatalogDetailView(APIView):
         return ok(catalog_service.delete_catalog(pk))
 
 
-# --- Courses ---------------------------------------------------------------
+#  Courses 
 class CourseListCreateView(APIView):
     def get_permissions(self):
         return [IsAdminOrChair()] if self.request.method == 'POST' else super().get_permissions()
@@ -58,7 +58,7 @@ class CourseDetailView(APIView):
         return ok(course_service.delete_course(pk))
 
 
-# --- Import (admin) --------------------------------------------------------
+#  Import (admin) 
 class ImportPreviewView(APIView):
     permission_classes = [IsAdmin]
     parser_classes = [MultiPartParser, FormParser]
