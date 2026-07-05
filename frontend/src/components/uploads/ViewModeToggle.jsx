@@ -1,8 +1,8 @@
-import { LayoutGrid, FolderOpen, List } from "lucide-react";
+import { LayoutGrid, Grid3x3, List } from "lucide-react";
 
 const modes = [
-  { value: "grouped", label: "Grouped", Icon: LayoutGrid },
-  { value: "folder", label: "Folder", Icon: FolderOpen },
+  { value: "compact", label: "Compact", Icon: LayoutGrid },
+  { value: "grid", label: "Grid", Icon: Grid3x3 },
   { value: "list", label: "List", Icon: List },
 ];
 

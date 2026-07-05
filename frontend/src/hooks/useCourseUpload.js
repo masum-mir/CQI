@@ -74,7 +74,11 @@ export default function useCourseUpload(activeCourseId) {
 
   const handleRemoveFile = useCallback(
     (itemId, selectedItem, setSelectedItem) => {
-      updateActiveCourseFiles((list) => list.filter((f) => f.fileType !== itemId));
+      updateActiveCourseFiles((list) => {
+        const removed = list.find((f) => f.fileType === itemId);
+        if (removed?.thumbnailUrl) URL.revokeObjectURL(removed.thumbnailUrl);
+        return list.filter((f) => f.fileType !== itemId);
+      });
       if (selectedItem?.fileType === itemId) setSelectedItem(null);
     },
     [updateActiveCourseFiles]
