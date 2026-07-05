@@ -9,8 +9,8 @@ import useCourseUpload from "@/hooks/useCourseUpload";
 import ViewModeToggle from "@/components/uploads/ViewModeToggle";
 import UploadToolbar from "@/components/uploads/UploadToolbar";
 import BottomBar from "@/components/uploads/BottomBar";
-import GroupedUploadView from "@/components/uploads/GroupedUploadView";
-import FolderUploadView from "@/components/uploads/FolderUploadView";
+import CompactUploadView from "@/components/uploads/CompactUploadView";
+import GridUploadView from "@/components/uploads/GridUploadView";
 import ListUploadView from "@/components/uploads/ListUploadView";
 
 export default function UploadPage() {
@@ -19,7 +19,7 @@ export default function UploadPage() {
   const targetItemIdRef = useRef(null);
 
   const { user } = useAuth();
-  const [viewMode, setViewMode] = useState("grouped");
+  const [viewMode, setViewMode] = useState("compact");
   const [selectedItem, setSelectedItem] = useState(null);
   const [allCourses, setAllCourses] = useState([]);
   const [loadingShell, setLoadingShell] = useState(true);
@@ -126,16 +126,16 @@ export default function UploadPage() {
                   <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
                 </div>
 
-                {viewMode === "grouped" && (
-                  <GroupedUploadView
+                {viewMode === "compact" && (
+                  <CompactUploadView
                     categories={CATEGORIES}
                     getFileForItem={getFileForItem}
                     onSlotClick={onSlotClick}
                     onRemoveFile={(id) => handleRemoveFile(id, selectedItem, setSelectedItem)}
                   />
                 )}
-                {viewMode === "folder" && (
-                  <FolderUploadView
+                {viewMode === "grid" && (
+                  <GridUploadView
                     categories={CATEGORIES}
                     getFileForItem={getFileForItem}
                     onSlotClick={onSlotClick}

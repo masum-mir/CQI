@@ -1,7 +1,7 @@
 import UploadCategory from './UploadCategory';
 import UploadCard from './UploadCard';
 
-export default function GroupedUploadView({ categories, getFileForItem, onSlotClick, onRemoveFile }) {
+export default function CompactUploadView({ categories, getFileForItem, onSlotClick, onRemoveFile }) {
   return (
     <>
       {categories.map((category) => (

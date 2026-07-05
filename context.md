@@ -1,12 +1,10 @@
 # Context — Auth bypass changes (REVERTED)
 
 ## Status
-Auth bypass has been **reverted**. Both files restored to their original code.
+Auth bypass has been **reverted**. Login now calls the real backend again. Mock data file deleted.
 
 ## Reverted files
-
-### 1. `frontend/src/hooks/useAuth.js`
-Restored to original — checks localStorage for `access_token`, calls `authApi.me()` on mount, provides real `login`, `register`, `googleLogin`, `logout` handlers.
-
-### 2. `frontend/src/components/layout/ProtectedRoute.jsx`
-Restored to original — checks `user` and `loading` from `useAuthContext`, redirects to `/login` if unauthenticated, redirects to `/unauthorized` if role gate fails.
+- `frontend/src/hooks/useAuth.js` — restored to original (real API calls)
+- `frontend/src/pages/UploadPage.jsx` — restored to original (API calls, not mock data)
+- `frontend/src/hooks/useCourseUpload.js` — restored to original (real commit logic)
+- `frontend/src/utils/mockData.js` — deleted

@@ -9,10 +9,16 @@ export function getFileIcon(file) {
 }
 
 export function makeEntry(file, itemId) {
+  const thumbnailUrl =
+    file.type.startsWith("image/") || file.type === "application/pdf"
+      ? URL.createObjectURL(file)
+      : null;
+
   return {
     id: `${itemId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     file,
     fileType: itemId,
     status: "queued",
+    thumbnailUrl,
   };
 }
