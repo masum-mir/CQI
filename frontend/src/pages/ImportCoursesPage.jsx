@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { UploadCloud, FileText, AlertTriangle, CheckCircle2, History } from 'lucide-react'
+import { UploadCloud, FileSpreadsheet, AlertTriangle, CheckCircle2, History } from 'lucide-react'
 import { importApi } from '../api/importApi'
 
 export default function ImportCoursesPage() {
@@ -20,7 +20,8 @@ export default function ImportCoursesPage() {
     setLoadingBatches(true)
     try {
       const res = await importApi.listBatches()
-      setBatches(res.data.batches || [])
+      // envelope-tolerant: works whether the api returns data.batches or data.data.batches
+      setBatches(res.data.data?.batches || res.data.batches || [])
     } catch {
       // non-fatal; the page still works without history
     } finally {
@@ -33,6 +34,7 @@ export default function ImportCoursesPage() {
   }, [fetchBatches])
 
   const handlePreview = async (e) => {
+    console.log("file data e::", e)
     e.preventDefault()
     if (!file) return
     setError('')
@@ -45,13 +47,13 @@ export default function ImportCoursesPage() {
         .map((d) => d.trim())
         .filter(Boolean)
       const res = await importApi.preview(file, deptList)
-      console.log("Preview data: ", res);
       setPreviewResult(res.data.data)
     } catch (err) {
       setError(
-        err.response?.data?.error ||
+        err.response?.data?.message ||
+          err.response?.data?.error ||
           err.response?.data?.detail ||
-          'Failed to parse the uploaded PDF'
+          'Failed to parse the uploaded Excel file'
       )
     } finally {
       setPreviewing(false)
@@ -63,20 +65,20 @@ export default function ImportCoursesPage() {
     setCommitting(true)
     setError('')
     try {
-      console.log("Preview result id: ", previewResult.batch.id)
       await importApi.commit(previewResult.batch.id)
       setPreviewResult(null)
       setFile(null)
       if (fileInputRef.current) fileInputRef.current.value = ''
       await fetchBatches()
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to commit the import')
+      setError(err.response?.data?.message || err.response?.data?.error || 'Failed to commit the import')
     } finally {
       setCommitting(false)
     }
   }
 
   const batch = previewResult?.batch
+  console.log("batch file info::: ", previewResult)
 
   return (
     <div className="max-w-3xl mx-auto py-8 px-4">
@@ -84,8 +86,8 @@ export default function ImportCoursesPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Import courses</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Upload the offered-courses PDF. Review the parsed offerings before committing —
-          nothing is written until you confirm.
+          Upload the offered-courses Excel file (.xls / .xlsx). Review the parsed offerings
+          before committing — nothing is written until you confirm.
         </p>
       </div>
 
@@ -93,17 +95,20 @@ export default function ImportCoursesPage() {
       <form onSubmit={handlePreview} className="bg-white border border-gray-100 rounded-xl p-5 mb-6">
         <div className="flex flex-col gap-3">
           <label className="block">
-            <span className="block text-xs font-semibold text-gray-600 mb-1">Offered-courses PDF</span>
+            <span className="block text-xs font-semibold text-gray-600 mb-1">Offered-courses Excel</span>
             <div className="flex items-center gap-2 border border-dashed border-gray-300 rounded-lg p-4 hover:border-violet-300 transition">
               <UploadCloud size={18} className="text-gray-400 flex-shrink-0" />
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="application/pdf"
+                accept=".xls,.xlsx,.htm,.html,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
                 className="text-sm text-gray-600 w-full"
               />
             </div>
+            <span className="block text-[11px] text-gray-400 mt-1">
+              The portal’s “.xls” export (an HTML table) and real .xlsx files are both supported.
+            </span>
           </label>
 
           <label className="block">
@@ -114,7 +119,7 @@ export default function ImportCoursesPage() {
               type="text"
               value={departments}
               onChange={(e) => setDepartments(e.target.value)}
-              placeholder="CSE, EEE"
+              placeholder="CSE, ICE"
               className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-violet-400"
             />
           </label>
@@ -170,7 +175,7 @@ export default function ImportCoursesPage() {
               <p className="text-xs font-semibold text-gray-600 mb-1">Parse warnings</p>
               <ul className="text-xs text-amber-700 bg-amber-50 rounded-lg p-3 space-y-1">
                 {batch.errors.map((e, i) => (
-                  <li key={i}>{typeof e === 'string' ? e : JSON.stringify(e)}</li>
+                  <li key={i}>{typeof e === 'string' ? e : (e.message || JSON.stringify(e))}</li>
                 ))}
               </ul>
             </div>
@@ -185,9 +190,9 @@ export default function ImportCoursesPage() {
                 <thead>
                   <tr className="text-left text-gray-400 border-b border-gray-100">
                     <th className="py-1.5 pr-3">Code</th>
-                    <th className="py-1.5 pr-3">Section</th>
-                    <th className="py-1.5 pr-3">Faculty</th>
-                    {/* <th className="py-1.5 pr-3">Resolved</th> */}
+                    <th className="py-1.5 pr-3">Sec</th>
+                    <th className="py-1.5 pr-3">Title</th>
+                    <th className="py-1.5 pr-3">Faculty</th> 
                   </tr>
                 </thead>
                 <tbody>
@@ -195,14 +200,10 @@ export default function ImportCoursesPage() {
                     <tr key={i} className="border-b border-gray-50">
                       <td className="py-1.5 pr-3 text-gray-700">{off.course_code}</td>
                       <td className="py-1.5 pr-3 text-gray-500">{off.section}</td>
-                      <td className="py-1.5 pr-3 text-gray-500">{off.faculty_code || '—'}</td>
-                      {/* <td className="py-1.5 pr-3">
-                        {off._faculty_resolved ? (
-                          <span className="text-emerald-600">✓</span>
-                        ) : (
-                          <span className="text-amber-600">unresolved</span>
-                        )}
-                      </td> */}
+                      <td className="py-1.5 pr-3 text-gray-500 truncate max-w-[180px]" title={off.title}>
+                        {off.title || '—'}
+                      </td>
+                      <td className="py-1.5 pr-3 text-gray-500">{off.faculty_code || '—'}</td> 
                     </tr>
                   ))}
                 </tbody>
@@ -241,7 +242,7 @@ export default function ImportCoursesPage() {
               className="flex items-center justify-between bg-white border border-gray-100 rounded-lg px-4 py-2.5"
             >
               <div className="flex items-center gap-2.5">
-                <FileText size={14} className="text-gray-400" />
+                <FileSpreadsheet size={14} className="text-gray-400" />
                 <div>
                   <p className="text-xs font-medium text-gray-700">{b.fileName}</p>
                   <p className="text-[11px] text-gray-400">{b.semester}</p>

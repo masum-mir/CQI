@@ -8,7 +8,7 @@ export const courseFileApi = {
 
   create: (courseId) => api.post('/course-files', { courseId }),
 
-  // file: a File object; meta: { itemNo, subItem, isAdditional }
+  // file: a File object; meta: { itemNo, isAdditional }
   upload: (cfId, file, meta = {}) => {
     const form = new FormData()
     form.append('file', file)
@@ -17,7 +17,6 @@ export const courseFileApi = {
       if (meta.itemNo) form.append('itemNo', meta.itemNo)
     } else {
       form.append('itemNo', meta.itemNo)
-      if (meta.subItem) form.append('subItem', meta.subItem)
     }
     return api.post(`/course-files/${cfId}/upload`, form, {
       headers: { 'Content-Type': 'multipart/form-data' },
