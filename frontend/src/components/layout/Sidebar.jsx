@@ -8,19 +8,21 @@ const NAV_MAIN = [
   { to: "/", icon: Home, label: "Home", exact: true,
     roles: ["admin", "chairperson", "faculty"] },
  
-  { to: "/upload", icon: FileText, label: "Course Materials", exact: false,
-    roles: ["faculty"] },
+  { to: "/upload/file", icon: FileText, label: "Course Materials", exact: false,
+    roles: ["faculty", "chairperson"] },
+  
+  { to: "/upload/file/list", icon: FileText, label: "Uploaded Files", exact: false,
+    roles: ["chairperson", "faculty"] },
 
   { to: "/courses", icon: FileText, label: "Course List", exact: false,
-    roles: ["admin", "chairperson", "faculty"] },
- 
+    roles: ["chairperson", "admin"] },
+
   { to: "/admin/users", icon: FileText, label: "Users List", exact: false,
     roles: ["admin"] },
-  // { to: "/catalog", icon: FileText, label: "Catalog", exact: false, roles: ["admin"] },
-  { to: "/courses/import", icon: FileText, label: "Course import", exact: false,
-    roles: ["admin"] },
-  { to: "/course/details", icon: FileText, label: "Course File List", exact: false,
-    roles: ["admin", "chairperson", "faculty"] },
+
+  { to: "/course/import", icon: FileText, label: "Course import", exact: false,
+    roles: ["admin", "chairperson"] },
+  
 ];
 
 const MIN_WIDTH = 64; // collapsed width

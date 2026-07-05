@@ -73,12 +73,6 @@ def ensure_indexes():
     _safe(db[C.COL_AUDIT_LOGS], [('action', ASCENDING)])
     _safe(db[C.COL_AUDIT_LOGS], [('target_type', ASCENDING), ('target_id', ASCENDING)])
 
-    _safe(db[C.COL_REQUIRED_ITEMS], [('item_no', ASCENDING)], unique=True)
-    _safe(db[C.COL_REQUIRED_ITEMS], [('active', ASCENDING)])
-
-    _safe(db[C.COL_COURSE_CATALOG], [('course_code', ASCENDING)], unique=True)
-    _safe(db[C.COL_COURSE_CATALOG], [('department', ASCENDING)])
-
     _safe(db[C.COL_COURSES],
           [('course_code', ASCENDING), ('section', ASCENDING), ('semester', ASCENDING)],
           unique=True)
@@ -92,16 +86,16 @@ def ensure_indexes():
     _safe(db[C.COL_COURSE_FILES], [('status', ASCENDING)])
     _safe(db[C.COL_COURSE_FILES], [('semester', ASCENDING)])
 
-    # One file per (course_file, item_no, sub_item) — but only for non-additional
-    # uploads. Additional uploads (is_additional=true) may repeat.
     _safe(db[C.COL_DOCUMENTS],
-          [('course_file', ASCENDING), ('item_no', ASCENDING), ('sub_item', ASCENDING)],
-          unique=True,
-          partialFilterExpression={'is_additional': False})
+          [('course_file', ASCENDING), ('item_no', ASCENDING)],
+          unique=False)
+
+    _safe(db[C.COL_DOCUMENTS], [('course_file', ASCENDING)])
     _safe(db[C.COL_DOCUMENTS], [('course', ASCENDING)])
     _safe(db[C.COL_DOCUMENTS], [('uploaded_by', ASCENDING)])
-    _safe(db[C.COL_DOCUMENTS], [('processing.status', ASCENDING)])
-    _safe(db[C.COL_DOCUMENTS], [('review.status', ASCENDING)])
+
+    _safe(db[C.COL_DOCUMENTS], [('status', ASCENDING)])
+    _safe(db[C.COL_DOCUMENTS], [('item_no', ASCENDING)])
 
     _safe(db[C.COL_IMPORT_BATCHES], [('file_hash', ASCENDING)])
     _safe(db[C.COL_IMPORT_BATCHES], [('semester', ASCENDING)])

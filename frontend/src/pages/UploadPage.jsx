@@ -2,8 +2,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FilePreviewPanel } from "@/components/uploads/FilePreviewPanel";
-import { courseApi } from "@/api/courseApi";
-import { itemApi } from "@/api/itemApi";
+import { courseApi } from "@/api/courseApi"; 
 import { useAuth } from "@/hooks/useAuth";
 import { CATEGORIES } from "@/utils/uploadConstants";
 import useCourseUpload from "@/hooks/useCourseUpload";
@@ -41,8 +40,8 @@ export default function UploadPage() {
   } = useCourseUpload(activeCourseId);
 
   useEffect(() => {
-    Promise.all([itemApi.list(), courseApi.list()])
-      .then(([iRes, cRes]) => {
+    Promise.all([courseApi.list()])
+      .then(([cRes]) => {
         const all = cRes.data.data.courses || [];
         const mine = all.filter(
           (c) =>
