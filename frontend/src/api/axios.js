@@ -29,6 +29,7 @@ api.interceptors.response.use(
     const original = error.config
     const status = error.response?.status
 
+    // if (status !== 401 || original._retry || original.url?.includes('/api/auth/refresh')) {
     if (status !== 401 || original._retry || original.url?.includes('/auth/refresh')) {
       return Promise.reject(error)
     }
@@ -51,6 +52,7 @@ api.interceptors.response.use(
       if (!refreshToken) throw new Error('No refresh token')
 
       const { data } = await axios.post(`${BASE_URL}/auth/refresh`, { refreshToken })
+      // const { data } = await axios.post('/api/auth/refresh', { refreshToken })
 
       localStorage.setItem('access_token', data.accessToken)
       localStorage.setItem('refresh_token', data.refreshToken)

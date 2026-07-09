@@ -254,9 +254,27 @@ export default function useCourseUpload(activeCourseId) {
    * Remove file (local + server if already uploaded)
    */
   const handleRemoveFile = useCallback(
-    (itemId, selectedItem, setSelectedItem) => {
-      updateActiveCourseFiles((list) => list.filter((f) => f.fileType !== itemId));
-      if (selectedItem?.fileType === itemId) setSelectedItem(null);
+    async (itemId, selectedItem, setSelectedItem) => {
+      const entry = (courseFiles[activeCourseId] || []).find(
+        (f) => f.fileType === itemId
+      );
+
+      if (entry?.committed && entry.documentId) {
+        try {
+          await documentApi.remove(entry.documentId);
+        } catch {
+          toast.error("Delete failed");
+          return;
+        }
+      }
+
+      updateActive((prev) =>
+        prev.filter((f) => f.fileType !== itemId)
+      );
+
+      if (selectedItem?.fileType === itemId) {
+        setSelectedItem?.(null);
+      }
     },
     [activeCourseId, courseFiles, updateActive]
   );
