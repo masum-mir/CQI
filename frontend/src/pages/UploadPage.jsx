@@ -40,15 +40,17 @@ export default function UploadPage() {
   } = useCourseUpload(activeCourseId);
 
   useEffect(() => {
+    // filter faculty and semester wise
     Promise.all([courseApi.list()])
       .then(([cRes]) => {
-        const all = cRes.data.data.courses || [];
+        const all = cRes.data.data.courses || []; 
         const mine = all.filter(
           (c) =>
             c.facultyCode &&
             user?.shortCode &&
             c.facultyCode.trim().toLowerCase() === user.shortCode.trim().toLowerCase()
         );
+        console.log("my course:", mine);
         setAllCourses(mine);
         const sems = [...new Set(mine.map((c) => c.semester).filter(Boolean))].sort((a, b) =>
           b.localeCompare(a)

@@ -1,18 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Backend
+backend/.env
+backend/media/
+
+# Node
 node_modules/
-frontend/node_modules/
-frontend/dist/
+
+# Build
 dist/
-.vite/
+
+# Logs
 *.log
 
+# Editor
+.vscode/
+.idea/
 
-node_modules/
-frontend/node_modules/
-dist/
-frontend/dist/
-.vite/
-*.log
-
-
-backend/config/__pycache__/
-backend/core/__pycache__/
+# OS
+.DS_Store
+Thumbs.db

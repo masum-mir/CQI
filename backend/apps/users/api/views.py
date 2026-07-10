@@ -1,4 +1,3 @@
-"""Thin DRF controllers for auth, users, and roles."""
 from rest_framework.views import APIView
 
 from core.utils.response import ok, created
@@ -6,7 +5,7 @@ from core.permissions import IsAdmin
 from apps.users.services import auth_service, user_service, role_service
 
 
-# --- Auth ------------------------------------------------------------------
+#  Auth 
 class RegisterView(APIView):
     permission_classes = []
     authentication_classes = []
@@ -76,7 +75,7 @@ class MeView(APIView):
         return ok({'user': request.user.to_dict()})
 
 
-# --- Users (admin) ---------------------------------------------------------
+#  Users (admin) 
 class UserListCreateView(APIView):
     permission_classes = [IsAdmin]
 
@@ -101,7 +100,7 @@ class UserDetailView(APIView):
         return ok(user_service.delete_user(pk, request.user.id))
 
 
-# --- Roles (admin) ---------------------------------------------------------
+#  Roles (admin) 
 class RoleListView(APIView):
     permission_classes = [IsAdmin]
 

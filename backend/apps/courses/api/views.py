@@ -9,7 +9,7 @@ from apps.courses.services import course_service, catalog_service, import_servic
 #  Course catalog 
 class CatalogListCreateView(APIView):
     def get_permissions(self):
-        return [IsAdmin()] if self.request.method == 'POST' else super().get_permissions()
+        return [IsAdminOrChair()] if self.request.method == 'POST' else super().get_permissions()
 
     def get(self, request):
         return ok(catalog_service.list_catalog(request.query_params))
@@ -19,7 +19,7 @@ class CatalogListCreateView(APIView):
 
 
 class CatalogDetailView(APIView):
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdminOrChair]
 
     def patch(self, request, pk):
         return ok(catalog_service.update_catalog(pk, request.data))
@@ -45,7 +45,7 @@ class CourseDetailView(APIView):
         if self.request.method == 'PATCH':
             return [IsAdminOrChair()]
         if self.request.method == 'DELETE':
-            return [IsAdmin()]
+            return [IsAdminOrChair()]
         return super().get_permissions()
 
     def get(self, request, pk):
@@ -60,7 +60,7 @@ class CourseDetailView(APIView):
 
 #  Import (admin) 
 class ImportPreviewView(APIView):
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdminOrChair]
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
@@ -72,14 +72,14 @@ class ImportPreviewView(APIView):
 
 
 class ImportCommitView(APIView):
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdminOrChair]
 
     def post(self, request, pk):
         return ok(import_service.commit(pk, request.user.id))
 
 
 class ImportListView(APIView):
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdminOrChair]
 
     def get(self, request):
         return ok(import_service.list_batches())

@@ -34,3 +34,9 @@ class IsFacultyOrAdmin(RolePermission):
 
 class IsChairOrAdmin(RolePermission):
     allowed_roles = (C.ROLE_CHAIR, C.ROLE_ADMIN)
+
+class IsChairOrFaculty(RolePermission):
+    allowed_roles = (C.ROLE_CHAIR, C.ROLE_FACULTY)
+
+class IsChairOrFacultyOrAdmin(RolePermission):
+    allowed_roles = (C.ROLE_CHAIR, C.ROLE_FACULTY, C.ROLE_ADMIN)
