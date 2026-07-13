@@ -30,52 +30,45 @@
 //     api.patch(`/course-files/${cfId}/review`, { decision, comment }),
 // }
 
-import api from "./axios";
+let mockDocCounter = 0
+const mockDocsByCfId = {}
 
 export const courseFileApi = {
-  list: ({ status, semester } = {}) =>
-    api.get("/course-files", { params: { status, semester } }),
+  list: () =>
+    Promise.resolve({ data: { data: { courseFiles: [] } } }),
 
   get: (id) =>
-    api.get(`/course-files/${id}`),
+    Promise.resolve({ data: { data: { documents: mockDocsByCfId[id] || [] } } }),
 
-  create: (courseId) =>
-    api.post("/course-files", { courseId }),
+  create: (courseId) => {
+    const cfId = `mock-cf-${courseId}-${Date.now()}`
+    mockDocsByCfId[cfId] = []
+    return Promise.resolve({ data: { data: { courseFile: { id: cfId, course: courseId } } } })
+  },
 
   upload: (cfId, file, meta = {}) => {
-    const form = new FormData();
-
-    form.append("file", file);
-
-    const { itemNo, isAdditional } = meta;
-
-    // CASE 1: additional file
-    if (isAdditional) {
-      form.append("isAdditional", "true");
-      if (itemNo != null) {
-        form.append("itemNo", itemNo); // optional safety only
-      }
+    mockDocCounter++
+    const doc = {
+      id: `mock-doc-${mockDocCounter}`,
+      itemNo: meta.itemNo,
+      isAdditional: !!meta.isAdditional,
+      storage: {
+        originalName: file.name,
+        size: file.size,
+        mimeType: file.type,
+        fileName: file.name,
+      },
+      review: { status: 'pending' },
+      createdAt: new Date().toISOString(),
     }
-
-    // CASE 2: normal required slot file
-    else {
-      if (itemNo == null) {
-        throw new Error("itemNo is required for normal upload");
-      }
-      form.append("itemNo", itemNo);
-    }
-
-    return api.post(`/course-files/${cfId}/upload`, form, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    if (!mockDocsByCfId[cfId]) mockDocsByCfId[cfId] = []
+    mockDocsByCfId[cfId].push(doc)
+    return Promise.resolve({ data: { data: { document: doc } } })
   },
 
   submit: (cfId) =>
-    api.patch(`/course-files/${cfId}/submit`),
+    Promise.resolve({ data: { message: 'Submitted' } }),
 
   review: (cfId, decision, comment) =>
-    api.patch(`/course-files/${cfId}/review`, {
-      decision,
-      comment,
-    }),
+    Promise.resolve({ data: { message: 'Reviewed' } }),
 };

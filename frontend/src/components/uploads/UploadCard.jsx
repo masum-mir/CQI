@@ -7,6 +7,11 @@ import "react-pdf/dist/Page/TextLayer.css";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
+const CARD_STATUS = {
+  queued: "bg-amber-50 border-amber-300",
+  done: "bg-emerald-50 border-emerald-300",
+};
+
 export default function UploadCard({ item, fileEntry, onSlotClick, onRemoveFile }) {
   const hasFile = !!fileEntry;
   const rawFile = hasFile ? fileEntry.file : null;
@@ -15,6 +20,7 @@ export default function UploadCard({ item, fileEntry, onSlotClick, onRemoveFile 
   const isImage = rawFile?.type.startsWith("image/");
   const isPdf = rawFile?.type === "application/pdf";
   const thumbUrl = hasFile ? fileEntry.thumbnailUrl : null;
+  const statusBg = !hasFile ? "bg-red-50 border-red-200" : CARD_STATUS[fileEntry.status] || "bg-white border-gray-200";
 
   return (
     <div key={item.id}>
@@ -23,7 +29,7 @@ export default function UploadCard({ item, fileEntry, onSlotClick, onRemoveFile 
       </p>
       <div
         onClick={() => onSlotClick(item.id)}
-        className="bg-white border border-gray-200 rounded-lg aspect-square w-full flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group hover:border-gray-300 transition-all"
+        className={`rounded-lg aspect-square w-full flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group transition-all border ${statusBg} hover:brightness-95`}
       >
         {hasFile ? (
           <>

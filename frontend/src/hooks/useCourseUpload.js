@@ -66,12 +66,17 @@ const REVERSE_SLOT = Object.entries(SLOT_MAP).reduce((acc, [slot, meta]) => {
 const TOTAL_SLOTS = Object.keys(SLOT_MAP).length;
 
 function makeEntry(file, itemId) {
+  const thumbnailUrl =
+    file.type?.startsWith("image/") || file.type === "application/pdf"
+      ? URL.createObjectURL(file)
+      : null;
   return {
     id: `${itemId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     file,
     fileType: itemId,
     status: "queued",
     reviewStatus: null,
+    thumbnailUrl,
   };
 }
 
@@ -236,10 +241,14 @@ export default function useCourseUpload(activeCourseId) {
         return clear();
       }
 
-      updateActive((prev) => [
-        ...prev.filter((f) => f.fileType !== itemId),
-        makeEntry(file, itemId),
-      ]);
+      updateActive((prev) => {
+        const old = prev.find((f) => f.fileType === itemId);
+        if (old?.thumbnailUrl) URL.revokeObjectURL(old.thumbnailUrl);
+        return [
+          ...prev.filter((f) => f.fileType !== itemId),
+          makeEntry(file, itemId),
+        ];
+      });
 
       if (selectedItem?.fileType === itemId) {
         setSelectedItem?.(null);
@@ -258,6 +267,10 @@ export default function useCourseUpload(activeCourseId) {
       const entry = (courseFiles[activeCourseId] || []).find(
         (f) => f.fileType === itemId
       );
+
+      if (entry?.thumbnailUrl) {
+        URL.revokeObjectURL(entry.thumbnailUrl);
+      }
 
       if (entry?.committed && entry.documentId) {
         try {

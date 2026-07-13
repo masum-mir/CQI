@@ -28,7 +28,7 @@ export default function App() {
             <Route path="/" element={ <AppLayout> <HomePage /> </AppLayout>} />
           </Route>
  
-          <Route element={<ProtectedRoute roles={['faculty', 'chairperson']} />}>
+          <Route element={<ProtectedRoute roles={['faculty', 'chairperson', 'admin']} />}>
             <Route path="/upload/file" element={<AppLayout> <UploadPage /> </AppLayout>} />
             <Route path="/upload/file/list" element={<AppLayout> <CourseFilesPage /> </AppLayout>} /> 
           </Route>

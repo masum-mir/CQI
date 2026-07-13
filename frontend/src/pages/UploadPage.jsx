@@ -149,6 +149,12 @@ export default function UploadPage() {
                     categories={CATEGORIES}
                     getFileForItem={getFileForItem}
                     onSlotClick={onSlotClick}
+                    onRemoveFile={(id) => handleRemoveFile(id, selectedItem, setSelectedItem)}
+                    onUploadClick={(itemId) => {
+                      if (!activeCourseId) { toast.error("Select a course first."); return }
+                      targetItemIdRef.current = itemId;
+                      fileInputRef.current?.click();
+                    }}
                   />
                 )}
               </div>

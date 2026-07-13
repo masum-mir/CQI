@@ -32,56 +32,19 @@
 // }
 
 
-import api from "./axios";
-
 export const documentApi = {
-  // Download file (auth required)
   download: async (id, suggestedName) => {
-    const res = await api.get(`/documents/${id}/download`, {
-      responseType: "blob",
-    });
-
-    const blob = res.data;
-
-    const disposition = res.headers["content-disposition"];
-    const match =
-      disposition && /filename="?([^"]+)"?/.exec(disposition);
-
-    const filename = match?.[1] || suggestedName || "document";
-
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = filename;
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    window.URL.revokeObjectURL(url);
+    console.log('[MOCK] download', id, suggestedName)
   },
 
-  // raw blob fetch (preview use)
   fetchBlob: async (id) => {
-    const res = await api.get(`/documents/${id}/download`, {
-      responseType: "blob",
-    });
-
-    return {
-      blob: res.data,
-      mime: res.data.type,
-    };
+    const blob = new Blob(['Mock file content'], { type: 'application/pdf' })
+    return { blob, mime: 'application/pdf' }
   },
 
-  // delete document
   remove: (id) =>
-    api.delete(`/documents/${id}`),
+    Promise.resolve({ data: { message: 'Deleted' } }),
 
-  // document review (chair/admin)
   review: (id, status, remark) =>
-    api.patch(`/documents/${id}/review`, {
-      status,
-      remark,
-    }),
+    Promise.resolve({ data: { message: 'Reviewed' } }),
 };

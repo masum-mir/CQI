@@ -1,6 +1,6 @@
 import ListRow from "./ListRow";
 
-function ListUploadView({ categories, getFileForItem, onSlotClick }) {
+function ListUploadView({ categories, getFileForItem, onSlotClick, onRemoveFile, onUploadClick }) {
   const items = categories.flatMap((cat) => cat.items);
 
   return (
@@ -14,6 +14,9 @@ function ListUploadView({ categories, getFileForItem, onSlotClick }) {
             <th className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-2 text-left">
               Document Name
             </th>
+            <th className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-2 text-right">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -23,6 +26,8 @@ function ListUploadView({ categories, getFileForItem, onSlotClick }) {
               item={item}
               fileEntry={getFileForItem(item.id)}
               onSlotClick={onSlotClick}
+              onRemoveFile={onRemoveFile}
+              onUploadClick={onUploadClick}
             />
           ))}
         </tbody>
