@@ -8,6 +8,9 @@ Auth bypass was **reverted**. Login now calls the real backend again. Mock data 
 - `frontend/src/pages/UploadPage.jsx` — restored to original (API calls, not mock data)
 - `frontend/src/hooks/useCourseUpload.js` — restored to original (real commit logic)
 - `frontend/src/utils/mockData.js` — deleted
+- `frontend/src/api/courseApi.js` — restored to original (real API calls, not mock data)
+- `frontend/src/api/courseFileApi.js` — restored to original (real API calls, not mock data)
+- `frontend/src/api/documentApi.js` — restored to original (real API calls, not mock data)
 
 ## API path prefix fix (2026-07-06) — login only
 Frontend auth API calls were missing the `/api` path prefix, so Vite's dev proxy never forwarded them to Django. Also fixed the proxy target (doubled `/api`).
