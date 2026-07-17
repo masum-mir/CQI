@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { UploadCloud, FileSpreadsheet, AlertTriangle, CheckCircle2, History } from 'lucide-react'
 import { importApi } from '../api/importApi'
+import Pagination from '@/components/Pagination'
+import { usePagination } from '@/hooks/usePagination'
 
 export default function ImportCoursesPage() {
   const fileInputRef = useRef(null)
@@ -32,6 +34,11 @@ export default function ImportCoursesPage() {
   useEffect(() => {
     fetchBatches()
   }, [fetchBatches])
+
+  const { page, setPage, totalPages, paginated, pageSize } = usePagination(batches, {
+    pageSize: 10,
+    resetDeps: [batches],
+  })
 
   const handlePreview = async (e) => {
     console.log("file data e::", e)
@@ -236,7 +243,7 @@ export default function ImportCoursesPage() {
         )}
 
         <div className="space-y-2">
-          {batches.map((b) => (
+          {paginated.map((b) => (
             <div
               key={b.id}
               className="flex items-center justify-between bg-white border border-gray-100 rounded-lg px-4 py-2.5"
@@ -265,6 +272,14 @@ export default function ImportCoursesPage() {
             </div>
           ))}
         </div>
+
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+          totalItems={batches.length}
+          pageSize={pageSize}
+        />
       </div>
     </div>
   )

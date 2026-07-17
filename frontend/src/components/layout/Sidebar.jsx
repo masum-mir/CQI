@@ -1,34 +1,34 @@
 import { useState, useRef, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { Home, FileText, Menu, X } from "lucide-react";
+import { Home, FolderKanban, Files, BookOpenCheck, History, Library, Users, FileSpreadsheet, Menu, X } from "lucide-react";
 import { useUIStore } from "@/store/uiStore";
 import { useAuthContext } from "@/context/AuthContext";  
 
 const NAV_MAIN = [
   { to: "/", icon: Home, label: "Home", exact: true,
     roles: ["admin", "chairperson", "faculty"] },
- 
-  { to: "/upload/file", icon: FileText, label: "Course Materials", exact: false,
-    roles: ["faculty", "chairperson"] },
   
-  { to: "/upload/file/list", icon: FileText, label: "Uploaded Files", exact: false,
+  { to: "/upload/file", icon: FolderKanban, label: "Course Materials", exact: false,
+    roles: ["faculty", "chairperson"] },
+   
+  { to: "/upload/file/list", icon: Files, label: "Uploaded Files", exact: false,
     roles: ["chairperson", "faculty"] },
 
-  { to: "/my-courses-list", icon: FileText, label: "My Course", exact: false,
+  { to: "/my-courses-list", icon: BookOpenCheck, label: "My Course", exact: false,
     roles: ["chairperson", "faculty"] },
 
-  { to: "/faculty-courses-list", icon: FileText, label: "Faculty course history", exact: false,
+  { to: "/faculty-courses-list", icon: History, label: "Faculty course history", exact: false,
     roles: ["chairperson", "admin"] },
 
-  { to: "/courses", icon: FileText, label: "Course List", exact: false,
+  { to: "/courses", icon: Library, label: "Course List", exact: false,
     roles: ["chairperson", "admin"] },
 
-  { to: "/admin/users", icon: FileText, label: "Users List", exact: false,
+  { to: "/admin/users", icon: Users, label: "Users List", exact: false,
     roles: ["admin"] },
 
-  { to: "/course/import", icon: FileText, label: "Course import", exact: false,
+  { to: "/course/import", icon: FileSpreadsheet, label: "Course import", exact: false,
     roles: ["admin", "chairperson"] },
-  
+   
 ];
 
 const MIN_WIDTH = 64; // collapsed width
