@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -15,7 +15,9 @@ import {
   ChevronRight,
   ZoomIn,
   ZoomOut,
+  Loader2,
 } from "lucide-react";
+import { documentApi } from "@/api/documentApi";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -43,19 +45,60 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(1.2);
   const [pdfError, setPdfError] = useState(null);
+  const [loadingBlob, setLoadingBlob] = useState(false);
+  const objectUrlRef = useRef(null);
 
   useEffect(() => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
     if (!item) {
       setObjectUrl(null);
+      setLoadingBlob(false);
       return;
     }
-    const url = URL.createObjectURL(item.file);
-    setObjectUrl(url);
+
+    let cancelled = false;
+
     setPageNumber(1);
     setScale(1.2);
     setPdfError(null);
     setNumPages(null);
-    return () => URL.revokeObjectURL(url);
+
+    const isRealBlob = item.file instanceof Blob || item.file instanceof File;
+
+    if (item.committed && !isRealBlob) {
+      setLoadingBlob(true);
+      setObjectUrl(null);
+      documentApi
+        .fetchBlob(item.documentId)
+        .then(({ blob }) => {
+          if (cancelled) return;
+          const url = URL.createObjectURL(blob);
+          objectUrlRef.current = url;
+          setObjectUrl(url);
+          setLoadingBlob(false);
+        })
+        .catch((err) => {
+          if (cancelled) return;
+          console.error("Failed to fetch committed file:", err);
+          setPdfError("Failed to load file from server");
+          setLoadingBlob(false);
+        });
+    } else if (isRealBlob) {
+      const url = URL.createObjectURL(item.file);
+      objectUrlRef.current = url;
+      setObjectUrl(url);
+    }
+
+    return () => {
+      cancelled = true;
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = null;
+      }
+    };
   }, [item]);
 
   // close on Escape
@@ -154,7 +197,11 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
         </div>
 
         <div className="flex-1 overflow-auto bg-gray-100 flex flex-col items-center min-h-0">
-          {isPdf && objectUrl ? (
+          {loadingBlob ? (
+            <div className="flex items-center justify-center py-24">
+              <Loader2 size={32} className="text-violet-500 animate-spin" />
+            </div>
+          ) : isPdf && objectUrl ? (
             pdfError ? (
               <div className="flex flex-col items-center gap-3 text-gray-400 py-16 text-center">
                 <FileText size={40} className="text-rose-400" />
