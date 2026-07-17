@@ -10,6 +10,9 @@ import AdminUsersPage from '@/pages/AdminUsersPage'
 import ImportCoursesPage from '@/pages/ImportCoursesPage'
 import CoursesPage from '@/pages/CoursesPage' 
 import CourseFilesPage from '@/pages/CourseFilesPage' 
+import MyCourseList from '@/pages/MyCourseList'
+import FacultyCourseHistoryPage from '@/pages/FacultyCourseHistoryPage'
+
  
 export default function App() {
   return (
@@ -31,11 +34,13 @@ export default function App() {
           <Route element={<ProtectedRoute roles={['faculty', 'chairperson', 'admin']} />}>
             <Route path="/upload/file" element={<AppLayout> <UploadPage /> </AppLayout>} />
             <Route path="/upload/file/list" element={<AppLayout> <CourseFilesPage /> </AppLayout>} /> 
+            <Route path="/my-courses-list" element={<AppLayout> <MyCourseList /> </AppLayout>} /> 
           </Route>
  
           <Route element={<ProtectedRoute roles={['chairperson','admin']} />}> 
             <Route path="/courses" element={ <AppLayout> <CoursesPage /> </AppLayout>} />
             <Route path="/course/import" element={<AppLayout> <ImportCoursesPage /> </AppLayout>} /> 
+            <Route path="/faculty-courses-list" element={<AppLayout> <FacultyCourseHistoryPage /> </AppLayout>} />
           </Route>
  
           <Route element={<ProtectedRoute roles={['admin']} />}>

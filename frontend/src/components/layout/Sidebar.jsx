@@ -14,6 +14,12 @@ const NAV_MAIN = [
   { to: "/upload/file/list", icon: FileText, label: "Uploaded Files", exact: false,
     roles: ["chairperson", "faculty"] },
 
+  { to: "/my-courses-list", icon: FileText, label: "My Course", exact: false,
+    roles: ["chairperson", "faculty"] },
+
+  { to: "/faculty-courses-list", icon: FileText, label: "Faculty course history", exact: false,
+    roles: ["chairperson", "admin"] },
+
   { to: "/courses", icon: FileText, label: "Course List", exact: false,
     roles: ["chairperson", "admin"] },
 

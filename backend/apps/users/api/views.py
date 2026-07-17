@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 
 from core.utils.response import ok, created
-from core.permissions import IsAdmin
+from core.permissions import IsAdmin, IsAdminOrChair
 from apps.users.services import auth_service, user_service, role_service
 
 
@@ -77,7 +77,7 @@ class MeView(APIView):
 
 #  Users (admin) 
 class UserListCreateView(APIView):
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdminOrChair]
 
     def get(self, request):
         return ok(user_service.list_users(role=request.query_params.get('role'),
@@ -88,7 +88,7 @@ class UserListCreateView(APIView):
 
 
 class UserDetailView(APIView):
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdminOrChair]
 
     def get(self, request, pk):
         return ok(user_service.get_user(pk))
@@ -102,7 +102,7 @@ class UserDetailView(APIView):
 
 #  Roles (admin) 
 class RoleListView(APIView):
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdminOrChair]
 
     def get(self, request):
         return ok(role_service.list_roles())
