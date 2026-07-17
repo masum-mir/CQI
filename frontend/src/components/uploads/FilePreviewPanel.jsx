@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -15,9 +15,8 @@ import {
   ChevronRight,
   ZoomIn,
   ZoomOut,
+  Loader2,
 } from "lucide-react";
-import { courseFileApi } from "@/api/courseFileApi";
-import * as XLSX from "xlsx";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -45,74 +44,24 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(1.2);
   const [pdfError, setPdfError] = useState(null);
- 
-const [excelData, setExcelData] = useState([]);
-  // useEffect(() => {
-  //   if (!item) {
-  //     setObjectUrl(null);
-  //     return;
-  //   }
-  //   console.log("item:: ", item)
-  //   const url = URL.createObjectURL(item.file);
 
-  //   setObjectUrl(url);
-  //   setPageNumber(1);
-  //   setScale(1.2);
-  //   setPdfError(null);
-  //   setNumPages(null);
-  //   return () => URL.revokeObjectURL(url);
-  // }, [item]);
   useEffect(() => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
     if (!item) {
       setObjectUrl(null);
+      setLoadingBlob(false);
       return;
     }
-
-    let url;
-
-    async function loadFile() {
-      try {
-        const res = await courseFileApi.preview(item.id);
-
-        const blob = new Blob([res.data], {
-          type: item.file.type,
-        });
-
-        url = URL.createObjectURL(blob);
-
-        setObjectUrl(url);
-        const isExcelFile =
-  item.file.type.includes("sheet") ||
-  item.file.type.includes("excel") ||
-  item.file.name.toLowerCase().endsWith(".xlsx") ||
-  item.file.name.toLowerCase().endsWith(".xls");
-
-        if (isExcelFile) {
-          const workbook = XLSX.read(await blob.arrayBuffer(), {
-            type: "array",
-          });
-
-          const sheet = workbook.Sheets[workbook.SheetNames[0]];
-
-          const rows = XLSX.utils.sheet_to_json(sheet, {
-            header: 1,
-          });
-
-          setExcelData(rows);
-        }
-      } catch (err) {
-        console.log("Preview ERROR:", err);
-      }
-    }
-
-    loadFile();
-
-    return () => {
-      if (url) {
-        URL.revokeObjectURL(url);
-        setExcelData([]);
-      }
-    };
+    const url = URL.createObjectURL(item.file);
+    setObjectUrl(url);
+    setPageNumber(1);
+    setScale(1.2);
+    setPdfError(null);
+    setNumPages(null);
+    return () => URL.revokeObjectURL(url);
   }, [item]);
 
   // close on Escape
@@ -217,7 +166,11 @@ const { file, status } = item;
         </div>
 
         <div className="flex-1 overflow-auto bg-gray-100 flex flex-col items-center min-h-0">
-          {isPdf && objectUrl ? (
+          {loadingBlob ? (
+            <div className="flex items-center justify-center py-24">
+              <Loader2 size={32} className="text-violet-500 animate-spin" />
+            </div>
+          ) : isPdf && objectUrl ? (
             pdfError ? (
               <div className="flex flex-col items-center gap-3 text-gray-400 py-16 text-center">
                 <FileText size={40} className="text-rose-400" />

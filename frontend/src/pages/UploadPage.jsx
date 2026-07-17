@@ -39,6 +39,22 @@ export default function UploadPage() {
     handleCommit,
   } = useCourseUpload(activeCourseId);
 
+  const [uploadFilter, setUploadFilter] = useState("all");
+
+  const filteredCategories = useMemo(() => {
+    if (uploadFilter === "all") return CATEGORIES;
+
+    return CATEGORIES.map((cat) => ({
+      ...cat,
+      items: cat.items.filter((item) => {
+        const entry = getFileForItem(item.id);
+        const isUploaded =
+          entry?.status === "done" && entry?.committed === true;
+        return uploadFilter === "uploaded" ? isUploaded : !isUploaded;
+      }),
+    })).filter((cat) => cat.items.length > 0);
+  }, [getFileForItem, uploadFilter]);
+
   useEffect(() => {
     // filter faculty and semester wise
     Promise.all([courseApi.list()])
@@ -124,13 +140,28 @@ export default function UploadPage() {
           <div className="flex-1 min-h-0 flex overflow-hidden">
             <div className="flex-1 p-4 overflow-y-auto">
               <div className="max-w-5xl mx-auto">
-                <div className="flex items-center justify-end mb-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-1 bg-gray-100 p-0.5 rounded-lg">
+                    {["all", "uploaded", "missing"].map((f) => (
+                      <button
+                        key={f}
+                        onClick={() => setUploadFilter(f)}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-md capitalize ${
+                          uploadFilter === f
+                            ? "bg-[#534AB7] text-white"
+                            : "text-gray-500 hover:text-gray-700"
+                        }`}
+                      >
+                        {f}
+                      </button>
+                    ))}
+                  </div>
                   <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
                 </div>
 
                 {viewMode === "compact" && (
                   <CompactUploadView
-                    categories={CATEGORIES}
+                    categories={filteredCategories}
                     getFileForItem={getFileForItem}
                     onSlotClick={onSlotClick}
                     onRemoveFile={(id) => handleRemoveFile(id, selectedItem, setSelectedItem)}
@@ -138,7 +169,7 @@ export default function UploadPage() {
                 )}
                 {viewMode === "grid" && (
                   <GridUploadView
-                    categories={CATEGORIES}
+                    categories={filteredCategories}
                     getFileForItem={getFileForItem}
                     onSlotClick={onSlotClick}
                     onRemoveFile={(id) => handleRemoveFile(id, selectedItem, setSelectedItem)}
@@ -146,7 +177,7 @@ export default function UploadPage() {
                 )}
                 {viewMode === "list" && (
                   <ListUploadView
-                    categories={CATEGORIES}
+                    categories={filteredCategories}
                     getFileForItem={getFileForItem}
                     onSlotClick={onSlotClick}
                     onRemoveFile={(id) => handleRemoveFile(id, selectedItem, setSelectedItem)}
