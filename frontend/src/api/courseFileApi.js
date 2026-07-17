@@ -23,6 +23,12 @@ export const courseFileApi = {
     })
   },
 
+  preview: (id) =>
+  api.get(`/documents/${id}/preview`, {
+    responseType: "arraybuffer",
+  }),
+
+
   submit: (cfId) => api.patch(`/course-files/${cfId}/submit`),
 
   // decision: 'approved' | 'rejected' | 'under_review'

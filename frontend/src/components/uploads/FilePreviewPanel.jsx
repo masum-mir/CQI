@@ -16,6 +16,8 @@ import {
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
+import { courseFileApi } from "@/api/courseFileApi";
+import * as XLSX from "xlsx";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -43,19 +45,74 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(1.2);
   const [pdfError, setPdfError] = useState(null);
+ 
+const [excelData, setExcelData] = useState([]);
+  // useEffect(() => {
+  //   if (!item) {
+  //     setObjectUrl(null);
+  //     return;
+  //   }
+  //   console.log("item:: ", item)
+  //   const url = URL.createObjectURL(item.file);
 
+  //   setObjectUrl(url);
+  //   setPageNumber(1);
+  //   setScale(1.2);
+  //   setPdfError(null);
+  //   setNumPages(null);
+  //   return () => URL.revokeObjectURL(url);
+  // }, [item]);
   useEffect(() => {
     if (!item) {
       setObjectUrl(null);
       return;
     }
-    const url = URL.createObjectURL(item.file);
-    setObjectUrl(url);
-    setPageNumber(1);
-    setScale(1.2);
-    setPdfError(null);
-    setNumPages(null);
-    return () => URL.revokeObjectURL(url);
+
+    let url;
+
+    async function loadFile() {
+      try {
+        const res = await courseFileApi.preview(item.id);
+
+        const blob = new Blob([res.data], {
+          type: item.file.type,
+        });
+
+        url = URL.createObjectURL(blob);
+
+        setObjectUrl(url);
+        const isExcelFile =
+  item.file.type.includes("sheet") ||
+  item.file.type.includes("excel") ||
+  item.file.name.toLowerCase().endsWith(".xlsx") ||
+  item.file.name.toLowerCase().endsWith(".xls");
+
+        if (isExcelFile) {
+          const workbook = XLSX.read(await blob.arrayBuffer(), {
+            type: "array",
+          });
+
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+          const rows = XLSX.utils.sheet_to_json(sheet, {
+            header: 1,
+          });
+
+          setExcelData(rows);
+        }
+      } catch (err) {
+        console.log("Preview ERROR:", err);
+      }
+    }
+
+    loadFile();
+
+    return () => {
+      if (url) {
+        URL.revokeObjectURL(url);
+        setExcelData([]);
+      }
+    };
   }, [item]);
 
   // close on Escape
@@ -81,13 +138,19 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
   const zoomIn = () => setScale((s) => Math.min(3.0, +(s + 0.25).toFixed(2)));
   const zoomOut = () => setScale((s) => Math.max(0.5, +(s - 0.25).toFixed(2)));
 
-  if (!item) return null;
+ if (!item) return null;
 
-  const { file, status } = item;
+const { file, status } = item;
+ 
   const isImage = file.type.startsWith("image/");
   const isPdf = file.type === "application/pdf";
   const ext = file.name.split(".").pop().toUpperCase();
-
+ const isExcel =
+  file.type.includes("sheet") ||
+  file.type.includes("excel") ||
+  file.name.toLowerCase().endsWith(".xlsx") ||
+  file.name.toLowerCase().endsWith(".xls");
+  
   return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -211,6 +274,25 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
                 )}
               </Document>
             )
+          ) : isExcel ? (
+            <div className="w-full overflow-auto p-4">
+              <table className="min-w-full border border-gray-300 text-sm">
+                <tbody>
+                  {excelData.map((row, i) => (
+                    <tr key={i}>
+                      {row.map((cell, j) => (
+                        <td
+                          key={j}
+                          className="border border-gray-300 px-3 py-2 whitespace-nowrap"
+                        >
+                          {cell?.toString()}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : isImage && objectUrl ? (
             <div className="flex-1 flex items-center justify-center p-6 w-full">
               <img
@@ -280,6 +362,6 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
         )}
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }

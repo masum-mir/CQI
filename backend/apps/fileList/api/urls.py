@@ -11,6 +11,6 @@ urlpatterns = [
 
     # Documents
     path('documents/<str:pk>', views.DocumentDetailView.as_view()),
-    path('documents/<str:pk>/download', views.DocumentDownloadView.as_view()),
+    path('documents/<str:pk>/preview', views.DocumentDownloadView.as_view()),
     path('documents/<str:pk>/review', views.DocumentReviewView.as_view()),
 ]
