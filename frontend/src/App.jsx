@@ -12,6 +12,7 @@ import CoursesPage from '@/pages/CoursesPage'
 import CourseFilesPage from '@/pages/CourseFilesPage' 
 import MyCourseList from '@/pages/MyCourseList'
 import FacultyCourseHistoryPage from '@/pages/FacultyCourseHistoryPage'
+import FacultyCompliancePage from '@/pages/FacultyCompliancePage'
 
  
 export default function App() {
@@ -41,6 +42,7 @@ export default function App() {
             <Route path="/courses" element={ <AppLayout> <CoursesPage /> </AppLayout>} />
             <Route path="/course/import" element={<AppLayout> <ImportCoursesPage /> </AppLayout>} /> 
             <Route path="/faculty-courses-list" element={<AppLayout> <FacultyCourseHistoryPage /> </AppLayout>} />
+            <Route path="/faculty-compliance" element={<AppLayout> <FacultyCompliancePage /> </AppLayout>} />
           </Route>
  
           <Route element={<ProtectedRoute roles={['admin']} />}>

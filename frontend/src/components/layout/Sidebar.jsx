@@ -20,6 +20,9 @@ const NAV_MAIN = [
   { to: "/faculty-courses-list", icon: History, label: "Faculty course history", exact: false,
     roles: ["chairperson", "admin"] },
 
+  { to: "/faculty-compliance", icon: History, label: "Faculty Compliance", exact: false,
+    roles: ["chairperson", "admin"] },
+
   { to: "/courses", icon: Library, label: "Course List", exact: false,
     roles: ["chairperson", "admin"] },
 
