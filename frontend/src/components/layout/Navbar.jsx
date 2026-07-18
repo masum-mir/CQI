@@ -4,7 +4,7 @@ import { useAuthContext } from "@/context/AuthContext";
 
 export function Navbar() {
   const auth = useAuthContext();
-  console.log(auth);
+  console.log("auth::", auth);
 
   const { toggleSidebar } = useUIStore();
   const { logout } = useAuthContext();
@@ -31,13 +31,20 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Right — bell + user */}
-      <div className="flex items-center gap-2">
+      {/* Right */}
+      <div className="flex items-center gap-3">
+        {auth.user && (
+          <div className="text-right">
+            <p className="text-sm font-medium text-gray-700">{auth.user.name.toUpperCase()}</p>
+            {auth.user.role && <p className="text-xs text-gray-400">{auth.user.role}</p>}
+          </div>
+        )}
+
         <div className="flex items-center gap-2 pl-2 border-l border-gray-100">
           <button
             onClick={logout}
             className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500
-                       transition-colors ml-1"
+                 transition-colors ml-1"
             aria-label="Sign out"
           >
             <LogOut size={15} />

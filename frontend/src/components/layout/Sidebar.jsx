@@ -8,7 +8,7 @@ const NAV_MAIN = [
   { to: "/", icon: Home, label: "Home", exact: true,
     roles: ["admin", "chairperson", "faculty"] },
   
-  { to: "/upload/file", icon: FolderKanban, label: "Course Materials", exact: false,
+  { to: "/upload/file", icon: FolderKanban, label: "Course Materials", exact: true,
     roles: ["faculty", "chairperson"] },
    
   { to: "/upload/file/list", icon: Files, label: "Uploaded Files", exact: false,
