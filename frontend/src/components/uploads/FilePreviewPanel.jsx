@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -15,9 +15,11 @@ import {
   ChevronRight,
   ZoomIn,
   ZoomOut,
+  Loader2,
 } from "lucide-react";
 import { courseFileApi } from "@/api/courseFileApi";
 import * as XLSX from "xlsx";
+import { documentApi } from "@/api/documentApi";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -45,26 +47,20 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(1.2);
   const [pdfError, setPdfError] = useState(null);
- 
-const [excelData, setExcelData] = useState([]);
-  // useEffect(() => {
-  //   if (!item) {
-  //     setObjectUrl(null);
-  //     return;
-  //   }
-  //   console.log("item:: ", item)
-  //   const url = URL.createObjectURL(item.file);
 
-  //   setObjectUrl(url);
-  //   setPageNumber(1);
-  //   setScale(1.2);
-  //   setPdfError(null);
-  //   setNumPages(null);
-  //   return () => URL.revokeObjectURL(url);
-  // }, [item]);
+  const [excelData, setExcelData] = useState([]);
+
+  const [loadingBlob, setLoadingBlob] = useState(false);
+  const objectUrlRef = useRef(null);
+
   useEffect(() => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
     if (!item) {
       setObjectUrl(null);
+      setLoadingBlob(false);
       return;
     }
 
@@ -82,10 +78,10 @@ const [excelData, setExcelData] = useState([]);
 
         setObjectUrl(url);
         const isExcelFile =
-  item.file.type.includes("sheet") ||
-  item.file.type.includes("excel") ||
-  item.file.name.toLowerCase().endsWith(".xlsx") ||
-  item.file.name.toLowerCase().endsWith(".xls");
+          item.file.type.includes("sheet") ||
+          item.file.type.includes("excel") ||
+          item.file.name.toLowerCase().endsWith(".xlsx") ||
+          item.file.name.toLowerCase().endsWith(".xls");
 
         if (isExcelFile) {
           const workbook = XLSX.read(await blob.arrayBuffer(), {
@@ -138,19 +134,19 @@ const [excelData, setExcelData] = useState([]);
   const zoomIn = () => setScale((s) => Math.min(3.0, +(s + 0.25).toFixed(2)));
   const zoomOut = () => setScale((s) => Math.max(0.5, +(s - 0.25).toFixed(2)));
 
- if (!item) return null;
+  if (!item) return null;
 
-const { file, status } = item;
- 
+  const { file, status } = item;
+
   const isImage = file.type.startsWith("image/");
   const isPdf = file.type === "application/pdf";
   const ext = file.name.split(".").pop().toUpperCase();
- const isExcel =
-  file.type.includes("sheet") ||
-  file.type.includes("excel") ||
-  file.name.toLowerCase().endsWith(".xlsx") ||
-  file.name.toLowerCase().endsWith(".xls");
-  
+  const isExcel =
+    file.type.includes("sheet") ||
+    file.type.includes("excel") ||
+    file.name.toLowerCase().endsWith(".xlsx") ||
+    file.name.toLowerCase().endsWith(".xls");
+
   return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -217,7 +213,11 @@ const { file, status } = item;
         </div>
 
         <div className="flex-1 overflow-auto bg-gray-100 flex flex-col items-center min-h-0">
-          {isPdf && objectUrl ? (
+          {loadingBlob ? (
+            <div className="flex items-center justify-center py-24">
+              <Loader2 size={32} className="text-violet-500 animate-spin" />
+            </div>
+          ) : isPdf && objectUrl ? (
             pdfError ? (
               <div className="flex flex-col items-center gap-3 text-gray-400 py-16 text-center">
                 <FileText size={40} className="text-rose-400" />
