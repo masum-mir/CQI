@@ -77,3 +77,10 @@ npm install <package-name>
 npm update
 ```
 
+*google auth
+pip install google-auth
+
+npm install @react-oauth/google
+
+
+

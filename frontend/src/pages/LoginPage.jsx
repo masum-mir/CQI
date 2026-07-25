@@ -150,7 +150,23 @@
 
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useAuthContext } from '../context/AuthContext'
+import { Camera, Eye, EyeOff, User } from 'lucide-react'
+import { useAuthContext } from '@/context/AuthContext'
+import { GoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
+import GoogleLoginButton from '@/components/auth/GoogleLoginButton'  
+
+
+const EMPTY_FORM = {
+  name: '',
+  email: '',
+  password: '',
+  shortCode: '',
+  designation: '',
+  department: '',
+  employeeId: '',
+  profileImage: '',
+}
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -291,19 +307,42 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Toggle */}
-        <p className="text-center text-xs text-gray-500 mt-6">
-          {isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
-          <button
-            onClick={() => {
-              setIsRegister((v) => !v)
-              setError('')
-            }}
-            className="text-violet-600 font-semibold hover:underline"
-          >
-            {isRegister ? 'Login' : 'Register'}
-          </button>
-        </p>
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 border-t border-gray-200" />
+            <span className="text-[11px] text-gray-400 cqi-sans">or</span>
+            <div className="flex-1 border-t border-gray-200" />
+          </div>
+
+          <div className="flex justify-center">
+            { <GoogleLogin
+  onSuccess={async (credentialResponse) => {
+    const res = await axios.post('/api/auth/google', {
+      idToken: credentialResponse.credential
+    });
+    const { user, accessToken, refreshToken } = res.data.data; // check your `ok()` response shape
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+    // redirect to dashboard
+  }}
+  onError={() => console.log('Google login failed')}
+/> }
+          </div>
+
+          <p className="text-center text-xs text-gray-500 mt-6 cqi-sans">
+            {isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
+            <button
+              onClick={() => {
+                setIsRegister((v) => !v)
+                setError('')
+                setForm(EMPTY_FORM)
+                setShowPassword(false)
+              }}
+              className="text-violet-600 font-semibold hover:underline"
+            >
+              {isRegister ? 'Login' : 'Register'}
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   )
