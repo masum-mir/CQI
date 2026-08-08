@@ -12,3 +12,5 @@ google-auth>=2.0
 # mongomock>=4.1
 beautifulsoup4>=4.12
 lxml>=5.0
+google-auth==2.56.3
+requests==2.34.2

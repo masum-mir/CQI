@@ -46,6 +46,29 @@ def _safe(coll, keys, **opts):
         log.warning('Index skipped on %s (%s): %s', coll.name, keys, exc)
 
 
+def _partial_unique_string_index(coll, field):
+    index_name = f'{field}_1'
+    desired_filter = {field: {'$type': 'string'}}
+
+    try:
+        info = coll.index_information().get(index_name)
+        if info:
+            current_filter = info.get('partialFilterExpression')
+            if not info.get('unique') or current_filter != desired_filter:
+                coll.drop_index(index_name)
+                log.info('Replaced legacy MongoDB index: %s.%s', coll.name, index_name)
+    except (OperationFailure, NotImplementedError, TypeError) as exc:
+        log.warning('Could not inspect/replace index %s.%s: %s',
+                    coll.name, index_name, exc)
+
+    _safe(
+        coll,
+        [(field, ASCENDING)],
+        name=index_name,
+        unique=True,
+        partialFilterExpression=desired_filter,
+    )
+
 def ensure_indexes():
     global _indexes_ready
     if _indexes_ready or _db is None:
@@ -55,8 +78,8 @@ def ensure_indexes():
     _safe(db[C.COL_ROLES], [('name', ASCENDING)], unique=True)
 
     _safe(db[C.COL_USERS], [('email', ASCENDING)], unique=True)
-    _safe(db[C.COL_USERS], [('short_code', ASCENDING)], unique=True, sparse=True)
-    _safe(db[C.COL_USERS], [('google_id', ASCENDING)], unique=True, sparse=True)
+    _partial_unique_string_index(db[C.COL_USERS], 'short_code')
+    _partial_unique_string_index(db[C.COL_USERS], 'google_id')
     _safe(db[C.COL_USERS], [('role', ASCENDING)])
     _safe(db[C.COL_USERS], [('status', ASCENDING)])
 
@@ -73,9 +96,7 @@ def ensure_indexes():
     _safe(db[C.COL_AUDIT_LOGS], [('action', ASCENDING)])
     _safe(db[C.COL_AUDIT_LOGS], [('target_type', ASCENDING), ('target_id', ASCENDING)])
 
-    _safe(db[C.COL_COURSES],
-          [('course_code', ASCENDING), ('section', ASCENDING), ('semester', ASCENDING)],
-          unique=True)
+    _safe(db[C.COL_COURSES],[('course_code', ASCENDING), ('section', ASCENDING), ('semester', ASCENDING)], unique=True)
     _safe(db[C.COL_COURSES], [('faculty', ASCENDING)])
     _safe(db[C.COL_COURSES], [('semester', ASCENDING)])
     _safe(db[C.COL_COURSES], [('faculty_code', ASCENDING)])
@@ -86,9 +107,7 @@ def ensure_indexes():
     _safe(db[C.COL_COURSE_FILES], [('status', ASCENDING)])
     _safe(db[C.COL_COURSE_FILES], [('semester', ASCENDING)])
 
-    _safe(db[C.COL_DOCUMENTS],
-          [('course_file', ASCENDING), ('item_no', ASCENDING)],
-          unique=False)
+    _safe(db[C.COL_DOCUMENTS],[('course_file', ASCENDING), ('item_no', ASCENDING)],unique=False)
 
     _safe(db[C.COL_DOCUMENTS], [('course_file', ASCENDING)])
     _safe(db[C.COL_DOCUMENTS], [('course', ASCENDING)])

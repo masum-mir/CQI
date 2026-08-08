@@ -46,10 +46,7 @@ TEMPLATES = [{
 
 # SQLite is ONLY for Django's internal apps. Domain data is in MongoDB.
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+
 }
 
 # --- MongoDB (PyMongo) ------------------------------------------------------
@@ -68,7 +65,6 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'core.utils.response.custom_exception_handler',
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
     ],
 }
 
@@ -80,12 +76,12 @@ JWT_REFRESH_DAYS = int(os.getenv('JWT_REFRESH_DAYS', '7'))
 JWT_EXPIRES_DAYS = JWT_REFRESH_DAYS
 
 # --- OAuth / email ----------------------------------------------------------
-GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')
-FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000')
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '356893553017-4s8q20ff3p91t9hjpfobuctlhconpq1b.apps.googleusercontent.com')
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://127.0.0.1:5173')
 EMAIL_VERIFY_TTL_HOURS = int(os.getenv('EMAIL_VERIFY_TTL_HOURS', '24'))
 PASSWORD_RESET_TTL_MINUTES = int(os.getenv('PASSWORD_RESET_TTL_MINUTES', '30'))
 # In DEBUG, one-time tokens are returned in the API response / logged instead of
-# emailed, so the flow is testable without an SMTP provider.
+# emailed, so the flow is testable without an SMTP provider.pip install google-auth requests
 EXPOSE_DEV_TOKENS = os.getenv('EXPOSE_DEV_TOKENS', str(DEBUG)).lower() == 'true'
 
 # --- Files ------------------------------------------------------------------
@@ -110,23 +106,3 @@ ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'Admin@1234')
 # --- Logging (-> logs/app.log) ---------------------------------------------
 LOG_DIR = BASE_DIR / 'logs'
 LOG_DIR.mkdir(exist_ok=True)
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {'format': '{asctime} [{levelname}] {name}: {message}', 'style': '{'},
-    },
-    'handlers': {
-        'file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': str(LOG_DIR / 'app.log'),
-            'maxBytes': 5 * 1024 * 1024,
-            'backupCount': 3,
-            'formatter': 'verbose',
-        },
-        'console': {'class': 'logging.StreamHandler', 'formatter': 'verbose'},
-    },
-    'loggers': {
-        'cqi': {'handlers': ['file', 'console'], 'level': 'INFO', 'propagate': False},
-    },
-}

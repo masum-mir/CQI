@@ -106,3 +106,12 @@ class RoleListView(APIView):
 
     def get(self, request):
         return ok(role_service.list_roles())
+
+class ImportUsersView(APIView):
+    permission_classes = [IsAdminOrChair]
+
+    def post(self, request):
+        return created(user_service.import_users(
+            request.data.get('users'),
+            request.user.id,
+        ))

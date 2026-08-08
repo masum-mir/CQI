@@ -14,6 +14,7 @@ urlpatterns = [
     path('auth/me', views.MeView.as_view()),
     # users + roles (admin)
     path('users', views.UserListCreateView.as_view()),
+    path('users/import', views.ImportUsersView.as_view()),
     path('users/<str:pk>', views.UserDetailView.as_view()),
     path('roles', views.RoleListView.as_view()),
 ]

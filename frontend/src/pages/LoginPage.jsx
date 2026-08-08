@@ -362,14 +362,14 @@ console.log("user data: ", user);
           </div>
 
           <div className="flex justify-center">
-            {/* <GoogleLoginButton
+            <GoogleLoginButton
               text={isRegister ? 'signup_with' : 'signin_with'}
               width={288}
               onSuccess={(user) => {
                 setError('')
                 goHome(user)
               }}
-            /> */}
+            />
           </div>
 
           <p className="text-center text-xs text-gray-500 mt-6 cqi-sans">

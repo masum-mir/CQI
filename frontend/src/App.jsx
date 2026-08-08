@@ -6,7 +6,7 @@ import LoginPage from "@/pages/LoginPage";
 import HomePage from "@/pages/HomePage";
 import UploadPage from "@/pages/UploadPage";
 import UnauthorizedPage from '@/pages/UnauthorizedPage'
-import AdminUsersPage from '@/pages/AdminUsersPage' 
+import UsersPage from '@/pages/UsersPage' 
 import ImportCoursesPage from '@/pages/ImportCoursesPage'
 import CoursesPage from '@/pages/CoursesPage' 
 import CourseFilesPage from '@/pages/CourseFilesPage' 
@@ -46,7 +46,7 @@ export default function App() {
           </Route>
  
           <Route element={<ProtectedRoute roles={['admin']} />}>
-            <Route path="/admin/users" element={<AppLayout> <AdminUsersPage /> </AppLayout>} /> 
+            <Route path="/admin/users" element={<AppLayout> <UsersPage /> </AppLayout>} /> 
           </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
