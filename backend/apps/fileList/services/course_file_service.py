@@ -90,33 +90,116 @@ def build_completeness(course_file_id):
 # ---------------------------------------------------------------------
 # Create Course File
 # ---------------------------------------------------------------------
+# def create_course_file(user, data):
+#     course = course_repo.find_by_id(
+#         ensure_object_id(data.get("courseId"), name="courseId")
+#     )
+#     if not course:
+#         raise ApiError("Course not found", status=404)
+#
+#     if user.role == C.ROLE_FACULTY and str(course.get("faculty")) != str(user.id):
+#         raise ApiError("Forbidden: not your course", status=403)
+#
+#     existing = course_file_repo.find_by_course(course["_id"])
+#     if existing:
+#         return {"courseFile": course_file_dict(existing), "message": "Already exists"}
+#
+#     doc = course_file_repo.insert({
+#         "course": course["_id"],
+#         "faculty": course.get("faculty") or ensure_object_id(user.id),
+#         "semester": course["semester"],
+#         "status": C.CF_DRAFT,
+#         "review": {"reviewed_by": None, "comment": None, "reviewed_at": None},
+#         "submitted_at": None,
+#         "created_at": now(),
+#         "updated_at": now(),
+#     })
+#     log.info("Course file created for course %s", course["_id"])
+#     return {"courseFile": course_file_dict(doc)}
+
+def _same_code(a, b):
+    return bool(a and b) and str(a).strip().lower() == str(b).strip().lower()
+
+
+def _faculty_owns_course(user, course):
+    if user.role != C.ROLE_FACULTY:
+        return True
+
+    # Normal case: faculty ObjectId already matched
+    if str(course.get("faculty")) == str(user.id):
+        return True
+
+    # Imported-course case: match faculty_code with logged-in faculty short_code
+    user_short_code = (getattr(user, "doc", {}) or {}).get("short_code")
+
+    return _same_code(
+        course.get("faculty_code"),
+        user_short_code
+    )
+
 def create_course_file(user, data):
     course = course_repo.find_by_id(
         ensure_object_id(data.get("courseId"), name="courseId")
     )
+
     if not course:
         raise ApiError("Course not found", status=404)
 
-    if user.role == C.ROLE_FACULTY and str(course.get("faculty")) != str(user.id):
+    if not _faculty_owns_course(user, course):
         raise ApiError("Forbidden: not your course", status=403)
 
+    if user.role == C.ROLE_FACULTY:
+        faculty_oid = ensure_object_id(user.id)
+
+        if str(course.get("faculty")) != str(user.id):
+            course = course_repo.update(
+                course["_id"],
+                {
+                    "faculty": faculty_oid,
+                    "updated_at": now(),
+                }
+            )
+    else:
+        faculty_oid = course.get("faculty") or ensure_object_id(user.id)
+
     existing = course_file_repo.find_by_course(course["_id"])
+
     if existing:
-        return {"courseFile": course_file_dict(existing), "message": "Already exists"}
+        if (
+            user.role == C.ROLE_FACULTY
+            and str(existing.get("faculty")) != str(user.id)
+        ):
+            existing = course_file_repo.update(
+                existing["_id"],
+                {
+                    "faculty": faculty_oid,
+                    "updated_at": now(),
+                }
+            )
+
+        return {
+            "courseFile": course_file_dict(existing),
+            "message": "Already exists",
+        }
 
     doc = course_file_repo.insert({
         "course": course["_id"],
-        "faculty": course.get("faculty") or ensure_object_id(user.id),
+        "faculty": faculty_oid,
         "semester": course["semester"],
         "status": C.CF_DRAFT,
-        "review": {"reviewed_by": None, "comment": None, "reviewed_at": None},
+        "review": {
+            "reviewed_by": None,
+            "comment": None,
+            "reviewed_at": None,
+        },
         "submitted_at": None,
         "created_at": now(),
         "updated_at": now(),
     })
-    log.info("Course file created for course %s", course["_id"])
-    return {"courseFile": course_file_dict(doc)}
 
+    return {
+        "courseFile": course_file_dict(doc)
+    }
 
 # ---------------------------------------------------------------------
 # List Course Files
