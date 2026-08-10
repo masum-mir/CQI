@@ -12,7 +12,7 @@ export const SLOT_ITEM_NO = {
   obe_excel: 2,
   co_attainment: 3,
   po_attainment: 4,
-  cqi_summary: 5,
+  cqi_grade_summary: 5,
   instructor_feedback: 6,
   course_outline: 7,
   class_test_question: 8,

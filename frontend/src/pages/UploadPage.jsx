@@ -1,11 +1,18 @@
-import { useState, useRef, useMemo, useEffect } from "react";
+import {
+  useState,
+  useRef,
+  useMemo,
+  useEffect,
+  useCallback,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FilePreviewPanel } from "@/components/uploads/FilePreviewPanel";
-import { courseApi } from "@/api/courseApi"; 
+import { courseApi } from "@/api/courseApi";
+import { courseFileApi } from "@/api/courseFileApi";
+import { documentApi } from "@/api/documentApi";
 import { useAuth } from "@/hooks/useAuth";
 import { CATEGORIES } from "@/utils/uploadConstants";
-import useCourseUpload from "@/hooks/useCourseUpload";
 import ViewModeToggle from "@/components/uploads/ViewModeToggle";
 import UploadToolbar from "@/components/uploads/UploadToolbar";
 import BottomBar from "@/components/uploads/BottomBar";
@@ -13,12 +20,105 @@ import CompactUploadView from "@/components/uploads/CompactUploadView";
 import GridUploadView from "@/components/uploads/GridUploadView";
 import ListUploadView from "@/components/uploads/ListUploadView";
 
+const MAX_SIZE_BYTES = 10 * 1024 * 1024;
+
+const ALLOWED_TYPES = new Set([
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+]);
+ 
+
+const SLOT_MAP = {
+  final_grades: { itemNo: 1 },
+  obe_excel: { itemNo: 2 },
+  co_attainment: { itemNo: 3 },
+  po_attainment: { itemNo: 4 },
+  cqi_grade_summary: { itemNo: 5 },
+  instructor_feedback: { itemNo: 6 },
+  course_outline: { itemNo: 7 },
+
+  class_test_question: { itemNo: 8 },
+  class_test_sample: { itemNo: 9 },
+
+  midterm_question: { itemNo: 10 },
+  midterm_sample: { itemNo: 11 },
+
+  final_question: { itemNo: 12 },
+  final_sample: { itemNo: 13 },
+
+  project_list: { itemNo: 14 },
+  project_sample: { itemNo: 15 },
+
+  lab_experiments: { itemNo: 16 },
+  class_attendance: { itemNo: 17 },
+  lab_attendance: { itemNo: 18 },
+  midterm_attendance: { itemNo: 19 },
+  final_attendance: { itemNo: 20 },
+  capstone_report: { itemNo: 21 },
+};
+
+const REVERSE_SLOT = Object.entries(SLOT_MAP).reduce((acc, [slot, meta]) => {
+  acc[meta.itemNo] = slot;
+  return acc;
+}, {});
+
+const TOTAL_SLOTS = Object.keys(SLOT_MAP).length;
+
+function makeEntry(file, itemId) {
+  const thumbnailUrl =
+    file.type?.startsWith("image/") || file.type === "application/pdf"
+      ? URL.createObjectURL(file)
+      : null;
+
+  return {
+    id: `${itemId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    file,
+    fileType: itemId,
+    status: "queued",
+    reviewStatus: null,
+    thumbnailUrl,
+  };
+}
+
+export function slotColorClass(entry) {
+  if (!entry) return "bg-gray-300";
+  if (entry.reviewStatus === "rejected") return "bg-red-500";
+  if (entry.status === "uploading" || entry.status === "processing") {
+    return "bg-blue-500";
+  }
+  if (entry.status === "failed") return "bg-red-500";
+  if (entry.reviewStatus === "approved") return "bg-emerald-500";
+  if (entry.status === "done") return "bg-green-500";
+  if (entry.status === "queued") return "bg-amber-400";
+  return "bg-gray-300";
+}
+
+export function slotRingClass(entry) {
+  if (entry?.reviewStatus === "rejected") {
+    return "ring-2 ring-red-400 border-red-300";
+  }
+  if (entry?.reviewStatus === "approved") {
+    return "ring-1 ring-emerald-300";
+  }
+  return "";
+}
+
 export default function UploadPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const targetItemIdRef = useRef(null);
+  const cfIdByCourse = useRef({});
+  const loadedCourses = useRef(new Set());
 
   const { user } = useAuth();
+
   const [viewMode, setViewMode] = useState("compact");
   const [selectedItem, setSelectedItem] = useState(null);
   const [allCourses, setAllCourses] = useState([]);
@@ -26,51 +126,47 @@ export default function UploadPage() {
   const [activeSemester, setActiveSemester] = useState(null);
   const [activeCourseId, setActiveCourseId] = useState(null);
   const [semesterMenuOpen, setSemesterMenuOpen] = useState(false);
-
-  const {
-    courseFiles,
-    committing,
-    totalItems,
-    totalFiles,
-    queuedCount,
-    getFileForItem,
-    handleFileAdd,
-    handleRemoveFile,
-    handleCommit,
-  } = useCourseUpload(activeCourseId);
-
   const [uploadFilter, setUploadFilter] = useState("all");
 
-  const filteredCategories = useMemo(() => {
-    if (uploadFilter === "all") return CATEGORIES;
+  const [courseFiles, setCourseFiles] = useState({});
+  const [committing, setCommitting] = useState(false);
 
-    return CATEGORIES.map((cat) => ({
-      ...cat,
-      items: cat.items.filter((item) => {
-        const entry = getFileForItem(item.id);
-        const isUploaded =
-          entry?.status === "done" && entry?.committed === true;
-        return uploadFilter === "uploaded" ? isUploaded : !isUploaded;
-      }),
-    })).filter((cat) => cat.items.length > 0);
-  }, [getFileForItem, uploadFilter]);
+  const files = useMemo(() => {
+    return activeCourseId ? courseFiles[activeCourseId] || [] : [];
+  }, [courseFiles, activeCourseId]);
+
+  const updateActive = useCallback(
+    (updater) => {
+      if (!activeCourseId) return;
+
+      setCourseFiles((prev) => ({
+        ...prev,
+        [activeCourseId]: updater(prev[activeCourseId] || []),
+      }));
+    },
+    [activeCourseId]
+  );
 
   useEffect(() => {
-    // filter faculty and semester wise
-    Promise.all([courseApi.list()])
-      .then(([cRes]) => {
-        const all = cRes.data.data.courses || []; 
+    courseApi
+      .list()
+      .then((cRes) => {
+        const all = cRes.data.data.courses || [];
+
         const mine = all.filter(
           (c) =>
             c.facultyCode &&
             user?.shortCode &&
-            c.facultyCode.trim().toLowerCase() === user.shortCode.trim().toLowerCase()
+            c.facultyCode.trim().toLowerCase() ===
+              user.shortCode.trim().toLowerCase()
         );
-        console.log("my course:", mine);
+
         setAllCourses(mine);
-        const sems = [...new Set(mine.map((c) => c.semester).filter(Boolean))].sort((a, b) =>
-          b.localeCompare(a)
-        );
+
+        const sems = [
+          ...new Set(mine.map((c) => c.semester).filter(Boolean)),
+        ].sort((a, b) => b.localeCompare(a));
+
         if (sems.length) {
           setActiveSemester(sems[0]);
           const first = mine.find((c) => c.semester === sems[0]);
@@ -85,22 +181,302 @@ export default function UploadPage() {
     setSelectedItem(null);
   }, [activeCourseId]);
 
+  useEffect(() => {
+    if (!activeCourseId || loadedCourses.current.has(activeCourseId)) return;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const listRes = await courseFileApi.list();
+        const cfs = listRes.data.data?.courseFiles || [];
+
+        const cf = cfs.find((x) => x.course === activeCourseId);
+
+        if (!cf) {
+          loadedCourses.current.add(activeCourseId);
+          return;
+        }
+
+        cfIdByCourse.current[activeCourseId] = cf.id;
+
+        const detRes = await courseFileApi.get(cf.id);
+        const docs = detRes.data.data?.documents || [];
+
+        if (cancelled) return;
+
+        const committed = docs
+          .filter((d) => !d.isAdditional)
+          .map((d) => {
+            const slot = REVERSE_SLOT[d.itemNo];
+            if (!slot) return null;
+
+            return {
+              id: d.id,
+              documentId: d.id,
+              fileType: slot,
+              status: "done",
+              committed: true,
+              file: {
+                name:
+                  d.storage?.originalName ||
+                  d.storage?.fileName ||
+                  "file",
+                size: d.storage?.size,
+                type: d.storage?.mimeType,
+              },
+            };
+          })
+          .filter(Boolean);
+
+        loadedCourses.current.add(activeCourseId);
+
+        if (committed.length) {
+          setCourseFiles((prev) => {
+            const existing = prev[activeCourseId] || [];
+            const map = new Map(existing.map((f) => [f.fileType, f]));
+
+            committed.forEach((c) => {
+              if (!map.has(c.fileType)) map.set(c.fileType, c);
+            });
+
+            return {
+              ...prev,
+              [activeCourseId]: [...map.values()],
+            };
+          });
+        }
+      } catch {
+        loadedCourses.current.add(activeCourseId);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeCourseId]);
+
+  const fileMap = useMemo(() => {
+    const map = new Map();
+    files.forEach((f) => {
+      if (f.fileType) map.set(f.fileType, f);
+    });
+    return map;
+  }, [files]);
+
+  const getFileForItem = useCallback(
+    (id) => fileMap.get(id) || null,
+    [fileMap]
+  );
+
+  const handleFileAdd = useCallback(
+    (e) => {
+      const list = e.target.files;
+
+      const clear = () => {
+        e.target.value = "";
+        targetItemIdRef.current = null;
+      };
+
+      if (!list || !list.length) {
+        clear();
+        return;
+      }
+
+      const itemId = targetItemIdRef.current;
+
+      if (!itemId) {
+        toast.error("No item selected");
+        clear();
+        return;
+      }
+
+      const file = list[0];
+
+      if (!ALLOWED_TYPES.has(file.type)) {
+        toast.error("Unsupported file type");
+        clear();
+        return;
+      }
+
+      if (file.size > MAX_SIZE_BYTES) {
+        toast.error("File exceeds 10MB limit");
+        clear();
+        return;
+      }
+
+      updateActive((prev) => {
+        const old = prev.find((f) => f.fileType === itemId);
+
+        if (old?.thumbnailUrl) {
+          URL.revokeObjectURL(old.thumbnailUrl);
+        }
+
+        return [
+          ...prev.filter((f) => f.fileType !== itemId),
+          makeEntry(file, itemId),
+        ];
+      });
+
+      if (selectedItem?.fileType === itemId) {
+        setSelectedItem(null);
+      }
+
+      clear();
+    },
+    [selectedItem, updateActive]
+  );
+
+  const handleRemoveFile = useCallback(
+    async (itemId) => {
+      if (!activeCourseId) return;
+
+      const entry = (courseFiles[activeCourseId] || []).find(
+        (f) => f.fileType === itemId
+      );
+
+      if (entry?.committed && entry.documentId) {
+        try {
+          await documentApi.remove(entry.documentId);
+        } catch {
+          toast.error("Delete failed");
+          return;
+        }
+      }
+
+      if (entry?.thumbnailUrl) {
+        URL.revokeObjectURL(entry.thumbnailUrl);
+      }
+
+      updateActive((prev) => prev.filter((f) => f.fileType !== itemId));
+
+      if (selectedItem?.fileType === itemId) {
+        setSelectedItem(null);
+      }
+    },
+    [activeCourseId, courseFiles, selectedItem, updateActive]
+  );
+
+  const handleCommit = useCallback(async () => {
+    if (!activeCourseId) {
+      toast.error("Select a course first");
+      return;
+    }
+
+    const courseId = activeCourseId;
+
+    const queued = (courseFiles[courseId] || []).filter(
+      (f) => f.status === "queued" || f.status === "failed"
+    );
+
+    if (!queued.length) {
+      toast("No files to upload");
+      return;
+    }
+
+    const setStatus = (fileType, status, extra = {}) => {
+      setCourseFiles((prev) => ({
+        ...prev,
+        [courseId]: (prev[courseId] || []).map((f) =>
+          f.fileType === fileType ? { ...f, status, ...extra } : f
+        ),
+      }));
+    };
+
+    setCommitting(true);
+
+    queued.forEach((f) => setStatus(f.fileType, "uploading"));
+
+    try {
+      let cfId = cfIdByCourse.current[courseId];
+
+      if (!cfId) {
+        const res = await courseFileApi.create(courseId);
+        cfId = res.data.data.courseFile.id;
+        cfIdByCourse.current[courseId] = cfId;
+      }
+
+      let success = 0;
+
+      for (const f of queued) {
+        const meta = SLOT_MAP[f.fileType];
+
+        if (!meta) {
+          setStatus(f.fileType, "failed");
+          continue;
+        }
+
+        try {
+          const res = await courseFileApi.upload(cfId, f.file, {
+            itemNo: meta.itemNo,
+          });
+
+          const doc = res.data.data?.document;
+
+          setStatus(f.fileType, "done", {
+            committed: true,
+            documentId: doc?.id,
+          });
+
+          success += 1;
+        } catch (err) {
+          setStatus(f.fileType, "failed");
+          toast.error(err?.response?.data?.message || "Upload failed");
+        }
+      }
+
+      if (success) {
+        toast.success(`Uploaded ${success} file(s)`);
+      }
+    } catch {
+      queued.forEach((f) => setStatus(f.fileType, "queued"));
+      toast.error("Upload session failed");
+    } finally {
+      setCommitting(false);
+    }
+  }, [activeCourseId, courseFiles]);
+
   const semesters = useMemo(
     () =>
-      [...new Set(allCourses.map((c) => c.semester).filter(Boolean))].sort((a, b) =>
-        b.localeCompare(a)
+      [...new Set(allCourses.map((c) => c.semester).filter(Boolean))].sort(
+        (a, b) => b.localeCompare(a)
       ),
     [allCourses]
   );
 
   const visibleCourses = useMemo(
-    () => allCourses.filter((c) => !activeSemester || c.semester === activeSemester),
+    () =>
+      allCourses.filter(
+        (c) => !activeSemester || c.semester === activeSemester
+      ),
     [allCourses, activeSemester]
   );
+
+  const filteredCategories = useMemo(() => {
+    if (uploadFilter === "all") return CATEGORIES;
+
+    return CATEGORIES.map((cat) => ({
+      ...cat,
+      items: cat.items.filter((item) => {
+        const entry = getFileForItem(item.id);
+        const isUploaded =
+          entry?.status === "done" && entry?.committed === true;
+
+        return uploadFilter === "uploaded" ? isUploaded : !isUploaded;
+      }),
+    })).filter((cat) => cat.items.length > 0);
+  }, [getFileForItem, uploadFilter]);
+
+  const totalFiles = files.length;
+
+  const queuedCount = files.filter(
+    (f) => f.status === "queued" || f.status === "failed"
+  ).length;
 
   const handleSemesterSelect = (sem) => {
     setActiveSemester(sem);
     setSemesterMenuOpen(false);
+
     const first = allCourses.find((c) => c.semester === sem);
     setActiveCourseId(first ? first.id : null);
   };
@@ -110,13 +486,26 @@ export default function UploadPage() {
       toast.error("Select a course first.");
       return;
     }
+
     const existing = getFileForItem(itemId);
+
     if (existing) {
       setSelectedItem(existing);
-    } else {
-      targetItemIdRef.current = itemId;
-      fileInputRef.current?.click();
+      return;
     }
+
+    targetItemIdRef.current = itemId;
+    fileInputRef.current?.click();
+  };
+
+  const onUploadClick = (itemId) => {
+    if (!activeCourseId) {
+      toast.error("Select a course first.");
+      return;
+    }
+
+    targetItemIdRef.current = itemId;
+    fileInputRef.current?.click();
   };
 
   return (
@@ -156,7 +545,11 @@ export default function UploadPage() {
                       </button>
                     ))}
                   </div>
-                  <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
+
+                  <ViewModeToggle
+                    viewMode={viewMode}
+                    onChange={setViewMode}
+                  />
                 </div>
 
                 {viewMode === "compact" && (
@@ -164,28 +557,26 @@ export default function UploadPage() {
                     categories={filteredCategories}
                     getFileForItem={getFileForItem}
                     onSlotClick={onSlotClick}
-                    onRemoveFile={(id) => handleRemoveFile(id, selectedItem, setSelectedItem)}
+                    onRemoveFile={handleRemoveFile}
                   />
                 )}
+
                 {viewMode === "grid" && (
                   <GridUploadView
                     categories={filteredCategories}
                     getFileForItem={getFileForItem}
                     onSlotClick={onSlotClick}
-                    onRemoveFile={(id) => handleRemoveFile(id, selectedItem, setSelectedItem)}
+                    onRemoveFile={handleRemoveFile}
                   />
                 )}
+
                 {viewMode === "list" && (
                   <ListUploadView
                     categories={filteredCategories}
                     getFileForItem={getFileForItem}
                     onSlotClick={onSlotClick}
-                    onRemoveFile={(id) => handleRemoveFile(id, selectedItem, setSelectedItem)}
-                    onUploadClick={(itemId) => {
-                      if (!activeCourseId) { toast.error("Select a course first."); return }
-                      targetItemIdRef.current = itemId;
-                      fileInputRef.current?.click();
-                    }}
+                    onRemoveFile={handleRemoveFile}
+                    onUploadClick={onUploadClick}
                   />
                 )}
               </div>
@@ -194,7 +585,7 @@ export default function UploadPage() {
 
           <BottomBar
             totalFiles={totalFiles}
-            totalItems={totalItems}
+            totalItems={TOTAL_SLOTS}
             queuedCount={queuedCount}
             committing={committing}
             onCommit={handleCommit}
@@ -207,7 +598,9 @@ export default function UploadPage() {
         item={selectedItem}
         onClose={() => setSelectedItem(null)}
         onRemove={() => {
-          if (selectedItem) handleRemoveFile(selectedItem.fileType, selectedItem, setSelectedItem);
+          if (selectedItem) {
+            handleRemoveFile(selectedItem.fileType);
+          }
         }}
       />
 
@@ -216,7 +609,7 @@ export default function UploadPage() {
         type="file"
         accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp"
         className="hidden"
-        onChange={(e) => handleFileAdd(e, targetItemIdRef, selectedItem, setSelectedItem)}
+        onChange={handleFileAdd}
       />
     </div>
   );
