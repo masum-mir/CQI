@@ -1,79 +1,48 @@
-# Frontend Setup  
+# CQI Frontend  
 
-## Prerequisites
+## Step 1: Open a Terminal
 
-Before running the frontend application, make sure the following are installed:
-
-* Node.js (v18+ recommended)
-* npm (comes with Node.js)
-
----
-
-## Navigate to the Frontend Directory
+Go to the frontend folder:
 
 ```bash
 cd frontend
 ```
 
----
+## Step 2: Install Dependencies
 
-## Install Dependencies
+For the first run:
 
 ```bash
 npm install
 ```
 
-This command will install all required packages listed in `package.json`.
+## Step 3: Create the `.env` File
 
----
+Create a `.env` file inside the `frontend` folder:
 
-## Start the Development Server
+```env
+VITE_API_BASE_URL=http://localhost:8000/api
+```
+
+## Step 4: Start the Backend First
+
+Before starting the frontend, make sure the backend is running at:
+
+```text
+http://localhost:8000
+```
+
+## Step 5: Run the Frontend
 
 ```bash
 npm run dev
 ```
 
-The development server will start successfully and display a local URL in the terminal.
+## Step 6: Open the Application
 
----
-
-## Open in Browser
-
-Visit the following URL:
+Open your browser and go to:
 
 ```text
-http://localhost:5173/
+http://localhost:5173
 ```
-
----
  
-### Node Modules Issue
-
-If dependencies are corrupted or missing:
-
-```bash
-rm -rf node_modules
-npm install
-```
-
-### Port Already in Use
-
-If port `5173` is occupied, Vite will automatically use another available port. Check the terminal output for the correct URL.
-
----
-
-## Notes
-
-* Ensure the backend server is running before using frontend features that require API access.
-* Install any new package using:
-
-```bash
-npm install <package-name>
-```
-
-* Keep dependencies up to date:
-
-```bash
-npm update
-```
-
