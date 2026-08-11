@@ -2,8 +2,7 @@
 __pycache__/
 *.py[cod]
 
-# Backend
-backend/.env
+# Backend 
 backend/media/
 
 # Node

@@ -1,0 +1,76 @@
+services:
+
+  mongo:
+    image: mongo:7.0
+    container_name: cqi_mongo
+    restart: unless-stopped
+    
+    ports:
+      - "27018:27017"
+
+    volumes:
+      - mongo_data:/data/db
+
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    container_name: cqi_backend
+    restart: unless-stopped
+
+    ports:
+      - "8000:8000"
+
+    environment:
+      DEBUG: "True"
+      ALLOWED_HOSTS: "*"
+
+      MONGO_URI: "mongodb://mongo:27017"
+      MONGO_DB: "cqi_db"
+
+      JWT_SECRET: "8uF!mP2#xKswe9@qR4$z7@J&nL1*eT6^&*#cV3!aH598H&^%$9878623hgytfe&6^g7&^"
+
+      FRONTEND_URL: "http://localhost:5173"
+
+    volumes:
+      - ./backend:/app
+      - backend_media:/app/media
+
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    container_name: cqi_frontend
+    restart: unless-stopped
+
+    ports:
+      - "5173:5173"
+
+    environment:
+      VITE_API_BASE_URL: "http://localhost:8000/api"
+
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+    depends_on:
+      - backend
+
+
+volumes:
+  mongo_data:
+  backend_media:
