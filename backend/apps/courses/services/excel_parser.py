@@ -1,19 +1,3 @@
-"""Parser for the EWU 'Offered Courses' Excel export.
-
-The portal's ".xls" download is actually an HTML <table> (Excel opens it fine),
-so the primary path parses HTML. Real binary .xlsx is also supported via
-openpyxl. Both return the SAME shape as pdf_parser.parse_offered_courses:
-
-    { 'semester': str|None,
-      'offerings': [ { course_code, section, faculty_code, title,
-                       capacity:{enrolled,total},
-                       schedule:[{day,start_time,end_time,room}] } ],
-      'errors': [ {row, message} ] }
-
-Multiple class-meeting rows of one section are merged into one offering with a
-schedule. Unlike the PDF, Excel rows embed the course title and semester
-(in each row's "Action" link), so titles come for free.
-"""
 import re
 import urllib.parse
 
@@ -146,7 +130,7 @@ def parse_offered_courses(data, filename='upload.xls', departments=None):
         if not _CODE.match(code):
             continue
         section = _col(cells, colmap, 'section', 1)
-        faculty = _col(cells, colmap, 'faculty', 2)
+        faculty = _col(cells, colmap, 'faculty', 2).strip().upper()
         timing = _col(cells, colmap, 'timing', 3)
         room = _col(cells, colmap, 'room', 4)
         cap_total = _col(cells, colmap, 'capacity', 6)

@@ -1,10 +1,3 @@
-"""Parser for the EWU 'Offered Courses' PDF.
-
-`extract_text` turns a PDF file into text (lazy pdfplumber import so the module
-loads even where pdfplumber isn't installed). `parse_offered_courses` is a pure
-function over text — fully unit-testable without a PDF — that groups the
-multiple class-meeting rows of a section into a single offering with a schedule.
-"""
 import re
 
 # PDF day letters -> weekday names

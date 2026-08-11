@@ -1,15 +1,14 @@
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.views import APIView
-from rest_framework.parsers import MultiPartParser, FormParser
 
-from core.utils.response import ok, created
-from core.permissions import IsAdmin, IsAdminOrChair
-from apps.courses.services import course_service, catalog_service, import_service
+from core.permissions import IsAdminOrChair
+from core.utils.response import created, ok
+from apps.courses.services import catalog_service, course_service, import_service
 
 
-#  Course catalog 
 class CatalogListCreateView(APIView):
     def get_permissions(self):
-        return [IsAdminOrChair()] if self.request.method == 'POST' else super().get_permissions()
+        return [IsAdminOrChair()] if self.request.method == "POST" else super().get_permissions()
 
     def get(self, request):
         return ok(catalog_service.list_catalog(request.query_params))
@@ -28,10 +27,9 @@ class CatalogDetailView(APIView):
         return ok(catalog_service.delete_catalog(pk))
 
 
-#  Courses 
 class CourseListCreateView(APIView):
     def get_permissions(self):
-        return [IsAdminOrChair()] if self.request.method == 'POST' else super().get_permissions()
+        return [IsAdminOrChair()] if self.request.method == "POST" else super().get_permissions()
 
     def get(self, request):
         return ok(course_service.list_courses(request.user, request.query_params))
@@ -42,9 +40,7 @@ class CourseListCreateView(APIView):
 
 class CourseDetailView(APIView):
     def get_permissions(self):
-        if self.request.method == 'PATCH':
-            return [IsAdminOrChair()]
-        if self.request.method == 'DELETE':
+        if self.request.method in ("PATCH", "DELETE"):
             return [IsAdminOrChair()]
         return super().get_permissions()
 
@@ -58,17 +54,22 @@ class CourseDetailView(APIView):
         return ok(course_service.delete_course(pk))
 
 
-#  Import (admin) 
 class ImportPreviewView(APIView):
     permission_classes = [IsAdminOrChair]
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
-        departments = request.data.get('departments')
+        departments = request.data.get("departments")
         if isinstance(departments, str):
-            departments = [d.strip() for d in departments.split(',') if d.strip()]
-        return created(import_service.preview(request.FILES.get('file'),
-                                              departments, request.user.id))
+            departments = [item.strip() for item in departments.split(",") if item.strip()]
+
+        return created(
+            import_service.preview(
+                request.FILES.get("file"),
+                departments,
+                request.user.id,
+            )
+        )
 
 
 class ImportCommitView(APIView):

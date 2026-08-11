@@ -1,6 +1,3 @@
-"""Business logic for course files: submission, review, upload handling,
-and completeness computation (flat 21-item model)."""
-
 import logging
 
 from core.utils import now
@@ -90,33 +87,6 @@ def build_completeness(course_file_id):
 # ---------------------------------------------------------------------
 # Create Course File
 # ---------------------------------------------------------------------
-# def create_course_file(user, data):
-#     course = course_repo.find_by_id(
-#         ensure_object_id(data.get("courseId"), name="courseId")
-#     )
-#     if not course:
-#         raise ApiError("Course not found", status=404)
-#
-#     if user.role == C.ROLE_FACULTY and str(course.get("faculty")) != str(user.id):
-#         raise ApiError("Forbidden: not your course", status=403)
-#
-#     existing = course_file_repo.find_by_course(course["_id"])
-#     if existing:
-#         return {"courseFile": course_file_dict(existing), "message": "Already exists"}
-#
-#     doc = course_file_repo.insert({
-#         "course": course["_id"],
-#         "faculty": course.get("faculty") or ensure_object_id(user.id),
-#         "semester": course["semester"],
-#         "status": C.CF_DRAFT,
-#         "review": {"reviewed_by": None, "comment": None, "reviewed_at": None},
-#         "submitted_at": None,
-#         "created_at": now(),
-#         "updated_at": now(),
-#     })
-#     log.info("Course file created for course %s", course["_id"])
-#     return {"courseFile": course_file_dict(doc)}
-
 def _same_code(a, b):
     return bool(a and b) and str(a).strip().lower() == str(b).strip().lower()
 

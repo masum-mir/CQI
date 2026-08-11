@@ -1,4 +1,3 @@
-"""ALL MongoDB queries for the one_time_tokens collection live here."""
 from core.db.client import get_collection
 from core import constants as C
 

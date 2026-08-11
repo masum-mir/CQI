@@ -1,4 +1,3 @@
-"""ALL MongoDB queries for the import_batches collection live here."""
 from core.db.client import get_collection
 from core import constants as C
 
@@ -13,6 +12,13 @@ def find_by_id(oid):
 
 def find_by_hash(file_hash):
     return _col().find_one({'file_hash': file_hash})
+
+
+def find_committed_by_hash(file_hash):
+    return _col().find_one({
+        'file_hash': file_hash,
+        'status': C.IMPORT_COMMITTED,
+    })
 
 
 def find_all(query=None):

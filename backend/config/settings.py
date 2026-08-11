@@ -32,6 +32,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -74,6 +75,31 @@ JWT_ACCESS_MINUTES = int(os.getenv('JWT_ACCESS_MINUTES', '15'))
 JWT_REFRESH_DAYS = int(os.getenv('JWT_REFRESH_DAYS', '7'))
 # Backwards-compat alias (older code referenced JWT_EXPIRES_DAYS)
 JWT_EXPIRES_DAYS = JWT_REFRESH_DAYS
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
+
+JWT_ACCESS_COOKIE_NAME = "access_token"
+JWT_REFRESH_COOKIE_NAME = "refresh_token"
+
+JWT_COOKIE_SAMESITE = "Lax"
+JWT_COOKIE_SECURE = os.getenv(
+    "JWT_COOKIE_SECURE", "False" if DEBUG else "True"
+).lower() == "true"
+
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SECURE = os.getenv(
+    "CSRF_COOKIE_SECURE", "False" if DEBUG else "True"
+).lower() == "true"
 
 # --- OAuth / email ----------------------------------------------------------
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '356893553017-4s8q20ff3p91t9hjpfobuctlhconpq1b.apps.googleusercontent.com')

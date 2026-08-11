@@ -3,7 +3,7 @@ import { Sidebar } from "./Sidebar";
 import { HelpBar } from "./HelpBar";
 import { useUIStore } from "@/store/uiStore";
 import { useLocation } from "react-router-dom";
-import { HELP_BY_PATH } from "@/config/helpContent";
+import { HELP_BY_PATH } from "@/utils/helpContent";
 
 export function AppLayout({ children }) {
   const { sidebarOpen, toggleSidebar } = useUIStore();

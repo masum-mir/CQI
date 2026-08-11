@@ -1,13 +1,3 @@
-"""Import pipeline for the offered-courses file (Excel/HTML or PDF).
-
-Two phases so an admin reviews before anything is written:
-  preview  -> parse + resolve faculty, store a batch with stats (status=preview)
-  commit   -> idempotently upsert the parsed offerings into `courses`
-
-The university portal's ".xls" export is an HTML table; real .xlsx and the
-legacy PDF are also accepted. Excel rows carry the course title and semester,
-so those are filled without needing the catalog.
-"""
 import hashlib
 import logging
 
@@ -60,6 +50,8 @@ def preview(uploaded_file, departments, admin_id):
     data = uploaded_file.read()
     file_hash = hashlib.sha256(data).hexdigest()
 
+    duplicate = import_batch_repo.find_committed_by_hash(file_hash)
+
     kind, parsed = _parse(filename, data, departments)
     offerings = parsed['offerings']
     semester = parsed['semester'] or 'Unknown'
@@ -97,11 +89,7 @@ def preview(uploaded_file, departments, admin_id):
                  target_type='import_batch', target_id=batch['_id'],
                  meta={'semester': semester, 'offerings': len(offerings), 'kind': kind})
 
-    duplicate = import_batch_repo.find_by_hash(file_hash)
-    note = None
-    if duplicate and str(duplicate['_id']) != str(batch['_id']) \
-            and duplicate.get('status') == C.IMPORT_COMMITTED:
-        note = 'This exact file was already committed earlier.'
+    note = 'This exact file was already committed earlier.' if duplicate else None
 
     return {
         'batch': import_batch_dict(batch),
@@ -137,7 +125,8 @@ def commit(batch_id, admin_id):
             'course_type': _course_type_for(title, code, cat),
             'department': course_service.department_from_code(code),
             'faculty': faculty_id,
-            'faculty_code': off.get('faculty_code'),
+            'faculty_code': (str(off.get('faculty_code')).strip().upper()
+                             if off.get('faculty_code') else None),
             'capacity': off.get('capacity'),
             'schedule': off.get('schedule', []),
             'source': {'import_batch': batch['_id'],
@@ -164,4 +153,3 @@ def commit(batch_id, admin_id):
 
 def list_batches():
     return {'batches': [import_batch_dict(b) for b in import_batch_repo.find_all()]}
-

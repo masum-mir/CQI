@@ -5,7 +5,7 @@ from apps.users.repositories import role_repo
 from apps.users.api.serializers import role_dict
 
 SYSTEM_ROLES = [
-    ('admin', 'Full system administrator'),
+    ('admin', 'System administrator'),
     ('chairperson', 'Reviews and approves course files'),
     ('faculty', 'Creates course files and uploads documents'),
 ]
