@@ -69,7 +69,8 @@ const REVERSE_SLOT = Object.entries(SLOT_MAP).reduce((acc, [slot, meta]) => {
   return acc;
 }, {});
 
-const TOTAL_SLOTS = Object.keys(SLOT_MAP).length;
+// Only these course codes may upload the Capstone Project item.
+const CAPSTONE_COURSES = new Set(["CSE400A", "CSE400B", "CSE400C"]);
 
 function makeEntry(file, itemId) {
   const thumbnailUrl =
@@ -134,6 +135,11 @@ export default function UploadPage() {
   const files = useMemo(() => {
     return activeCourseId ? courseFiles[activeCourseId] || [] : [];
   }, [courseFiles, activeCourseId]);
+
+  const activeCourse = useMemo(
+    () => allCourses.find((c) => c.id === activeCourseId) || null,
+    [allCourses, activeCourseId]
+  );
 
   const updateActive = useCallback(
     (updater) => {
@@ -452,10 +458,22 @@ export default function UploadPage() {
     [allCourses, activeSemester]
   );
 
-  const filteredCategories = useMemo(() => {
-    if (uploadFilter === "all") return CATEGORIES;
+  const baseCategories = useMemo(() => {
+    const code = (
+      activeCourse?.courseCode ||
+      activeCourse?.label?.split("-")[0] ||
+      ""
+    ).toUpperCase();
 
-    return CATEGORIES.map((cat) => ({
+    return CAPSTONE_COURSES.has(code)
+      ? CATEGORIES
+      : CATEGORIES.filter((cat) => cat.label !== "Capstone");
+  }, [activeCourse]);
+
+  const filteredCategories = useMemo(() => {
+    if (uploadFilter === "all") return baseCategories;
+
+    return baseCategories.map((cat) => ({
       ...cat,
       items: cat.items.filter((item) => {
         const entry = getFileForItem(item.id);
@@ -465,7 +483,12 @@ export default function UploadPage() {
         return uploadFilter === "uploaded" ? isUploaded : !isUploaded;
       }),
     })).filter((cat) => cat.items.length > 0);
-  }, [getFileForItem, uploadFilter]);
+  }, [getFileForItem, uploadFilter, baseCategories]);
+
+  const visibleTotalItems = baseCategories.reduce(
+    (n, cat) => n + cat.items.length,
+    0
+  );
 
   const totalFiles = files.length;
 
@@ -585,7 +608,7 @@ export default function UploadPage() {
 
           <BottomBar
             totalFiles={totalFiles}
-            totalItems={TOTAL_SLOTS}
+            totalItems={visibleTotalItems}
             queuedCount={queuedCount}
             committing={committing}
             onCommit={handleCommit}

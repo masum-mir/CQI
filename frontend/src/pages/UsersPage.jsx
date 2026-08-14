@@ -5,6 +5,8 @@ import * as XLSX from 'xlsx'
 import { userApi } from '../api/userApi'
 import { useAuthContext } from '../context/AuthContext'
 import UserFormModal from '../components/UserFormModal'
+import Pagination from '../components/Pagination'
+import { usePagination } from '../hooks/usePagination'
 
 const ROLE_BADGE = {
   admin: 'bg-violet-100 text-violet-700',
@@ -76,6 +78,14 @@ export default function AdminUsersPage() {
       u.email?.toLowerCase().includes(q)
     )
   })
+
+  const { page, setPage, totalPages, paginated, pageSize } = usePagination(
+    filtered,
+    {
+      pageSize: 10,
+      resetDeps: [search, roleFilter, statusFilter],
+    }
+  )
 
   const openCreate = () => {
     setEditingUser(null)
@@ -486,7 +496,7 @@ export default function AdminUsersPage() {
               )}
 
             {!loading &&
-              filtered.map((u) => (
+              paginated.map((u) => (
                 <tr
                   key={u.id}
                   className="border-t border-gray-50 hover:bg-gray-50/50"
@@ -580,6 +590,14 @@ export default function AdminUsersPage() {
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        totalItems={filtered.length}
+        pageSize={pageSize}
+      />
 
       {/* Create/Edit User Modal */}
       {modalOpen && (

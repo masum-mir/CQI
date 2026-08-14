@@ -115,11 +115,8 @@ export function Sidebar() {
       {/* Header with toggle */}
       <div
         className={`flex items-center h-14 border-b border-gray-100
-          ${sidebarOpen ? "justify-between px-3" : "justify-center"}`}
+          ${sidebarOpen ? "justify-end px-3" : "justify-center"}`}
       >
-        {sidebarOpen && (
-          <span className="text-sm font-semibold text-gray-700">CQI</span>
-        )}
         <button
           onClick={toggleSidebar}
           className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
@@ -146,7 +143,7 @@ export function Sidebar() {
       {sidebarOpen && (
         <div className="px-5 py-3 border-t border-gray-100">
           <p className="text-[10px] text-gray-400">
-            CQI Module{user?.role ? ` · ${user.role}` : ""}
+            {user?.role || ""}
           </p>
         </div>
       )}
