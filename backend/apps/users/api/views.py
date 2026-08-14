@@ -3,7 +3,7 @@ from django.middleware.csrf import get_token
 from rest_framework.views import APIView
 
 from core.utils.response import ApiError, ok, created
-from core.permissions import IsAdminOrChair
+from core.permissions import IsAdminOrChair, IsChairOrFacultyOrAdmin
 from apps.users.services import auth_service, user_service, role_service
 
 
@@ -213,7 +213,7 @@ class UserListCreateView(APIView):
 
 
 class UserDetailView(APIView):
-    permission_classes = [IsAdminOrChair]
+    permission_classes = [IsChairOrFacultyOrAdmin]
 
     def get(self, request, pk):
         return ok(user_service.get_user(pk))

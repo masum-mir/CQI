@@ -12,7 +12,7 @@ urlpatterns = [
     path('auth/forgot-password', views.RequestPasswordResetView.as_view()),
     path('auth/reset-password', views.ResetPasswordView.as_view()),
     path('auth/me', views.MeView.as_view()),
-    # users + roles (admin)
+
     path('users', views.UserListCreateView.as_view()),
     path('users/import', views.ImportUsersView.as_view()),
     path('users/<str:pk>', views.UserDetailView.as_view()),

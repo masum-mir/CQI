@@ -7,6 +7,8 @@ import toast from 'react-hot-toast'
 import { courseFileApi } from '@/api/courseFileApi'
 import { documentApi } from '@/api/documentApi'
 import { useAuthContext } from '@/context/AuthContext'
+import Pagination from '@/components/Pagination'
+import { usePagination } from '@/hooks/usePagination'
  
 const ITEM_NAMES = {
   1: 'Final grades (Tabulation Sheet)',
@@ -229,6 +231,24 @@ export default function CourseFilesPage() {
     })
   }, [rows, search, course, semester, review, cfStatus, docType])
 
+  const {
+    page,
+    setPage,
+    totalPages,
+    paginated,
+    pageSize,
+  } = usePagination(filtered, {
+    pageSize: 10,
+    resetDeps: [
+      search,
+      course,
+      semester,
+      docType,
+      review,
+      cfStatus,
+    ],
+  })
+
   const activeFilters = [search, course, semester, docType, review, cfStatus].filter(Boolean).length
   const clearFilters = () => {
     setSearch(''); setCourse(''); setSemester(''); setDocType(''); setReview(''); setCfStatus('')
@@ -384,7 +404,7 @@ export default function CourseFilesPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((doc) => {
+              {paginated.map((doc) => {
                 const { Icon, color } = fileIcon(doc.storage?.originalName, doc.storage?.mimeType)
                 const rstatus = doc.review?.status || 'pending'
                 return (
@@ -453,9 +473,19 @@ export default function CourseFilesPage() {
       )}
 
       {!loading && filtered.length > 0 && (
-        <p className="text-[11px] text-gray-400 mt-3">
-          Showing {filtered.length} of {rows.length} file{rows.length > 1 ? 's' : ''}
-        </p>
+        <>
+          <p className="text-[11px] text-gray-400 mt-3">
+            Showing {(page - 1) * pageSize + 1}-{Math.min(page * pageSize, filtered.length)} of {filtered.length} file{filtered.length !== 1 ? 's' : ''}
+          </p>
+
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            totalItems={filtered.length}
+            pageSize={pageSize}
+          />
+        </>
       )}
 
       {/* Preview modal */}

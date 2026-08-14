@@ -1,58 +1,103 @@
-import { useState, useRef, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { Home, FolderKanban, Files, BookOpenCheck, History, Library, Users, FileSpreadsheet, Menu, X } from "lucide-react";
+import {
+  Home,
+  FolderKanban,
+  Files,
+  BookOpenCheck,
+  History,
+  Library,
+  Users,
+  FileSpreadsheet,
+  X,
+} from "lucide-react";
+
 import { useUIStore } from "@/store/uiStore";
-import { useAuthContext } from "@/context/AuthContext";  
+import { useAuthContext } from "@/context/AuthContext";
 
 const NAV_MAIN = [
-  { to: "/", icon: Home, label: "Home", exact: true,
-    roles: ["admin", "chairperson", "faculty"] },
-  
-  { to: "/upload/file", icon: FolderKanban, label: "Course Materials", exact: true,
-    roles: ["faculty", "chairperson"] },
-   
-  { to: "/upload/file/list", icon: Files, label: "Uploaded Files", exact: false,
-    roles: ["chairperson", "faculty"] },
-
-  { to: "/my-courses-list", icon: BookOpenCheck, label: "My Course", exact: false,
-    roles: ["chairperson", "faculty"] },
-
-  { to: "/faculty-courses-list", icon: History, label: "Faculty course history", exact: false,
-    roles: ["chairperson", "admin"] },
-
-  { to: "/faculty-compliance", icon: History, label: "Faculty Compliance", exact: false,
-    roles: ["chairperson", "admin"] },
-
-  { to: "/courses", icon: Library, label: "Course List", exact: false,
-    roles: ["chairperson", "admin"] },
-
-  { to: "/admin/users", icon: Users, label: "Users List", exact: false,
-    roles: ["admin"] },
-
-  { to: "/course/import", icon: FileSpreadsheet, label: "Course import", exact: false,
-    roles: ["admin", "chairperson"] },
-   
+  {
+    to: "/",
+    icon: Home,
+    label: "Home",
+    exact: true,
+    roles: ["admin", "chairperson", "faculty"],
+  },
+  {
+    to: "/upload/file",
+    icon: FolderKanban,
+    label: "Course Materials",
+    exact: true,
+    roles: ["faculty", "chairperson"],
+  },
+  {
+    to: "/upload/file/list",
+    icon: Files,
+    label: "Uploaded Files",
+    exact: false,
+    roles: ["chairperson", "faculty"],
+  },
+  {
+    to: "/my-courses-list",
+    icon: BookOpenCheck,
+    label: "My Course",
+    exact: false,
+    roles: ["chairperson", "faculty"],
+  },
+  {
+    to: "/faculty-courses-list",
+    icon: History,
+    label: "Faculty Course History",
+    exact: false,
+    roles: ["chairperson", "admin"],
+  },
+  {
+    to: "/faculty-compliance",
+    icon: History,
+    label: "Faculty Compliance",
+    exact: false,
+    roles: ["chairperson", "admin"],
+  },
+  {
+    to: "/courses",
+    icon: Library,
+    label: "Course List",
+    exact: false,
+    roles: ["chairperson", "admin"],
+  },
+  {
+    to: "/admin/users",
+    icon: Users,
+    label: "Users List",
+    exact: false,
+    roles: ["admin"],
+  },
+  {
+    to: "/course/import",
+    icon: FileSpreadsheet,
+    label: "Course Import",
+    exact: false,
+    roles: ["admin", "chairperson"],
+  },
 ];
 
-const MIN_WIDTH = 64; // collapsed width
-const DEFAULT_WIDTH = 224; // w-56
-
-function NavItem({ to, icon: Icon, label, exact }) {
+function NavItem({ to, icon: Icon, label, exact, onClick }) {
   return (
     <NavLink
       to={to}
       end={exact}
+      onClick={onClick}
       className={({ isActive }) =>
         `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm
          transition-colors mx-2
-         ${isActive
-          ? "bg-violet-50 text-violet-700 font-medium"
-          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-        }`
+         ${
+           isActive
+             ? "bg-violet-50 text-violet-700 font-medium"
+             : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+         }`
       }
     >
-      <Icon size={15} className="flex-shrink-0" />
-      {label}
+      <Icon size={16} className="flex-shrink-0" />
+      <span>{label}</span>
     </NavLink>
   );
 }
@@ -60,104 +105,85 @@ function NavItem({ to, icon: Icon, label, exact }) {
 export function Sidebar() {
   const { sidebarOpen, toggleSidebar } = useUIStore();
   const { user } = useAuthContext();
-  const [expandedWidth, setExpandedWidth] = useState(() => {
-    const saved = localStorage.getItem("sidebarWidth");
-    return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
-  });
-  const [isDragging, setIsDragging] = useState(false);
-  const containerRef = useRef(null);
 
-  // Only the items this user's role may see
   const navItems = NAV_MAIN.filter(
-    (item) => !item.roles || (user?.role && item.roles.includes(user.role))
+    (item) =>
+      !item.roles ||
+      (user?.role && item.roles.includes(user.role))
   );
 
-  // Save expanded width on change
-  useEffect(() => {
-    localStorage.setItem("sidebarWidth", String(expandedWidth));
-  }, [expandedWidth]);
-
-  const startResize = (e) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  useEffect(() => {
-    const onMouseMove = (e) => {
-      if (!isDragging || !containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      let newWidth = e.clientX - rect.left;
-      // No upper limit, only enforce minimum
-      newWidth = Math.max(newWidth, MIN_WIDTH);
-      setExpandedWidth(newWidth);
-    };
-    const onMouseUp = () => setIsDragging(false);
-
-    if (isDragging) {
-      document.addEventListener("mousemove", onMouseMove);
-      document.addEventListener("mouseup", onMouseUp);
+  const handleNavClick = () => {
+    if (window.innerWidth < 1024 && sidebarOpen) {
+      toggleSidebar();
     }
-    return () => {
-      document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseup", onMouseUp);
-    };
-  }, [isDragging]);
-
-  // Determine current width: if open, use expandedWidth; else collapsed width
-  const currentWidth = sidebarOpen ? expandedWidth : MIN_WIDTH;
+  };
 
   return (
     <aside
-      ref={containerRef}
-      className={`flex flex-col bg-white border-r border-gray-200 flex-shrink-0 overflow-y-auto relative`}
-      style={{ width: currentWidth }}
+      className={`
+        bg-white
+        border-r
+        border-gray-200
+        w-56
+        flex-shrink-0
+        flex-col
+        overflow-y-auto
+
+        fixed
+        top-14
+        bottom-0
+        left-0
+        z-40
+
+        transition-transform
+        duration-300
+        ease-in-out
+
+        lg:static
+        lg:flex
+        lg:translate-x-0
+
+        ${
+          sidebarOpen
+            ? "flex translate-x-0"
+            : "flex -translate-x-full"
+        }
+      `}
     >
-      {/* Header with toggle */}
-      <div
-        className={`flex items-center h-14 border-b border-gray-100
-          ${sidebarOpen ? "justify-end px-3" : "justify-center"}`}
-      >
+      {/* Mobile close button */}
+      <div className="flex justify-end px-3 py-2 border-b border-gray-100 lg:hidden">
         <button
           onClick={toggleSidebar}
-          className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
-          aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+          className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100"
+          aria-label="Close sidebar"
         >
-          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+          <X size={20} />
         </button>
       </div>
 
       {/* Navigation */}
-      {sidebarOpen && (
-        <div className="py-3 flex-1">
-          <div className="mb-4">
-            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider px-5 mb-1">
-              Main
-            </p>
-            {navItems.map((item) => (
-              <NavItem key={item.to} {...item} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {sidebarOpen && (
-        <div className="px-5 py-3 border-t border-gray-100">
-          <p className="text-[10px] text-gray-400">
-            {user?.role || ""}
+      <div className="py-3 flex-1">
+        <div className="mb-4">
+          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider px-5 mb-1">
+            Main
           </p>
-        </div>
-      )}
 
-      {/* Resize handle – only when expanded */}
-      {sidebarOpen && (
-        <div
-          className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-violet-400 transition-colors group"
-          onMouseDown={startResize}
-          style={{ touchAction: "none" }}
-        >
-          <div className="w-full h-full opacity-0 group-hover:opacity-100 bg-violet-400" />
+          {navItems.map((item) => (
+            <NavItem
+              key={item.to}
+              {...item}
+              onClick={handleNavClick}
+            />
+          ))}
         </div>
-      )}
+      </div>
+
+      {/* User role */}
+      <div className="px-5 py-3 border-t border-gray-100">
+        <p className="text-[10px] text-gray-400 uppercase">
+          {user?.role || ""}
+        </p>
+      </div>
     </aside>
   );
 }

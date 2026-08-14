@@ -13,6 +13,7 @@ import CourseFilesPage from '@/pages/CourseFilesPage'
 import MyCourseList from '@/pages/MyCourseList'
 import FacultyCourseHistoryPage from '@/pages/FacultyCourseHistoryPage'
 import FacultyCompliancePage from '@/pages/FacultyCompliancePage'
+import ProfilePage from "@/pages/ProfilePage"; 
 
  
 export default function App() {
@@ -30,6 +31,7 @@ export default function App() {
         {/* Any authenticated user */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={ <AppLayout> <HomePage /> </AppLayout>} />
+            <Route path="/profile" element={<AppLayout> <ProfilePage /> </AppLayout>} /> 
           </Route>
  
           <Route element={<ProtectedRoute roles={['faculty', 'chairperson', 'admin']} />}>

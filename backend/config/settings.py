@@ -124,11 +124,6 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 
-# Seed defaults
-ADMIN_NAME = os.getenv('ADMIN_NAME', 'System Admin')
-ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'admin@ewu.edu')
-ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'Admin@1234')
-
 # --- Logging (-> logs/app.log) ---------------------------------------------
 LOG_DIR = BASE_DIR / 'logs'
 LOG_DIR.mkdir(exist_ok=True)

@@ -5,14 +5,14 @@ import { useState } from 'react'
 import { useAuthContext } from '@/context/AuthContext'
 
 const ACTIONS = [
-  {
-    icon: UploadCloud,
-    title: 'Upload PDFs',
-    desc:  'Upload CQI documents for processing',
-    to:    '/upload',
-    color: 'bg-sky-50 text-sky-600',
-    roles: ['chairperson', 'admin', 'faculty']
-  }, 
+  // {
+  //   icon: UploadCloud,
+  //   title: 'Upload PDFs',
+  //   desc:  'Upload CQI documents for processing',
+  //   to:    '/upload',
+  //   color: 'bg-sky-50 text-sky-600',
+  //   roles: ['chairperson', 'admin', 'faculty']
+  // }, 
   // {
   //   icon: ClipboardList,
   //   title: 'CQI plans',

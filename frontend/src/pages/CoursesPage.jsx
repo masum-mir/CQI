@@ -58,7 +58,7 @@ export default function CoursesPage() {
     )
   })
 
-    const { page, setPage, totalPages, paginated, pageSize } = usePagination(filtered, {
+  const { page, setPage, totalPages, paginated, pageSize } = usePagination(filtered, {
     pageSize: 10,
     resetDeps: [search, semesterFilter],
   })
