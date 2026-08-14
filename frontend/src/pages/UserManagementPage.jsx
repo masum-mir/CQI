@@ -19,7 +19,7 @@ const STATUS_BADGE = {
   inactive: 'bg-gray-100 text-gray-500',
 }
 
-export default function AdminUsersPage() {
+export default function AdminUserManagementPage() {
   const { user: currentUser } = useAuthContext()
 
   const [users, setUsers] = useState([])

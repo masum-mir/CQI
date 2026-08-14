@@ -23,7 +23,7 @@ function groupBySemester(courses) {
     }));
 }
 
-export default function MyCourseList() {
+export default function MyCoursesPage() {
   const { user } = useAuthContext();
 
   const [selectedFaculty, setSelectedFaculty] = useState(null);

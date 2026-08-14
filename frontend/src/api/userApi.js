@@ -1,4 +1,4 @@
-import api from "./axios";
+import api from "./apiClient";
 
 export const userApi = {
   list: ({ role, status } = {}) =>

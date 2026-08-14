@@ -111,7 +111,7 @@ export function slotRingClass(entry) {
   return "";
 }
 
-export default function UploadPage() {
+export default function CourseUploadPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const targetItemIdRef = useRef(null);

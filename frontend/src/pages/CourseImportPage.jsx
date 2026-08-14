@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { UploadCloud, FileSpreadsheet, AlertTriangle, CheckCircle2, History } from 'lucide-react'
-import { importApi } from '../api/importApi'
+import { courseImportApi } from '../api/courseImportApi'
 import Pagination from '@/components/Pagination'
 import { usePagination } from '@/hooks/usePagination'
 
-export default function ImportCoursesPage() {
+export default function CourseImportPage() {
   const fileInputRef = useRef(null)
 
   const [file, setFile] = useState(null)
@@ -21,7 +21,7 @@ export default function ImportCoursesPage() {
   const fetchBatches = useCallback(async () => {
     setLoadingBatches(true)
     try {
-      const res = await importApi.listBatches()
+      const res = await courseImportApi.listBatches()
       // envelope-tolerant: works whether the api returns data.batches or data.data.batches
       setBatches(res.data.data?.batches || res.data.batches || [])
     } catch {
@@ -53,7 +53,7 @@ export default function ImportCoursesPage() {
         .split(',')
         .map((d) => d.trim())
         .filter(Boolean)
-      const res = await importApi.preview(file, deptList)
+      const res = await courseImportApi.preview(file, deptList)
       setPreviewResult(res.data.data)
     } catch (err) {
       setError(
@@ -72,7 +72,7 @@ export default function ImportCoursesPage() {
     setCommitting(true)
     setError('')
     try {
-      await importApi.commit(previewResult.batch.id)
+      await courseImportApi.commit(previewResult.batch.id)
       setPreviewResult(null)
       setFile(null)
       if (fileInputRef.current) fileInputRef.current.value = ''

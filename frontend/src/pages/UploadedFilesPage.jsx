@@ -128,7 +128,7 @@ function PreviewModal({ preview, onClose, onDownload }) {
   )
 }
 
-export default function CourseFilesPage() {
+export default function UploadedFilesPage() {
   const { user } = useAuthContext()
   const canDelete = user?.role === 'faculty' || user?.role === 'admin'
   const canReview = user?.role === 'chairperson' || user?.role === 'admin'

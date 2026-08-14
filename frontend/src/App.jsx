@@ -4,13 +4,13 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
 import LoginPage from "@/pages/LoginPage";
 import HomePage from "@/pages/HomePage";
-import UploadPage from "@/pages/UploadPage";
+import CourseUploadPage from "@/pages/CourseUploadPage";
 import UnauthorizedPage from '@/pages/UnauthorizedPage'
-import UsersPage from '@/pages/UsersPage' 
-import ImportCoursesPage from '@/pages/ImportCoursesPage'
-import CoursesPage from '@/pages/CoursesPage' 
-import CourseFilesPage from '@/pages/CourseFilesPage' 
-import MyCourseList from '@/pages/MyCourseList'
+import UserManagementPage from '@/pages/UserManagementPage' 
+import CourseImportPage from '@/pages/CourseImportPage'
+import CourseManagementPage from '@/pages/CourseManagementPage' 
+import UploadedFilesPage from '@/pages/UploadedFilesPage' 
+import MyCoursesPage from '@/pages/MyCoursesPage'
 import FacultyCourseHistoryPage from '@/pages/FacultyCourseHistoryPage'
 import FacultyCompliancePage from '@/pages/FacultyCompliancePage'
 import ProfilePage from "@/pages/ProfilePage"; 
@@ -35,20 +35,20 @@ export default function App() {
           </Route>
  
           <Route element={<ProtectedRoute roles={['faculty', 'chairperson', 'admin']} />}>
-            <Route path="/upload/file" element={<AppLayout> <UploadPage /> </AppLayout>} />
-            <Route path="/upload/file/list" element={<AppLayout> <CourseFilesPage /> </AppLayout>} /> 
-            <Route path="/my-courses-list" element={<AppLayout> <MyCourseList /> </AppLayout>} /> 
+            <Route path="/upload/file" element={<AppLayout> <CourseUploadPage /> </AppLayout>} />
+            <Route path="/upload/file/list" element={<AppLayout> <UploadedFilesPage /> </AppLayout>} /> 
+            <Route path="/my-courses-list" element={<AppLayout> <MyCoursesPage /> </AppLayout>} /> 
           </Route>
  
           <Route element={<ProtectedRoute roles={['chairperson','admin']} />}> 
-            <Route path="/courses" element={ <AppLayout> <CoursesPage /> </AppLayout>} />
-            <Route path="/course/import" element={<AppLayout> <ImportCoursesPage /> </AppLayout>} /> 
+            <Route path="/courses" element={ <AppLayout> <CourseManagementPage /> </AppLayout>} />
+            <Route path="/course/import" element={<AppLayout> <CourseImportPage /> </AppLayout>} /> 
             <Route path="/faculty-courses-list" element={<AppLayout> <FacultyCourseHistoryPage /> </AppLayout>} />
             <Route path="/faculty-compliance" element={<AppLayout> <FacultyCompliancePage /> </AppLayout>} />
           </Route>
  
           <Route element={<ProtectedRoute roles={['admin']} />}>
-            <Route path="/admin/users" element={<AppLayout> <UsersPage /> </AppLayout>} /> 
+            <Route path="/admin/users" element={<AppLayout> <UserManagementPage /> </AppLayout>} /> 
           </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
