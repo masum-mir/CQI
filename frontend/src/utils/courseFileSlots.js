@@ -28,7 +28,7 @@ export const SLOT_ITEM_NO = {
   lab_attendance: 18,
   midterm_attendance: 19,
   final_attendance: 20,
-  capstone_report: 21,
+  // capstone_report: 21,
 };
 
 export const ITEM_NO_TO_SLOT = Object.entries(SLOT_ITEM_NO).reduce(

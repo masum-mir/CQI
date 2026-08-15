@@ -61,7 +61,7 @@ const SLOT_MAP = {
   lab_attendance: { itemNo: 18 },
   midterm_attendance: { itemNo: 19 },
   final_attendance: { itemNo: 20 },
-  capstone_report: { itemNo: 21 },
+  // capstone_report: { itemNo: 21 },
 };
 
 const REVERSE_SLOT = Object.entries(SLOT_MAP).reduce((acc, [slot, meta]) => {
@@ -70,7 +70,7 @@ const REVERSE_SLOT = Object.entries(SLOT_MAP).reduce((acc, [slot, meta]) => {
 }, {});
 
 // Only these course codes may upload the Capstone Project item.
-const CAPSTONE_COURSES = new Set(["CSE400A", "CSE400B", "CSE400C"]);
+// const CAPSTONE_COURSES = new Set(["CSE400A", "CSE400B", "CSE400C"]);
 
 function makeEntry(file, itemId) {
   const thumbnailUrl =
@@ -458,17 +458,20 @@ export default function CourseUploadPage() {
     [allCourses, activeSemester]
   );
 
-  const baseCategories = useMemo(() => {
-    const code = (
-      activeCourse?.courseCode ||
-      activeCourse?.label?.split("-")[0] ||
-      ""
-    ).toUpperCase();
+  // const baseCategories = useMemo(() => {
+  //   const code = (
+  //     activeCourse?.courseCode ||
+  //     activeCourse?.label?.split("-")[0] ||
+  //     ""
+  //   ).toUpperCase();
 
-    return CAPSTONE_COURSES.has(code)
-      ? CATEGORIES
-      : CATEGORIES.filter((cat) => cat.label !== "Capstone");
-  }, [activeCourse]);
+  //   return CAPSTONE_COURSES.has(code)
+  //     ? CATEGORIES
+  //     : CATEGORIES.filter((cat) => cat.label !== "Capstone");
+  // }, [activeCourse]);
+
+  const baseCategories = useMemo(() => CATEGORIES, []);
+
 
   const filteredCategories = useMemo(() => {
     if (uploadFilter === "all") return baseCategories;

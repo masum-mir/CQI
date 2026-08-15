@@ -31,7 +31,7 @@ const ITEM_NAMES = {
   18: 'Lab Attendance',
   19: 'Midterm Exam Attendance',
   20: 'Final Exam Attendance',
-  21: 'Capstone Project Report',
+  // 21: 'Capstone Project Report',
 }
  
 function humanSize(bytes) {

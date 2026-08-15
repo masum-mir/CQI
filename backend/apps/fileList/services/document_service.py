@@ -117,9 +117,9 @@ def upload_document(user, cf_id, uploaded_file, data):
                     "mime_type": meta["mime_type"],
                     "size": meta["size"],
                 },
-                "processing": {"status": C.PROC_PENDING},
+                "processing": {"status": C.PROC_COMPLETED},
                 "review": {
-                    "status": C.DOC_PENDING,
+                    "status": C.DOC_APPROVED,
                     "remark": None,
                 },
                 "uploaded_by": ensure_object_id(user.id),

@@ -65,10 +65,10 @@ export const CATEGORIES = [
       { id: "final_attendance", title: "Final Exam Attendance" },
     ],
   },
-  {
-    label: "Capstone",
-    items: [{ id: "capstone_report", title: "Capstone Project Report" }],
-  },
+  // {
+  //   label: "Capstone",
+  //   items: [{ id: "capstone_report", title: "Capstone Project Report" }],
+  // },
 ];
 
 export const SLOT_MAP = {
@@ -92,7 +92,7 @@ export const SLOT_MAP = {
   lab_attendance: { itemNo: 14 },
   midterm_attendance: { itemNo: 15 },
   final_attendance: { itemNo: 16 },
-  capstone_report: { itemNo: 17 },
+  // capstone_report: { itemNo: 17 },
 };
 
 export const MAX_SIZE_BYTES = 10 * 1024 * 1024;

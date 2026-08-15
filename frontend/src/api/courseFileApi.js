@@ -18,6 +18,7 @@ export const courseFileApi = {
     } else {
       form.append("itemNo", meta.itemNo);
     }
+ 
     return api.post(`/course-files/${cfId}/upload`, form, {
       headers: { "Content-Type": "multipart/form-data" },
     });
