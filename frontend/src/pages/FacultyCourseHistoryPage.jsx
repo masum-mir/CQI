@@ -160,7 +160,7 @@ export default function FacultyCourseHistoryPage() {
   return (
     <div className="max-w-3xl mx-auto py-8 px-4">
       <div className="flex items-center gap-2 mb-6">
-        <BookOpen size={18} className="text-indigo-500" />
+        {/* <BookOpen size={18} className="text-indigo-500" /> */}
         <h1 className="text-lg font-semibold text-gray-900">
           Faculty course history
         </h1>
