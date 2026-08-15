@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { courseApi } from "@/api/courseApi";
 import { courseFileApi } from "@/api/courseFileApi";
 import { userApi } from "@/api/userApi";
-import { SLOT_ITEM_NO, ITEM_NO_TO_SLOT, TOTAL_SLOTS, SLOT_META } from "@/utils/courseFileSlots";
+import { SLOT_ITEM_NO, ITEM_NO_TO_SLOT, TOTAL_SLOTS, SLOT_META } from "@/utils/uploadConstants";
 
 export default function useFacultyCompliance() {
   const [rows, setRows] = useState([]);

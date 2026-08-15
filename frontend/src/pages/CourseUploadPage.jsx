@@ -13,6 +13,7 @@ import { courseFileApi } from "@/api/courseFileApi";
 import { documentApi } from "@/api/documentApi";
 import { useAuth } from "@/hooks/useAuth";
 import { CATEGORIES, SLOT_MAP, MAX_SIZE_BYTES, ALLOWED_TYPES } from "@/utils/uploadConstants";
+import { makeEntry } from "@/utils/uploadHelpers";
 import ViewModeToggle from "@/components/uploads/ViewModeToggle";
 import UploadToolbar from "@/components/uploads/UploadToolbar";
 import BottomBar from "@/components/uploads/BottomBar";
@@ -25,25 +26,7 @@ const REVERSE_SLOT = Object.entries(SLOT_MAP).reduce((acc, [slot, meta]) => {
   acc[meta.itemNo] = slot;
   return acc;
 }, {});
-
-// Only these course codes may upload the Capstone Project item.
-// const CAPSTONE_COURSES = new Set(["CSE400A", "CSE400B", "CSE400C"]);
-
-function makeEntry(file, itemId) {
-  const thumbnailUrl =
-    file.type?.startsWith("image/") || file.type === "application/pdf"
-      ? URL.createObjectURL(file)
-      : null;
-
-  return {
-    id: `${itemId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    file,
-    fileType: itemId,
-    status: "queued",
-    reviewStatus: null,
-    thumbnailUrl,
-  };
-}
+ 
 
 export function slotColorClass(entry) {
   if (!entry) return "bg-gray-300";

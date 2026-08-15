@@ -4,7 +4,7 @@ import { courseApi } from "@/api/courseApi";
 import { courseFileApi } from "@/api/courseFileApi";
 import { userApi } from "@/api/userApi";
 import { useAuthContext } from "@/context/AuthContext";
-import { buildCourseChecklist } from "@/utils/courseFileSlots";
+import { buildCourseChecklist } from "@/utils/uploadConstants";
 
 function groupBySemester(courses) {
   const map = new Map();
