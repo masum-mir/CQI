@@ -12,58 +12,15 @@ import { courseApi } from "@/api/courseApi";
 import { courseFileApi } from "@/api/courseFileApi";
 import { documentApi } from "@/api/documentApi";
 import { useAuth } from "@/hooks/useAuth";
-import { CATEGORIES } from "@/utils/uploadConstants";
+import { CATEGORIES, SLOT_MAP, MAX_SIZE_BYTES, ALLOWED_TYPES } from "@/utils/uploadConstants";
 import ViewModeToggle from "@/components/uploads/ViewModeToggle";
 import UploadToolbar from "@/components/uploads/UploadToolbar";
 import BottomBar from "@/components/uploads/BottomBar";
 import CompactUploadView from "@/components/uploads/CompactUploadView";
 import GridUploadView from "@/components/uploads/GridUploadView";
 import ListUploadView from "@/components/uploads/ListUploadView";
-
-const MAX_SIZE_BYTES = 10 * 1024 * 1024;
-
-const ALLOWED_TYPES = new Set([
-  "application/pdf",
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/webp",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "application/vnd.ms-excel",
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-]);
+  
  
-
-const SLOT_MAP = {
-  final_grades: { itemNo: 1 },
-  obe_excel: { itemNo: 2 },
-  co_attainment: { itemNo: 3 },
-  po_attainment: { itemNo: 4 },
-  cqi_grade_summary: { itemNo: 5 },
-  instructor_feedback: { itemNo: 6 },
-  course_outline: { itemNo: 7 },
-
-  class_test_question: { itemNo: 8 },
-  class_test_sample: { itemNo: 9 },
-
-  midterm_question: { itemNo: 10 },
-  midterm_sample: { itemNo: 11 },
-
-  final_question: { itemNo: 12 },
-  final_sample: { itemNo: 13 },
-
-  project_list: { itemNo: 14 },
-  project_sample: { itemNo: 15 },
-
-  lab_experiments: { itemNo: 16 },
-  class_attendance: { itemNo: 17 },
-  lab_attendance: { itemNo: 18 },
-  midterm_attendance: { itemNo: 19 },
-  final_attendance: { itemNo: 20 },
-  // capstone_report: { itemNo: 21 },
-};
-
 const REVERSE_SLOT = Object.entries(SLOT_MAP).reduce((acc, [slot, meta]) => {
   acc[meta.itemNo] = slot;
   return acc;

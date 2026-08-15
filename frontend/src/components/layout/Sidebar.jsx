@@ -151,7 +151,7 @@ export function Sidebar() {
       `}
     >
       {/* Mobile close button */}
-      <div className="flex justify-end px-3 py-2 border-b border-gray-100 lg:hidden">
+      {/* <div className="flex justify-end px-3 py-2 border-b border-gray-100 lg:hidden">
         <button
           onClick={toggleSidebar}
           className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100"
@@ -159,7 +159,7 @@ export function Sidebar() {
         >
           <X size={20} />
         </button>
-      </div>
+      </div> */}
 
       {/* Navigation */}
       <div className="py-3 flex-1">
