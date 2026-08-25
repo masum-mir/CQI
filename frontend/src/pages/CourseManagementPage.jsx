@@ -175,7 +175,7 @@ export default function CoursesPage() {
               </tr>
             )}
 
-            {!loading && paginated ===0 === 0 && (
+            {!loading && paginated.length === 0 && (
               <tr>
                 <td colSpan={7} className="px-4 py-12 text-center text-gray-400">
                   <BookOpen size={20} className="mx-auto mb-2 text-gray-300" />

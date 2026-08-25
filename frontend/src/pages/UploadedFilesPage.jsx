@@ -363,7 +363,20 @@ export default function UploadedFilesPage() {
             {docTypeOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
 
-          
+          {/* <select value={review} onChange={(e) => setReview(e.target.value)} className={selectCls}>
+            <option value="">All review states</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+
+          <select value={cfStatus} onChange={(e) => setCfStatus(e.target.value)} className={selectCls}>
+            <option value="">All course-file states</option>
+            <option value="in_progress">In progress</option>
+            <option value="submitted">Submitted</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select> */}
 
           {activeFilters > 0 && (
             <button
@@ -399,7 +412,8 @@ export default function UploadedFilesPage() {
                 <th className="px-4 py-3">File</th>
                 <th className="px-4 py-3">Course</th>
                 <th className="px-4 py-3">Document type</th>
-                <th className="px-4 py-3">Size</th> 
+                <th className="px-4 py-3">Size</th>
+                {/* <th className="px-4 py-3">Review</th> */}
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
@@ -434,6 +448,36 @@ export default function UploadedFilesPage() {
                       {labelFor(doc)}
                     </td>
                     <td className="px-4 py-3 text-gray-400 tabular-nums">{humanSize(doc.storage?.size)}</td>
+                    {/* <td className="px-4 py-3">
+                      {canReview ? (
+                        <select
+                          value={rstatus}
+                          disabled={savingReviewId === doc.id}
+                          onChange={(e) => handleReviewChange(doc, e.target.value)}
+                          className={`text-[11px] font-medium px-2 py-1 rounded-lg border outline-none disabled:opacity-50 ${
+                            rstatus === 'approved'
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                              : rstatus === 'rejected'
+                              ? 'bg-red-50 text-red-700 border-red-100'
+                              : 'bg-amber-50 text-amber-700 border-amber-100'
+                          }`}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="approved">Approved</option>
+                          <option value="rejected">Rejected</option>
+                        </select>
+                      ) : (
+                        <span className={`inline-flex text-[11px] font-medium px-2 py-1 rounded-full ${
+                          rstatus === 'approved'
+                            ? 'bg-emerald-50 text-emerald-700'
+                            : rstatus === 'rejected'
+                            ? 'bg-red-50 text-red-700'
+                            : 'bg-amber-50 text-amber-700'
+                        }`}>
+                          {rstatus}
+                        </span>
+                      )}
+                    </td> */}
 
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1">

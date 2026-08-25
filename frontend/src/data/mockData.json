@@ -1,0 +1,262 @@
+{
+  "users": [
+    {
+      "id": "usr-admin-001",
+      "name": "CQI Administrator",
+      "email": "admin@cqi.local",
+      "password": "12345678",
+      "role": "admin",
+      "department": "CSE",
+      "designation": "System Administrator",
+      "employeeId": "ADM-001",
+      "shortCode": "ADM",
+      "mobile": "01700000001",
+      "status": "active",
+      "profileImage": {
+        "url": "",
+        "provider": "mock"
+      }
+    },
+    {
+      "id": "usr-chair-001",
+      "name": "Dr. Nusrat Jahan",
+      "email": "chairperson@cqi.local",
+      "password": "12345678",
+      "role": "chairperson",
+      "department": "CSE",
+      "designation": "Chairperson",
+      "employeeId": "CSE-CP-01",
+      "shortCode": "NJH",
+      "mobile": "01700000002",
+      "status": "active",
+      "profileImage": {
+        "url": "",
+        "provider": "mock"
+      }
+    },
+    {
+      "id": "usr-faculty-001",
+      "name": "Md Masum",
+      "email": "faculty@cqi.local",
+      "password": "12345678",
+      "role": "faculty",
+      "department": "CSE",
+      "designation": "Lecturer",
+      "employeeId": "CSE-F-101",
+      "shortCode": "MSM",
+      "mobile": "01700000003",
+      "status": "active",
+      "profileImage": {
+        "url": "",
+        "provider": "mock"
+      }
+    },
+    {
+      "id": "usr-faculty-002",
+      "name": "Farhana Rahman",
+      "email": "farhana@cqi.local",
+      "password": "12345678",
+      "role": "faculty",
+      "department": "CSE",
+      "designation": "Assistant Professor",
+      "employeeId": "CSE-F-102",
+      "shortCode": "FRH",
+      "mobile": "01700000004",
+      "status": "active",
+      "profileImage": {
+        "url": "",
+        "provider": "mock"
+      }
+    }
+  ],
+  "courses": [
+    {
+      "id": "crs-001",
+      "courseCode": "CSE347",
+      "section": "1",
+      "title": "Artificial Intelligence",
+      "semester": "Summer 2026",
+      "type": "theory",
+      "department": "CSE",
+      "facultyCode": "MSM",
+      "capacity": {
+        "total": 40,
+        "enrolled": 36
+      }
+    },
+    {
+      "id": "crs-002",
+      "courseCode": "CSE475",
+      "section": "2",
+      "title": "Machine Learning",
+      "semester": "Summer 2026",
+      "type": "theory",
+      "department": "CSE",
+      "facultyCode": "MSM",
+      "capacity": {
+        "total": 40,
+        "enrolled": 34
+      }
+    },
+    {
+      "id": "crs-003",
+      "courseCode": "CSE331",
+      "section": "1",
+      "title": "Digital Logic Design",
+      "semester": "Spring 2026",
+      "type": "theory",
+      "department": "CSE",
+      "facultyCode": "MSM",
+      "capacity": {
+        "total": 42,
+        "enrolled": 39
+      }
+    },
+    {
+      "id": "crs-004",
+      "courseCode": "CSE221",
+      "section": "3",
+      "title": "Data Structures",
+      "semester": "Summer 2026",
+      "type": "lab",
+      "department": "CSE",
+      "facultyCode": "FRH",
+      "capacity": {
+        "total": 35,
+        "enrolled": 31
+      }
+    },
+    {
+      "id": "crs-005",
+      "courseCode": "CSE499",
+      "section": "1",
+      "title": "Capstone Project",
+      "semester": "Spring 2026",
+      "type": "sessional",
+      "department": "CSE",
+      "facultyCode": "FRH",
+      "capacity": {
+        "total": 25,
+        "enrolled": 22
+      }
+    },
+    {
+      "id": "crs-006",
+      "courseCode": "CSE321",
+      "section": "1",
+      "title": "Database Systems",
+      "semester": "Summer 2026",
+      "type": "theory",
+      "department": "CSE",
+      "facultyCode": "NJH",
+      "capacity": {
+        "total": 40,
+        "enrolled": 35
+      }
+    }
+  ],
+  "courseFiles": [
+    {
+      "id": "cf-001",
+      "course": "crs-001",
+      "semester": "Summer 2026",
+      "status": "in_progress",
+      "createdAt": "2026-08-20T10:30:00.000Z"
+    },
+    {
+      "id": "cf-002",
+      "course": "crs-004",
+      "semester": "Summer 2026",
+      "status": "submitted",
+      "createdAt": "2026-08-18T08:10:00.000Z"
+    }
+  ],
+  "documents": [
+    {
+      "id": "doc-001",
+      "courseFileId": "cf-001",
+      "itemNo": 1,
+      "isAdditional": false,
+      "storage": {
+        "originalName": "CSE347_Final_Grades.pdf",
+        "fileName": "CSE347_Final_Grades.pdf",
+        "size": 184320,
+        "mimeType": "application/pdf"
+      },
+      "review": {
+        "status": "approved",
+        "remark": "Looks good"
+      },
+      "createdAt": "2026-08-22T09:20:00.000Z"
+    },
+    {
+      "id": "doc-002",
+      "courseFileId": "cf-001",
+      "itemNo": 7,
+      "isAdditional": false,
+      "storage": {
+        "originalName": "CSE347_Course_Outline.pdf",
+        "fileName": "CSE347_Course_Outline.pdf",
+        "size": 220160,
+        "mimeType": "application/pdf"
+      },
+      "review": {
+        "status": "pending",
+        "remark": ""
+      },
+      "createdAt": "2026-08-22T09:25:00.000Z"
+    },
+    {
+      "id": "doc-003",
+      "courseFileId": "cf-001",
+      "itemNo": 8,
+      "isAdditional": false,
+      "storage": {
+        "originalName": "CSE347_Class_Test_Question.pdf",
+        "fileName": "CSE347_Class_Test_Question.pdf",
+        "size": 126976,
+        "mimeType": "application/pdf"
+      },
+      "review": {
+        "status": "rejected",
+        "remark": "Please upload the signed version"
+      },
+      "createdAt": "2026-08-22T09:30:00.000Z"
+    },
+    {
+      "id": "doc-004",
+      "courseFileId": "cf-002",
+      "itemNo": 1,
+      "isAdditional": false,
+      "storage": {
+        "originalName": "CSE221_Final_Grades.pdf",
+        "fileName": "CSE221_Final_Grades.pdf",
+        "size": 194560,
+        "mimeType": "application/pdf"
+      },
+      "review": {
+        "status": "approved",
+        "remark": ""
+      },
+      "createdAt": "2026-08-19T10:10:00.000Z"
+    },
+    {
+      "id": "doc-005",
+      "courseFileId": "cf-002",
+      "itemNo": 7,
+      "isAdditional": false,
+      "storage": {
+        "originalName": "CSE221_Course_Outline.pdf",
+        "fileName": "CSE221_Course_Outline.pdf",
+        "size": 174080,
+        "mimeType": "application/pdf"
+      },
+      "review": {
+        "status": "approved",
+        "remark": ""
+      },
+      "createdAt": "2026-08-19T10:15:00.000Z"
+    }
+  ],
+  "importBatches": []
+}

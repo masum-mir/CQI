@@ -8,7 +8,6 @@ import {
   Library,
   Users,
   FileSpreadsheet,
-  X,
 } from "lucide-react";
 
 import { useUIStore } from "@/store/uiStore";
@@ -34,7 +33,7 @@ const NAV_MAIN = [
     icon: Files,
     label: "Uploaded Files",
     exact: false,
-    roles: ["chairperson", "faculty"],
+    roles: ["chairperson", "faculty", "admin"],
   },
   {
     to: "/my-courses-list",

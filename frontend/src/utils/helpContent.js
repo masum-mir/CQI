@@ -58,7 +58,7 @@ export const HELP_BY_PATH = {
       "Tip: Upload the .xls/.xlsx file, then review the parsed preview first.",
       "Tip: Optionally enter a comma-separated department filter (e.g. CSE, ICE).",
       "Note: Faculty short codes in the file must match existing system users.",
-      "Note: Nothing is written to the database until you click 'Commit import'.",
+      "Note: Nothing is saved to browser demo data until you click 'Commit import'.",
     ],
   },
   "/admin/users": {

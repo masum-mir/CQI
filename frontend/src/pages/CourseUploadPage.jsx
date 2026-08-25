@@ -11,7 +11,7 @@ import { FilePreviewPanel } from "@/components/uploads/FilePreviewPanel";
 import { courseApi } from "@/api/courseApi";
 import { courseFileApi } from "@/api/courseFileApi";
 import { documentApi } from "@/api/documentApi";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/context/AuthContext";
 import { CATEGORIES, SLOT_MAP, MAX_SIZE_BYTES, ALLOWED_TYPES } from "@/utils/uploadConstants";
 import { makeEntry } from "@/utils/uploadHelpers";
 import ViewModeToggle from "@/components/uploads/ViewModeToggle";
@@ -58,7 +58,7 @@ export default function CourseUploadPage() {
   const cfIdByCourse = useRef({});
   const loadedCourses = useRef(new Set());
 
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   const [viewMode, setViewMode] = useState("compact");
   const [selectedItem, setSelectedItem] = useState(null);
