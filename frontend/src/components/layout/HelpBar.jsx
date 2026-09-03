@@ -61,31 +61,31 @@ export function HelpBar({
   return (
     <aside
       ref={containerRef}
-      className={`flex flex-col bg-white border-l border-gray-200 flex-shrink-0 overflow-y-auto relative h-full`}
+      className={`flex flex-col bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800 flex-shrink-0 overflow-y-auto relative h-full`}
       style={{ width: currentWidth }}
     >
       {/* Header / Toggle */}
       <div
-        className={`flex items-center h-14 border-b border-gray-100
+        className={`flex items-center h-14 border-b border-gray-100 dark:border-gray-800
           ${open ? "justify-between px-2" : "justify-center"}`}
       >
         <button
           onClick={toggle}
-          className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors"
           aria-label={open ? "Collapse help panel" : "Expand help panel"}
         >
           {open ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
         </button>
         {open && (
-          <span className="text-sm font-semibold text-gray-700 pr-2">{title}</span>
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-200 pr-2">{title}</span>
         )}
       </div>
 
       {/* Content */}
       {open && (
-        <div className="flex-1 p-4 text-sm text-gray-600 overflow-y-auto space-y-4">
+        <div className="flex-1 p-4 text-sm text-gray-600 dark:text-gray-400 overflow-y-auto space-y-4">
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
               Help
             </p>
             <ul className="space-y-0.5 text-xs">
@@ -95,7 +95,7 @@ export function HelpBar({
             </ul>
           </div>
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
               AI Assistant
             </p>
             <ul className="space-y-0.5 text-xs">
@@ -110,7 +110,7 @@ export function HelpBar({
       {/* Resize handle – only when expanded */}
       {open && (
         <div
-          className="absolute top-0 left-0 w-1 h-full cursor-col-resize hover:bg-violet-400 transition-colors group"
+          className="absolute top-0 left-0 w-1 h-full cursor-col-resize hover:bg-violet-400 dark:hover:bg-violet-500 transition-colors group"
           onMouseDown={startResize}
           style={{ touchAction: "none" }}
         >

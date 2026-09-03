@@ -68,10 +68,10 @@ export default function FacultyCompliancePage() {
       <div className="max-w-5xl mx-auto w-full flex flex-col gap-5">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
-            <h1 className="text-lg font-semibold text-gray-800">
+            <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
               Faculty Submission Compliance
             </h1>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
               Registered faculty members who still have missing course-file items.
             </p>
           </div>
@@ -91,21 +91,21 @@ export default function FacultyCompliancePage() {
         <div className="relative">
           <Search
             size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
           />
           <input
             type="text"
             value={nameQuery}
             onChange={(e) => setNameQuery(e.target.value)}
             placeholder="Search faculty by name…"
-            className="w-full sm:w-72 pl-8 pr-3 py-1.5 text-xs border border-gray-200 rounded-lg
-                       text-gray-700 placeholder:text-gray-400 focus:outline-none
+            className="w-full sm:w-72 pl-8 pr-3 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded-lg
+                       bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 placeholder:text-gray-400 focus:outline-none
                        focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7]"
           />
         </div>
 
         {semesters.length > 0 && (
-          <div className="flex items-center gap-1 bg-gray-100 p-0.5 rounded-lg flex-wrap w-fit">
+          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-0.5 rounded-lg flex-wrap w-fit">
             {semesters.map((sem) => (
               <button
                 key={sem}
@@ -113,7 +113,7 @@ export default function FacultyCompliancePage() {
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
                   semester === sem
                     ? "bg-[#534AB7] text-white"
-                    : "text-gray-500 hover:text-gray-700"
+                    : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                 }`}
               >
                 {sem}
@@ -123,7 +123,7 @@ export default function FacultyCompliancePage() {
         )}
 
         {loading ? (
-          <div className="py-20 text-center text-sm text-gray-400">
+          <div className="py-20 text-center text-sm text-gray-400 dark:text-gray-500">
             Loading compliance data…
           </div>
         ) : error ? (
@@ -131,14 +131,14 @@ export default function FacultyCompliancePage() {
             Could not load compliance data. Please try again.
           </div>
         ) : displayRows.length === 0 ? (
-          <div className="py-20 text-center text-sm text-gray-400">
+          <div className="py-20 text-center text-sm text-gray-400 dark:text-gray-500">
             Every registered faculty member has submitted all required items for this semester.
           </div>
         ) : (
-          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-500 border-b border-gray-200">
+                <tr className="bg-gray-50 dark:bg-gray-800/70 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800">
                   <th className="px-4 py-3">Faculty</th>
                   <th className="px-4 py-3">Email</th>
                   <th className="px-4 py-3">Missing</th>
@@ -148,16 +148,16 @@ export default function FacultyCompliancePage() {
                 {displayRows.map((f) => (
                   <tr
                     key={f.facultyCode}
-                    className="border-t border-gray-100 hover:bg-gray-50/60"
+                    className="border-t border-gray-100 dark:border-gray-800 hover:bg-gray-50/60 dark:hover:bg-gray-800/50"
                   >
-                    <td className="px-4 py-3 font-medium text-gray-800">
+                    <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-200">
                       {f.facultyName}
                     </td>
-                    <td className="px-4 py-3 text-gray-500">
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                       {f.facultyEmail || "—"}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full bg-red-50 text-red-600 border border-red-100">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full bg-red-50 text-red-600 border border-red-100 dark:bg-red-950/40 dark:text-red-300 dark:border-red-900">
                         <AlertCircle size={12} />
                         {f.missingCount} item{f.missingCount > 1 ? "s" : ""} missing
                       </span>

@@ -8,9 +8,9 @@ import { usePagination } from '@/hooks/usePagination'
 
 
 const TYPE_BADGE = {
-  theory: 'bg-sky-100 text-sky-700',
-  lab: 'bg-amber-100 text-amber-700',
-  sessional: 'bg-emerald-100 text-emerald-700',
+  theory: 'bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300',
+  lab: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300',
+  sessional: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300',
 }
 
 export default function CoursesPage() {
@@ -106,10 +106,10 @@ export default function CoursesPage() {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
             {user?.role === 'faculty' ? 'My courses' : 'Courses'}
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {user?.role === 'faculty'
               ? 'Course offerings assigned to you'
               : 'All course offerings across the department'}
@@ -129,13 +129,13 @@ export default function CoursesPage() {
       {/* Filters */}
       <div className="flex flex-wrap gap-2 mb-4">
         <div className="relative flex-1 min-w-[180px]">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search code, title, or faculty"
-            className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-violet-400"
+            className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-400 text-sm outline-none focus:ring-2 focus:ring-violet-400"
           />
         </div>
 
@@ -144,19 +144,19 @@ export default function CoursesPage() {
           value={semesterFilter}
           onChange={(e) => setSemesterFilter(e.target.value)}
           placeholder="Semester (e.g. Fall 2024)"
-          className="px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none w-48"
+          className="px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-400 text-sm outline-none w-48"
         />
       </div>
 
       {error && (
-        <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg mb-4">{error}</p>
+        <p className="text-xs text-red-600 bg-red-50 dark:bg-red-950/40 dark:text-red-300 px-3 py-2 rounded-lg mb-4">{error}</p>
       )}
 
       {/* Table */}
-      <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-500">
+            <tr className="bg-gray-50 dark:bg-gray-800/70 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">
               <th className="px-4 py-3">Course</th>
               <th className="px-4 py-3">Title</th>
               <th className="px-4 py-3">Type</th>
@@ -169,7 +169,7 @@ export default function CoursesPage() {
           <tbody>
             {loading && (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={7} className="px-4 py-8 text-center text-gray-400 dark:text-gray-500">
                   Loading...
                 </td>
               </tr>
@@ -177,8 +177,8 @@ export default function CoursesPage() {
 
             {!loading && paginated ===0 === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-gray-400">
-                  <BookOpen size={20} className="mx-auto mb-2 text-gray-300" />
+                <td colSpan={7} className="px-4 py-12 text-center text-gray-400 dark:text-gray-500">
+                  <BookOpen size={20} className="mx-auto mb-2 text-gray-300 dark:text-gray-600" />
                   No courses found
                 </td>
               </tr>
@@ -186,19 +186,19 @@ export default function CoursesPage() {
 
             {!loading &&
               paginated.map((c) => (
-                <tr key={c.id} className="border-t border-gray-50 hover:bg-gray-50/50">
-                  <td className="px-4 py-3 font-medium text-gray-800">{c.label}</td>
-                  <td className="px-4 py-3 text-gray-500">{c.title || '—'}</td>
+                <tr key={c.id} className="border-t border-gray-50 dark:border-gray-800 hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
+                  <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-200">{c.label}</td>
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{c.title || '—'}</td>
                   <td className="px-4 py-3">
-                    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${TYPE_BADGE[c.type] || 'bg-gray-100 text-gray-600'}`}>
+                    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${TYPE_BADGE[c.type] || 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'}`}>
                       {c.type}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-gray-500">{c.semester}</td>
-                  <td className="px-4 py-3 text-gray-500">
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{c.semester}</td>
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                     {c.facultyInfo?.name || (c.facultyCode ? `${c.facultyCode}` : 'Unassigned')}
                   </td>
-                  <td className="px-4 py-3 text-gray-500">
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                     {c.capacity ? `${c.capacity.enrolled ?? 0}/${c.capacity.total ?? '—'}` : '—'}
                   </td>
                   {(canEdit || canDelete) && (
@@ -207,7 +207,7 @@ export default function CoursesPage() {
                         {canEdit && (
                           <button
                             onClick={() => openEdit(c)}
-                            className="p-1.5 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-md transition"
+                            className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-950/60 dark:hover:text-violet-300 rounded-md transition"
                             title="Edit"
                           >
                             <Pencil size={14} />
@@ -217,7 +217,7 @@ export default function CoursesPage() {
                           <button
                             onClick={() => handleDelete(c)}
                             disabled={deletingId === c.id}
-                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition disabled:opacity-30"
+                            className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 dark:hover:text-red-400 rounded-md transition disabled:opacity-30"
                             title="Delete"
                           >
                             <Trash2 size={14} />

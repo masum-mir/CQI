@@ -51,7 +51,7 @@ function fileIcon(name = '', mime = '') {
   if (['xls', 'xlsx', 'csv'].includes(ext)) return { Icon: FileSpreadsheet, color: 'text-emerald-600' }
   if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext) || mime.startsWith('image/'))
     return { Icon: ImageIcon, color: 'text-sky-500' }
-  return { Icon: FileText, color: 'text-gray-400' }
+  return { Icon: FileText, color: 'text-gray-400 dark:text-gray-500' }
 }
 
 function labelFor(doc) {
@@ -71,26 +71,26 @@ function PreviewModal({ preview, onClose, onDownload }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
       <div
-        className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[88vh] flex flex-col overflow-hidden"
+        className="bg-white dark:bg-gray-900 border border-transparent dark:border-gray-700 rounded-2xl shadow-xl w-full max-w-3xl max-h-[88vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800">
           <div className="min-w-0">
-            <p className="text-sm font-medium text-gray-800 truncate" title={name}>{name}</p>
-            <p className="text-[11px] text-gray-400">{labelFor(doc)}</p>
+            <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate" title={name}>{name}</p>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500">{labelFor(doc)}</p>
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
             <button
               onClick={() => onDownload(doc)}
-              className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-violet-600 transition"
+              className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-violet-600 dark:hover:text-violet-300 transition"
               title="Download"
             >
               <Download size={16} />
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition"
+              className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
               title="Close"
             >
               <X size={16} />
@@ -99,9 +99,9 @@ function PreviewModal({ preview, onClose, onDownload }) {
         </div>
 
         {/* Body */}
-        <div className="flex-1 min-h-[300px] bg-gray-50 flex items-center justify-center overflow-auto">
+        <div className="flex-1 min-h-[300px] bg-gray-50 dark:bg-gray-950 flex items-center justify-center overflow-auto">
           {loading ? (
-            <span className="flex items-center gap-2 text-sm text-gray-400">
+            <span className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500">
               <Loader2 size={16} className="animate-spin" /> Loading preview…
             </span>
           ) : isImg ? (
@@ -109,8 +109,8 @@ function PreviewModal({ preview, onClose, onDownload }) {
           ) : isPdf ? (
             <iframe src={url} title={name} className="w-full h-[70vh] border-0" />
           ) : (
-            <div className="text-center text-sm text-gray-500 p-8">
-              <FileText size={28} className="mx-auto mb-2 text-gray-300" />
+            <div className="text-center text-sm text-gray-500 dark:text-gray-400 p-8">
+              <FileText size={28} className="mx-auto mb-2 text-gray-300 dark:text-gray-600" />
               Preview isn’t available for this file type.
               <div className="mt-3">
                 <button
@@ -318,14 +318,14 @@ export default function UploadedFilesPage() {
   }
 
   const selectCls =
-    'px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-violet-400 bg-white'
+    'px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-300 outline-none focus:ring-2 focus:ring-violet-400 bg-white dark:bg-gray-900'
 
   return (
     <div className="max-w-6xl mx-auto py-8 px-4">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Course files</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Course files</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           {user?.role === 'faculty'
             ? 'Every document you’ve uploaded across your courses'
             : 'All uploaded course-file documents across the department'}
@@ -333,20 +333,20 @@ export default function UploadedFilesPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white border border-gray-100 rounded-xl p-3 mb-4">
+      <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl p-3 mb-4">
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative flex-1 min-w-[220px]">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search file, course or document type…"
-              className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-violet-400"
+              className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 text-sm outline-none focus:ring-2 focus:ring-violet-400"
             />
           </div>
 
-          <Filter size={14} className="text-gray-400" />
+          <Filter size={14} className="text-gray-400 dark:text-gray-500" />
 
           <select value={course} onChange={(e) => setCourse(e.target.value)} className={selectCls}>
             <option value="">All courses</option>
@@ -368,7 +368,7 @@ export default function UploadedFilesPage() {
           {activeFilters > 0 && (
             <button
               onClick={clearFilters}
-              className="flex items-center gap-1 px-3 py-2 rounded-lg text-xs text-gray-500 border border-gray-200 hover:bg-gray-50 transition"
+              className="flex items-center gap-1 px-3 py-2 rounded-lg text-xs text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
             >
               <X size={13} /> Clear ({activeFilters})
             </button>
@@ -376,26 +376,26 @@ export default function UploadedFilesPage() {
         </div>
       </div>
 
-      {error && <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg mb-4">{error}</p>}
+      {error && <p className="text-xs text-red-600 bg-red-50 dark:bg-red-950/40 dark:text-red-300 px-3 py-2 rounded-lg mb-4">{error}</p>}
 
       {loading && (
-        <p className="text-sm text-gray-400 text-center py-12 flex items-center justify-center gap-2">
+        <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-12 flex items-center justify-center gap-2">
           <Loader2 size={16} className="animate-spin" /> Loading course files…
         </p>
       )}
 
       {!loading && filtered.length === 0 && (
-        <div className="text-center py-16 text-gray-400">
-          <FolderOpen size={24} className="mx-auto mb-2 text-gray-300" />
+        <div className="text-center py-16 text-gray-400 dark:text-gray-500">
+          <FolderOpen size={24} className="mx-auto mb-2 text-gray-300 dark:text-gray-600" />
           {rows.length === 0 ? 'No uploaded files yet' : 'No files match these filters'}
         </div>
       )}
 
       {!loading && filtered.length > 0 && (
-        <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-500 border-b border-gray-100">
+              <tr className="bg-gray-50 dark:bg-gray-800/70 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800">
                 <th className="px-4 py-3">File</th>
                 <th className="px-4 py-3">Course</th>
                 <th className="px-4 py-3">Document type</th>
@@ -408,7 +408,7 @@ export default function UploadedFilesPage() {
                 const { Icon, color } = fileIcon(doc.storage?.originalName, doc.storage?.mimeType)
                 const rstatus = doc.review?.status || 'pending'
                 return (
-                  <tr key={doc.id} className="border-t border-gray-50 hover:bg-gray-50/60 transition">
+                  <tr key={doc.id} className="border-t border-gray-50 dark:border-gray-800 hover:bg-gray-50/60 dark:hover:bg-gray-800/50 transition">
                     <td className="px-4 py-3">
                       <button
                         onClick={() => openPreview(doc)}
@@ -416,30 +416,30 @@ export default function UploadedFilesPage() {
                         title="Preview"
                       >
                         <Icon size={16} className={`${color} flex-shrink-0`} />
-                        <span className="text-gray-700 truncate max-w-[190px] group-hover:text-violet-600 group-hover:underline">
+                        <span className="text-gray-700 dark:text-gray-200 truncate max-w-[190px] group-hover:text-violet-600 dark:group-hover:text-violet-300 group-hover:underline">
                           {doc.storage?.originalName || '—'}
                         </span>
                         {doc.isAdditional && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-50 text-violet-600 flex-shrink-0">
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-50 text-violet-600 dark:bg-violet-950/60 dark:text-violet-300 flex-shrink-0">
                             extra
                           </span>
                         )}
                       </button>
                     </td>
                     <td className="px-4 py-3">
-                      <p className="text-gray-700">{doc.courseLabel}</p>
-                      <p className="text-[11px] text-gray-400">{doc.semester}</p>
+                      <p className="text-gray-700 dark:text-gray-200">{doc.courseLabel}</p>
+                      <p className="text-[11px] text-gray-400 dark:text-gray-500">{doc.semester}</p>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 truncate max-w-[220px]" title={labelFor(doc)}>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 truncate max-w-[220px]" title={labelFor(doc)}>
                       {labelFor(doc)}
                     </td>
-                    <td className="px-4 py-3 text-gray-400 tabular-nums">{humanSize(doc.storage?.size)}</td>
+                    <td className="px-4 py-3 text-gray-400 dark:text-gray-500 tabular-nums">{humanSize(doc.storage?.size)}</td>
 
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => openPreview(doc)}
-                          className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-violet-600 transition"
+                          className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-violet-600 dark:hover:text-violet-300 transition"
                           title="Preview"
                         >
                           <Eye size={15} />
@@ -447,7 +447,7 @@ export default function UploadedFilesPage() {
                         <button
                           onClick={() => handleDownload(doc)}
                           disabled={downloadingId === doc.id}
-                          className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-violet-600 transition disabled:opacity-50"
+                          className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-violet-600 dark:hover:text-violet-300 transition disabled:opacity-50"
                           title="Download"
                         >
                           {downloadingId === doc.id ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
@@ -456,7 +456,7 @@ export default function UploadedFilesPage() {
                           <button
                             onClick={() => handleDelete(doc)}
                             disabled={deletingId === doc.id}
-                            className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition disabled:opacity-50"
+                            className="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600 dark:hover:text-red-400 transition disabled:opacity-50"
                             title="Delete"
                           >
                             {deletingId === doc.id ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
@@ -474,7 +474,7 @@ export default function UploadedFilesPage() {
 
       {!loading && filtered.length > 0 && (
         <>
-          <p className="text-[11px] text-gray-400 mt-3">
+          <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-3">
             Showing {(page - 1) * pageSize + 1}-{Math.min(page * pageSize, filtered.length)} of {filtered.length} file{filtered.length !== 1 ? 's' : ''}
           </p>
 

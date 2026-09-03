@@ -14,11 +14,11 @@ export default function UploadToolbar({
   courseFiles,
 }) {
   return (
-    <nav className="flex items-center border-b border-gray-200 bg-white px-4 shrink-0">
-      <div className="relative shrink-0 flex items-center pr-3 mr-2 border-r border-gray-200">
+    <nav className="flex items-center border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 shrink-0">
+      <div className="relative shrink-0 flex items-center pr-3 mr-2 border-r border-gray-200 dark:border-gray-700">
         <button
           onClick={onToggleSemesterMenu}
-          className="flex items-center gap-1 text-xs text-gray-500 px-2.5 py-1.5 my-1.5 rounded-md border border-gray-200 hover:bg-gray-50 transition-colors"
+          className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 px-2.5 py-1.5 my-1.5 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
           title="Filter by semester"
         >
           <Filter size={12} />
@@ -29,9 +29,9 @@ export default function UploadToolbar({
         {semesterMenuOpen && (
           <>
             <div className="fixed inset-0 z-10" onClick={onCloseSemesterMenu} />
-            <div className="absolute left-0 top-full z-20 bg-white border border-gray-200 rounded-md shadow-sm min-w-[150px] py-1">
+            <div className="absolute left-0 top-full z-20 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md shadow-sm dark:shadow-black/40 min-w-[150px] py-1">
               {semesters.length === 0 && (
-                <span className="block px-3 py-1.5 text-xs text-gray-400">
+                <span className="block px-3 py-1.5 text-xs text-gray-400 dark:text-gray-500">
                   No semesters
                 </span>
               )}
@@ -41,8 +41,8 @@ export default function UploadToolbar({
                   onClick={() => {
                     onSemesterSelect(sem);
                   }}
-                  className={`w-full flex items-center justify-between px-3 py-1.5 text-xs text-left hover:bg-gray-50 transition-colors
-                    ${sem === activeSemester ? "text-gray-900 font-medium" : "text-gray-500"}`}
+                  className={`w-full flex items-center justify-between px-3 py-1.5 text-xs text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors
+                    ${sem === activeSemester ? "text-gray-900 dark:text-gray-100 font-medium" : "text-gray-500 dark:text-gray-400"}`}
                 >
                   {sem}
                   {sem === activeSemester && (
@@ -57,9 +57,9 @@ export default function UploadToolbar({
 
       <div className="flex flex-1 min-w-0 overflow-x-auto whitespace-nowrap">
         {loadingShell ? (
-          <span className="px-3.5 py-2.5 text-xs text-gray-400">Loading courses...</span>
+          <span className="px-3.5 py-2.5 text-xs text-gray-400 dark:text-gray-500">Loading courses...</span>
         ) : visibleCourses.length === 0 ? (
-          <span className="px-3.5 py-2.5 text-xs text-gray-400">
+          <span className="px-3.5 py-2.5 text-xs text-gray-400 dark:text-gray-500">
             No courses{activeSemester ? ` for ${activeSemester}` : ""}
           </span>
         ) : (
@@ -73,8 +73,8 @@ export default function UploadToolbar({
                 onClick={() => onCourseSelect(course.id)}
                 className={`px-3.5 py-2.5 text-xs font-medium border-b-2 transition-all shrink-0
                   ${activeCourseId === course.id
-                    ? "text-gray-900 border-[#534AB7]"
-                    : "text-gray-400 border-transparent hover:text-gray-500"
+                    ? "text-gray-900 dark:text-gray-100 border-[#534AB7] dark:border-violet-400"
+                    : "text-gray-400 dark:text-gray-500 border-transparent hover:text-gray-500 dark:hover:text-gray-300"
                   }`}
               >
                 {course.label}

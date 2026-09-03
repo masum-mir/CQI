@@ -104,14 +104,14 @@ export default function MyCoursesPage() {
       <div className="flex items-center gap-2 mb-6">
         {/* <BookOpen size={18} className="text-indigo-500" /> */}
 
-        <h1 className="text-lg font-semibold text-gray-900">
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
           My Course History
         </h1>
       </div>
 
 
       {coursesLoading && (
-        <div className="flex items-center gap-2 text-sm text-gray-400 py-10 justify-center">
+        <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 py-10 justify-center">
           <Loader2 size={16} className="animate-spin" />
           Loading courses...
         </div>
@@ -126,12 +126,12 @@ export default function MyCoursesPage() {
 
 
       {!coursesLoading && !error && groups.length === 0 && (
-        <div className="text-center py-12 border border-dashed border-gray-200 rounded-xl">
-          <p className="text-sm font-medium text-gray-600">
+        <div className="text-center py-12 border border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
             No courses assigned
           </p>
 
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
             You don't have any assigned courses yet.
           </p>
         </div>
@@ -149,7 +149,7 @@ export default function MyCoursesPage() {
                 className={`px-3 py-1.5 rounded-full text-xs border ${
                   activeSemester === semester
                     ? "bg-indigo-600 text-white"
-                    : "bg-white text-gray-500"
+                    : "bg-white text-gray-500 dark:bg-gray-900 dark:text-gray-400 dark:border-gray-700"
                 }`}
               >
                 {semester} ({courses.length})
@@ -164,20 +164,20 @@ export default function MyCoursesPage() {
               return (
                 <div
                   key={c.id}
-                  className="flex items-center gap-3 p-3.5 bg-white border border-gray-100 rounded-xl hover:border-gray-200 hover:shadow-sm transition-all"
+                  className="flex items-center gap-3 p-3.5 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-sm transition-all"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs text-gray-400">
+                      <span className="font-mono text-xs text-gray-400 dark:text-gray-500">
                         {c.courseCode}
                       </span>
                     </div>
-                    <p className="text-sm font-medium text-gray-800 truncate">
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
                       {c.title}
                     </p>
                   </div>
                   <span
-                    className={`flex-shrink-0 flex items-center gap-1 text-[11px] font-medium px-2 py-1 `}
+                    className={`flex-shrink-0 flex items-center gap-1 text-[11px] font-medium text-gray-700 dark:text-gray-300 px-2 py-1 `}
                   >
                     Section - {c.section}
                   </span>

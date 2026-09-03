@@ -14,14 +14,27 @@ import MyCoursesPage from '@/pages/MyCoursesPage'
 import FacultyCourseHistoryPage from '@/pages/FacultyCourseHistoryPage'
 import FacultyCompliancePage from '@/pages/FacultyCompliancePage'
 import ProfilePage from "@/pages/ProfilePage"; 
+import { useUIStore } from "@/store/uiStore";
 
  
 export default function App() {
+  const theme = useUIStore((state) => state.theme);
+
   return (
     <>
       <Toaster
         position="top-right"
-        toastOptions={{ style: { fontSize: "13px" } }}
+        toastOptions={{
+          style:
+            theme === "dark"
+              ? {
+                  fontSize: "13px",
+                  background: "#111827",
+                  color: "#f3f4f6",
+                  border: "1px solid #374151",
+                }
+              : { fontSize: "13px" },
+        }}
       />
       <Routes>
         {/* Public */}

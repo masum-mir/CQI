@@ -8,7 +8,7 @@ const modes = [
 
 export default function ViewModeToggle({ viewMode, onChange }) {
   return (
-    <div className="flex items-center gap-1 bg-gray-100 p-0.5 rounded-lg">
+    <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-0.5 rounded-lg">
       {modes.map(({ value, label, Icon }) => {
         const active = viewMode === value;
         return (
@@ -18,7 +18,7 @@ export default function ViewModeToggle({ viewMode, onChange }) {
             className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium ${
               active
                 ? "bg-[#534AB7] text-white"
-                : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50"
+                : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-400 dark:border-gray-700 dark:hover:bg-gray-800"
             }`}
           >
             <Icon size={14} />

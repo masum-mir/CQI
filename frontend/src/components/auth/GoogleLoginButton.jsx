@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useAuthContext } from "@/context/AuthContext"; 
+import { useUIStore } from "@/store/uiStore";
  
 const GSI_SRC = "https://accounts.google.com/gsi/client";
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -30,6 +31,7 @@ export default function GoogleLoginButton({
   const slotRef = useRef(null);
   const [busy, setBusy] = useState(false);
   const { googleLogin } = useAuthContext();
+  const theme = useUIStore((state) => state.theme);
 
   useEffect(() => {
     if (!CLIENT_ID) {
@@ -42,6 +44,7 @@ export default function GoogleLoginButton({
     loadGsi()
       .then((google) => {
         if (cancelled || !slotRef.current) return;
+        slotRef.current.replaceChildren();
 
         google.accounts.id.initialize({
           client_id: CLIENT_ID,
@@ -63,7 +66,7 @@ export default function GoogleLoginButton({
 
         google.accounts.id.renderButton(slotRef.current, {
           type: "standard",
-          theme: "outline",
+          theme: theme === "dark" ? "filled_black" : "outline",
           size: "large",
           shape: "rectangular",
           text,
@@ -76,7 +79,7 @@ export default function GoogleLoginButton({
     return () => {
       cancelled = true;
     };
-  }, [googleLogin, onSuccess, text, width]);
+  }, [googleLogin, onSuccess, text, theme, width]);
 
   if (!CLIENT_ID) return null; // hide cleanly when not configured
 
@@ -84,8 +87,8 @@ export default function GoogleLoginButton({
     <div className="relative inline-block">
       <div ref={slotRef} />
       {busy && (
-        <div className="absolute inset-0 bg-white/60 rounded-md flex items-center justify-center">
-          <span className="text-xs text-gray-500">Signing in…</span>
+        <div className="absolute inset-0 bg-white/60 dark:bg-gray-900/70 rounded-md flex items-center justify-center">
+          <span className="text-xs text-gray-500 dark:text-gray-300">Signing in…</span>
         </div>
       )}
     </div>

@@ -11,14 +11,14 @@ export default function BottomBar({
   const disabled = committing || queuedCount === 0;
 
   return (
-    <div className="flex items-center justify-between px-4 py-2.5 border-t border-gray-200 bg-white shrink-0">
+    <div className="flex items-center justify-between px-4 py-2.5 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
       <button
         onClick={onBack}
-        className="flex items-center gap-1 text-xs text-gray-500 px-2.5 py-1.5 rounded-md border border-gray-200 hover:bg-gray-50 transition-colors"
+        className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 px-2.5 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
       >
         <ArrowLeft size={13} /> Back
       </button>
-      <span className="text-[11px] text-gray-400">
+      <span className="text-[11px] text-gray-400 dark:text-gray-500">
         {totalFiles} of {totalItems} files uploaded
         {queuedCount > 0 && ` (${queuedCount} queued)`}
       </span>

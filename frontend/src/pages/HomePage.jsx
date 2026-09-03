@@ -90,16 +90,16 @@ export default function HomePage() {
 
       <div className="mb-8">
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-semibold text-gray-900">
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
             Welcome back{user?.name ? `, ${user.name}` : ''}
           </h1>
           {user?.role && (
-            <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-violet-100 text-violet-700">
+            <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300">
               {ROLE_LABEL[user.role] || user.role}
             </span>
           )}
         </div>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           CQI — Continuous Quality Improvement
         </p>
       </div>
@@ -109,28 +109,28 @@ export default function HomePage() {
           <button
             key={to}
             onClick={() => navigate(to)}
-            className="flex items-start gap-3 p-4 bg-white border border-gray-100
-                       rounded-xl hover:border-gray-200 hover:shadow-sm transition-all text-left"
+            className="flex items-start gap-3 p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800
+                       rounded-xl hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-sm transition-all text-left"
           >
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${color}`}>
               <Icon size={16} />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-800">{title}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
+              <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{title}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{desc}</p>
             </div>
           </button>
         ))}
 
         {visibleActions.length === 0 && (
-          <p className="col-span-2 text-sm text-gray-400">
+          <p className="col-span-2 text-sm text-gray-400 dark:text-gray-500">
             No actions available for your role yet.
           </p>
         )}
       </div>
 
       {user?.role === 'admin' && (
-        <div className="mt-6 flex items-center gap-2 text-xs text-gray-400">
+        <div className="mt-6 flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
           <ShieldCheck size={14} />
           You have administrator access.
         </div>

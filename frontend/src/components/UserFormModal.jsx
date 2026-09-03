@@ -84,14 +84,14 @@ export default function UserFormModal({ user, onClose, onSubmit, submitting }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/40 dark:bg-black/60 flex items-center justify-center p-4 z-50">
+      <div className="w-full max-w-md bg-white dark:bg-gray-900 border border-transparent dark:border-gray-700 rounded-2xl shadow-xl p-6 max-h-[90vh] overflow-y-auto">
 
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base font-semibold text-gray-900">
+          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
             {isEdit ? 'Edit user' : 'Create user'}
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-200">
             <X size={18} />
           </button>
         </div>
@@ -114,7 +114,7 @@ export default function UserFormModal({ user, onClose, onSubmit, submitting }) {
               onChange={set('email')}
               required
               disabled={isEdit}
-              className="input disabled:bg-gray-50 disabled:text-gray-400"
+              className="input disabled:bg-gray-50 disabled:text-gray-400 dark:disabled:bg-gray-950 dark:disabled:text-gray-400"
             />
           </Field>
 
@@ -169,21 +169,21 @@ export default function UserFormModal({ user, onClose, onSubmit, submitting }) {
           </div>
 
           {error && (
-            <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
+            <p className="text-xs text-red-600 bg-red-50 dark:bg-red-950/40 dark:text-red-300 px-3 py-2 rounded-lg">{error}</p>
           )}
 
           <div className="flex gap-2 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 border border-gray-200 text-gray-600 text-sm font-semibold rounded-lg hover:bg-gray-50"
+              className="flex-1 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 disabled:bg-violet-300 text-white text-sm font-semibold rounded-lg transition"
+              className="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 disabled:bg-violet-300 dark:disabled:bg-violet-900 text-white text-sm font-semibold rounded-lg transition"
             >
               {submitting ? 'Saving...' : isEdit ? 'Save changes' : 'Create user'}
             </button>
@@ -203,6 +203,14 @@ export default function UserFormModal({ user, onClose, onSubmit, submitting }) {
         .input:focus {
           box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.5);
         }
+        .dark .input {
+          background: #1f2937;
+          border-color: #4b5563;
+          color: #f3f4f6;
+        }
+        .dark .input::placeholder {
+          color: #9ca3af;
+        }
       `}</style>
     </div>
   )
@@ -211,7 +219,7 @@ export default function UserFormModal({ user, onClose, onSubmit, submitting }) {
 function Field({ label, children }) {
   return (
     <div>
-      <label className="block text-xs font-semibold text-gray-600 mb-1">{label}</label>
+      <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">{label}</label>
       {children}
     </div>
   )

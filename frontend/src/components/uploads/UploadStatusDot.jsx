@@ -8,7 +8,7 @@ const bgMap = {
 export default function UploadStatusDot({ status }) {
   return (
     <div
-      className={`w-1.5 h-1.5 rounded-full ${bgMap[status] || "bg-gray-300"}`}
+      className={`w-1.5 h-1.5 rounded-full ${bgMap[status] || "bg-gray-300 dark:bg-gray-600"}`}
     />
   );
 }

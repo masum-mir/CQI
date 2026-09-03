@@ -10,8 +10,8 @@ import { courseFileApi } from "@/api/courseFileApi";
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 const CARD_STATUS = {
-  queued: "bg-amber-50 border-amber-300",
-  done: "bg-emerald-50 border-emerald-300",
+  queued: "bg-amber-50 border-amber-300 dark:bg-amber-950/40 dark:border-amber-800",
+  done: "bg-emerald-50 border-emerald-300 dark:bg-emerald-950/40 dark:border-emerald-800",
 };
 
 export default function UploadCard({ item, fileEntry, onSlotClick, onRemoveFile }) {
@@ -66,11 +66,13 @@ export default function UploadCard({ item, fileEntry, onSlotClick, onRemoveFile 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasFile, fileEntry?.id, fileEntry?.thumbnailUrl, rawFile, isImage, isPdf]);
 
-  const statusBg = !hasFile ? "bg-red-50 border-red-200" : CARD_STATUS[fileEntry.status] || "bg-white border-gray-200";
+  const statusBg = !hasFile
+    ? "bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-900"
+    : CARD_STATUS[fileEntry.status] || "bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700";
 
   return (
     <div key={item.id}>
-      <p className="text-xs text-gray-500 mb-1 truncate text-center" title={item.title}>
+      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1 truncate text-center" title={item.title}>
         {item.title}
       </p>
       <div
@@ -86,7 +88,7 @@ export default function UploadCard({ item, fileEntry, onSlotClick, onRemoveFile 
                 className="w-full h-full object-cover"
               />
             ) : isPdf && thumbUrl ? (
-              <div className="w-full h-full flex items-center justify-center bg-gray-50 overflow-hidden p-1">
+              <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-800 overflow-hidden p-1">
                 <Document
                   file={{ url: thumbUrl }}
                   loading={
@@ -108,11 +110,11 @@ export default function UploadCard({ item, fileEntry, onSlotClick, onRemoveFile 
                 </Document>
               </div>
             ) : (isImage || isPdf) && !thumbUrl ? (
-              <div className="w-full h-full flex items-center justify-center bg-gray-50">
+              <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-800">
                 <span className="w-5 h-5 rounded-full border-2 border-violet-500 border-t-transparent animate-spin" />
               </div>
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50">
+              <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800">
                 {Icon && <Icon size={24} style={{ color }} />}
                 <span className="text-[9px] font-medium text-gray-400 uppercase mt-0.5">
                   {rawFile.name.split(".").pop()?.toUpperCase() || "FILE"}
@@ -127,7 +129,7 @@ export default function UploadCard({ item, fileEntry, onSlotClick, onRemoveFile 
                 e.stopPropagation();
                 onRemoveFile(item.id);
               }}
-              className="absolute top-1 left-1 w-4 h-4 rounded-full bg-red-100 text-red-500 text-[8px] hidden group-hover:flex items-center justify-center"
+              className="absolute top-1 left-1 w-4 h-4 rounded-full bg-red-100 dark:bg-red-950 text-red-500 dark:text-red-300 text-[8px] hidden group-hover:flex items-center justify-center"
               title="Remove"
             >
               <X size={8} />

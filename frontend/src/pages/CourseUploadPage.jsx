@@ -476,7 +476,7 @@ export default function CourseUploadPage() {
 
   return (
     <div className="w-full h-full flex flex-col px-4 py-8">
-      <div className="flex-1 min-h-0 bg-gray-50 rounded-xl overflow-hidden border border-gray-200 flex">
+      <div className="flex-1 min-h-0 bg-gray-50 dark:bg-gray-950 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 flex">
         <div className="flex-1 flex flex-col min-w-0">
           <UploadToolbar
             loadingShell={loadingShell}
@@ -496,7 +496,7 @@ export default function CourseUploadPage() {
             <div className="flex-1 p-4 overflow-y-auto">
               <div className="max-w-5xl mx-auto">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-1 bg-gray-100 p-0.5 rounded-lg">
+                  <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-0.5 rounded-lg">
                     {["all", "uploaded", "missing"].map((f) => (
                       <button
                         key={f}
@@ -504,7 +504,7 @@ export default function CourseUploadPage() {
                         className={`px-3 py-1.5 text-xs font-medium rounded-md capitalize ${
                           uploadFilter === f
                             ? "bg-[#534AB7] text-white"
-                            : "text-gray-500 hover:text-gray-700"
+                            : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                         }`}
                       >
                         {f}

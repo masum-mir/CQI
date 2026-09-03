@@ -6,15 +6,15 @@ function ListUploadView({ categories, getFileForItem, onSlotClick, onRemoveFile,
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
-        <thead className="bg-gray-50 border-b border-gray-200">
+        <thead className="bg-gray-50 dark:bg-gray-800/70 border-b border-gray-200 dark:border-gray-700">
           <tr>
-            <th className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-2 text-left">
+            <th className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-4 py-2 text-left">
               Status
             </th>
-            <th className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-2 text-left">
+            <th className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-4 py-2 text-left">
               Document Name
             </th>
-            <th className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-2 text-right">
+            <th className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-4 py-2 text-right">
               Actions
             </th>
           </tr>

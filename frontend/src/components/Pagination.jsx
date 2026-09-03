@@ -35,7 +35,7 @@ export default function Pagination({ page, totalPages, onPageChange, totalItems,
     }, [])
 
   return (
-    <div className="flex items-center justify-between mt-4 text-sm text-gray-500">
+    <div className="flex items-center justify-between mt-4 text-sm text-gray-500 dark:text-gray-400">
       <span>
         Showing {start}–{end} of {totalItems}
       </span>
@@ -44,7 +44,7 @@ export default function Pagination({ page, totalPages, onPageChange, totalItems,
         <button
           onClick={() => onPageChange(Math.max(1, page - 1))}
           disabled={page === 1}
-          className="p-1.5 rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:hover:bg-transparent transition"
+          className="p-1.5 rounded-md border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent transition"
           title="Previous page"
         >
           <ChevronLeft size={14} />
@@ -52,7 +52,7 @@ export default function Pagination({ page, totalPages, onPageChange, totalItems,
 
         {pageNumbers.map((p) =>
           typeof p === 'string' ? (
-            <span key={p} className="px-2 text-gray-300">
+            <span key={p} className="px-2 text-gray-300 dark:text-gray-600">
               …
             </span>
           ) : (
@@ -62,7 +62,7 @@ export default function Pagination({ page, totalPages, onPageChange, totalItems,
               className={`min-w-[28px] h-7 px-2 rounded-md text-xs font-medium transition ${
                 p === page
                   ? 'bg-violet-600 text-white'
-                  : 'text-gray-500 hover:bg-gray-50 border border-gray-200'
+                  : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700'
               }`}
             >
               {p}
@@ -73,7 +73,7 @@ export default function Pagination({ page, totalPages, onPageChange, totalItems,
         <button
           onClick={() => onPageChange(Math.min(totalPages, page + 1))}
           disabled={page === totalPages}
-          className="p-1.5 rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:hover:bg-transparent transition"
+          className="p-1.5 rounded-md border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent transition"
           title="Next page"
         >
           <ChevronRight size={14} />

@@ -5,13 +5,13 @@ export default function UnauthorizedPage() {
   const navigate = useNavigate()
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-4">
       <div className="text-center max-w-sm">
-        <div className="w-12 h-12 bg-red-50 text-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+        <div className="w-12 h-12 bg-red-50 dark:bg-red-950/40 text-red-500 dark:text-red-400 rounded-xl flex items-center justify-center mx-auto mb-4">
           <ShieldAlert size={22} />
         </div>
-        <h1 className="text-lg font-semibold text-gray-900">Access denied</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Access denied</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Your account role doesn't have permission to view this page.
         </p>
         <button

@@ -91,48 +91,48 @@ export default function CourseImportPage() {
     <div className="max-w-3xl mx-auto py-8 px-4">
 
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Import courses</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Import courses</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Upload the offered-courses Excel file (.xls / .xlsx). Review the parsed offerings
           before committing — nothing is written until you confirm.
         </p>
       </div>
 
       {/* Upload form */}
-      <form onSubmit={handlePreview} className="bg-white border border-gray-100 rounded-xl p-5 mb-6">
+      <form onSubmit={handlePreview} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl p-5 mb-6">
         <div className="flex flex-col gap-3">
           <label className="block">
-            <span className="block text-xs font-semibold text-gray-600 mb-1">Offered-courses Excel</span>
-            <div className="flex items-center gap-2 border border-dashed border-gray-300 rounded-lg p-4 hover:border-violet-300 transition">
-              <UploadCloud size={18} className="text-gray-400 flex-shrink-0" />
+            <span className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Offered-courses Excel</span>
+            <div className="flex items-center gap-2 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 hover:border-violet-300 dark:hover:border-violet-700 transition">
+              <UploadCloud size={18} className="text-gray-400 dark:text-gray-500 flex-shrink-0" />
               <input
                 ref={fileInputRef}
                 type="file"
                 accept=".xls,.xlsx,.htm,.html,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
-                className="text-sm text-gray-600 w-full"
+                className="text-sm text-gray-600 dark:text-gray-300 w-full dark:file:text-gray-300"
               />
             </div>
-            <span className="block text-[11px] text-gray-400 mt-1">
+            <span className="block text-[11px] text-gray-400 dark:text-gray-500 mt-1">
               The portal’s “.xls” export (an HTML table) and real .xlsx files are both supported.
             </span>
           </label>
 
           <label className="block">
-            <span className="block text-xs font-semibold text-gray-600 mb-1">
-              Department filter <span className="text-gray-400 font-normal">(optional, comma-separated)</span>
+            <span className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
+              Department filter <span className="text-gray-400 dark:text-gray-500 font-normal">(optional, comma-separated)</span>
             </span>
             <input
               type="text"
               value={departments}
               onChange={(e) => setDepartments(e.target.value)}
               placeholder="CSE, ICE"
-              className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-violet-400"
+              className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 text-sm outline-none focus:ring-2 focus:ring-violet-400"
             />
           </label>
 
           {error && (
-            <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg flex items-center gap-1.5">
+            <p className="text-xs text-red-600 bg-red-50 dark:bg-red-950/40 dark:text-red-300 px-3 py-2 rounded-lg flex items-center gap-1.5">
               <AlertTriangle size={13} />
               {error}
             </p>
@@ -141,7 +141,7 @@ export default function CourseImportPage() {
           <button
             type="submit"
             disabled={!file || previewing}
-            className="self-start px-4 py-2 bg-violet-600 hover:bg-violet-700 disabled:bg-violet-300 text-white text-sm font-semibold rounded-lg transition"
+            className="self-start px-4 py-2 bg-violet-600 hover:bg-violet-700 disabled:bg-violet-300 dark:disabled:bg-violet-900 text-white text-sm font-semibold rounded-lg transition"
           >
             {previewing ? 'Parsing...' : 'Preview import'}
           </button>
@@ -150,19 +150,19 @@ export default function CourseImportPage() {
 
       {/* Preview results */}
       {batch && (
-        <div className="bg-white border border-gray-100 rounded-xl p-5 mb-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl p-5 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-sm font-semibold text-gray-900">Preview — {batch.semester}</h2>
-              <p className="text-xs text-gray-400 mt-0.5">{batch.fileName}</p>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Preview — {batch.semester}</h2>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{batch.fileName}</p>
             </div>
-            <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+            <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">
               {batch.status}
             </span>
           </div>
 
           {previewResult.note && (
-            <p className="text-xs text-amber-700 bg-amber-50 px-3 py-2 rounded-lg mb-4 flex items-center gap-1.5">
+            <p className="text-xs text-amber-700 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-300 px-3 py-2 rounded-lg mb-4 flex items-center gap-1.5">
               <AlertTriangle size={13} />
               {previewResult.note}
             </p>
@@ -179,8 +179,8 @@ export default function CourseImportPage() {
 
           {batch.errors?.length > 0 && (
             <div className="mb-4">
-              <p className="text-xs font-semibold text-gray-600 mb-1">Parse warnings</p>
-              <ul className="text-xs text-amber-700 bg-amber-50 rounded-lg p-3 space-y-1">
+              <p className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Parse warnings</p>
+              <ul className="text-xs text-amber-700 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-300 rounded-lg p-3 space-y-1">
                 {batch.errors.map((e, i) => (
                   <li key={i}>{typeof e === 'string' ? e : (e.message || JSON.stringify(e))}</li>
                 ))}
@@ -190,12 +190,12 @@ export default function CourseImportPage() {
 
           {previewResult.sample?.length > 0 && (
             <div className="mb-4 overflow-x-auto">
-              <p className="text-xs font-semibold text-gray-600 mb-2">
+              <p className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2">
                 Sample (first {previewResult.sample.length})
               </p>
               <table className="w-full text-xs">
                 <thead>
-                  <tr className="text-left text-gray-400 border-b border-gray-100">
+                  <tr className="text-left text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-gray-800">
                     <th className="py-1.5 pr-3">Code</th>
                     <th className="py-1.5 pr-3">Sec</th>
                     <th className="py-1.5 pr-3">Title</th>
@@ -204,13 +204,13 @@ export default function CourseImportPage() {
                 </thead>
                 <tbody>
                   {previewResult.sample.map((off, i) => (
-                    <tr key={i} className="border-b border-gray-50">
-                      <td className="py-1.5 pr-3 text-gray-700">{off.course_code}</td>
-                      <td className="py-1.5 pr-3 text-gray-500">{off.section}</td>
-                      <td className="py-1.5 pr-3 text-gray-500 truncate max-w-[180px]" title={off.title}>
+                    <tr key={i} className="border-b border-gray-50 dark:border-gray-800">
+                      <td className="py-1.5 pr-3 text-gray-700 dark:text-gray-200">{off.course_code}</td>
+                      <td className="py-1.5 pr-3 text-gray-500 dark:text-gray-400">{off.section}</td>
+                      <td className="py-1.5 pr-3 text-gray-500 dark:text-gray-400 truncate max-w-[180px]" title={off.title}>
                         {off.title || '—'}
                       </td>
-                      <td className="py-1.5 pr-3 text-gray-500">{off.faculty_code || '—'}</td> 
+                      <td className="py-1.5 pr-3 text-gray-500 dark:text-gray-400">{off.faculty_code || '—'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -221,7 +221,7 @@ export default function CourseImportPage() {
           <button
             onClick={handleCommit}
             disabled={committing}
-            className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-300 text-white text-sm font-semibold rounded-lg transition"
+            className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-300 dark:disabled:bg-emerald-900 text-white text-sm font-semibold rounded-lg transition"
           >
             <CheckCircle2 size={15} />
             {committing ? 'Committing...' : 'Commit import'}
@@ -232,38 +232,38 @@ export default function CourseImportPage() {
       {/* Batch history */}
       <div>
         <div className="flex items-center gap-1.5 mb-3">
-          <History size={14} className="text-gray-400" />
-          <h2 className="text-sm font-semibold text-gray-700">Import history</h2>
+          <History size={14} className="text-gray-400 dark:text-gray-500" />
+          <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-200">Import history</h2>
         </div>
 
-        {loadingBatches && <p className="text-xs text-gray-400">Loading...</p>}
+        {loadingBatches && <p className="text-xs text-gray-400 dark:text-gray-500">Loading...</p>}
 
         {!loadingBatches && batches.length === 0 && (
-          <p className="text-xs text-gray-400">No imports yet</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500">No imports yet</p>
         )}
 
         <div className="space-y-2">
           {paginated.map((b) => (
             <div
               key={b.id}
-              className="flex items-center justify-between bg-white border border-gray-100 rounded-lg px-4 py-2.5"
+              className="flex items-center justify-between bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-lg px-4 py-2.5"
             >
               <div className="flex items-center gap-2.5">
-                <FileSpreadsheet size={14} className="text-gray-400" />
+                <FileSpreadsheet size={14} className="text-gray-400 dark:text-gray-500" />
                 <div>
-                  <p className="text-xs font-medium text-gray-700">{b.fileName}</p>
-                  <p className="text-[11px] text-gray-400">{b.semester}</p>
+                  <p className="text-xs font-medium text-gray-700 dark:text-gray-200">{b.fileName}</p>
+                  <p className="text-[11px] text-gray-400 dark:text-gray-500">{b.semester}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-[11px] text-gray-400">
+                <span className="text-[11px] text-gray-400 dark:text-gray-500">
                   +{b.stats.created} created, {b.stats.updated} updated
                 </span>
                 <span
                   className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
                     b.status === 'committed'
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : 'bg-amber-100 text-amber-700'
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
+                      : 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
                   }`}
                 >
                   {b.status}
@@ -287,9 +287,9 @@ export default function CourseImportPage() {
 
 function Stat({ label, value, warn }) {
   return (
-    <div className="bg-gray-50 rounded-lg px-3 py-2.5">
-      <p className="text-[11px] text-gray-400">{label}</p>
-      <p className={`text-lg font-semibold ${warn ? 'text-amber-600' : 'text-gray-800'}`}>{value}</p>
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg px-3 py-2.5">
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">{label}</p>
+      <p className={`text-lg font-semibold ${warn ? 'text-amber-600 dark:text-amber-400' : 'text-gray-800 dark:text-gray-200'}`}>{value}</p>
     </div>
   )
 }

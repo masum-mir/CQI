@@ -9,14 +9,14 @@ import Pagination from '../components/Pagination'
 import { usePagination } from '../hooks/usePagination'
 
 const ROLE_BADGE = {
-  admin: 'bg-violet-100 text-violet-700',
-  chairperson: 'bg-amber-100 text-amber-700',
-  faculty: 'bg-sky-100 text-sky-700',
+  admin: 'bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300',
+  chairperson: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300',
+  faculty: 'bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300',
 }
 
 const STATUS_BADGE = {
-  active: 'bg-emerald-100 text-emerald-700',
-  inactive: 'bg-gray-100 text-gray-500',
+  active: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300',
+  inactive: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400',
 }
 
 export default function AdminUserManagementPage() {
@@ -324,11 +324,11 @@ export default function AdminUserManagementPage() {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
             Users
           </h1>
 
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Manage accounts and role assignments
           </p>
         </div>
@@ -347,7 +347,7 @@ export default function AdminUserManagementPage() {
             onClick={() =>
               importInputRef.current?.click()
             }
-            className="flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-sm font-semibold rounded-lg transition"
+            className="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 text-sm font-semibold rounded-lg transition"
           >
             <Upload size={16} />
             Import Users
@@ -368,7 +368,7 @@ export default function AdminUserManagementPage() {
         <div className="relative flex-1 min-w-[180px]">
           <Search
             size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
           />
 
           <input
@@ -378,7 +378,7 @@ export default function AdminUserManagementPage() {
               setSearch(e.target.value)
             }
             placeholder="Search name or email"
-            className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-violet-400"
+            className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-400 text-sm outline-none focus:ring-2 focus:ring-violet-400"
           />
         </div>
 
@@ -387,7 +387,7 @@ export default function AdminUserManagementPage() {
           onChange={(e) =>
             setRoleFilter(e.target.value)
           }
-          className="px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none"
+          className="px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 text-sm outline-none"
         >
           <option value="">
             All roles
@@ -410,7 +410,7 @@ export default function AdminUserManagementPage() {
               e.target.value
             )
           }
-          className="px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none"
+          className="px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 text-sm outline-none"
         >
           <option value="">
             All statuses
@@ -425,13 +425,13 @@ export default function AdminUserManagementPage() {
       </div>
 
       {error && (
-        <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg mb-4">
+        <p className="text-xs text-red-600 bg-red-50 dark:bg-red-950/40 dark:text-red-300 px-3 py-2 rounded-lg mb-4">
           {error}
         </p>
       )}
 
       {importResult && (
-        <div className="text-xs px-3 py-2 rounded-lg mb-4 bg-emerald-50 text-emerald-700">
+        <div className="text-xs px-3 py-2 rounded-lg mb-4 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
           Import finished — Total:{' '}
           {importResult.total},
           {' '}Created:{' '}
@@ -446,10 +446,10 @@ export default function AdminUserManagementPage() {
       )}
 
       {/* Table */}
-      <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-500">
+            <tr className="bg-gray-50 dark:bg-gray-800/70 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">
               <th className="px-4 py-3">
                 Name
               </th>
@@ -476,7 +476,7 @@ export default function AdminUserManagementPage() {
               <tr>
                 <td
                   colSpan={6}
-                  className="px-4 py-8 text-center text-gray-400"
+                  className="px-4 py-8 text-center text-gray-400 dark:text-gray-500"
                 >
                   Loading...
                 </td>
@@ -488,7 +488,7 @@ export default function AdminUserManagementPage() {
                 <tr>
                   <td
                     colSpan={6}
-                    className="px-4 py-8 text-center text-gray-400"
+                    className="px-4 py-8 text-center text-gray-400 dark:text-gray-500"
                   >
                     No users found
                   </td>
@@ -499,20 +499,20 @@ export default function AdminUserManagementPage() {
               paginated.map((u) => (
                 <tr
                   key={u.id}
-                  className="border-t border-gray-50 hover:bg-gray-50/50"
+                  className="border-t border-gray-50 dark:border-gray-800 hover:bg-gray-50/50 dark:hover:bg-gray-800/50"
                 >
-                  <td className="px-4 py-3 font-medium text-gray-800">
+                  <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-200">
                     {u.name}
 
                     {u.id ===
                       currentUser?.id && (
-                      <span className="ml-1.5 text-[10px] text-gray-400">
+                      <span className="ml-1.5 text-[10px] text-gray-400 dark:text-gray-500">
                         (you)
                       </span>
                     )}
                   </td>
 
-                  <td className="px-4 py-3 text-gray-500">
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                     {u.email}
                   </td>
 
@@ -522,7 +522,7 @@ export default function AdminUserManagementPage() {
                         ROLE_BADGE[
                           u.role
                         ] ||
-                        'bg-gray-100 text-gray-600'
+                        'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'
                       }`}
                     >
                       {u.role}
@@ -535,14 +535,14 @@ export default function AdminUserManagementPage() {
                         STATUS_BADGE[
                           u.status
                         ] ||
-                        'bg-gray-100 text-gray-600'
+                        'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'
                       }`}
                     >
                       {u.status}
                     </span>
                   </td>
 
-                  <td className="px-4 py-3 text-gray-500">
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                     {u.department ||
                       '—'}
                   </td>
@@ -553,7 +553,7 @@ export default function AdminUserManagementPage() {
                         onClick={() =>
                           openEdit(u)
                         }
-                        className="p-1.5 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-md transition"
+                        className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-950/60 dark:hover:text-violet-300 rounded-md transition"
                         title="Edit"
                       >
                         <Pencil
@@ -571,7 +571,7 @@ export default function AdminUserManagementPage() {
                           deletingId ===
                             u.id
                         }
-                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition disabled:opacity-30 disabled:hover:bg-transparent"
+                        className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 dark:hover:text-red-400 rounded-md transition disabled:opacity-30 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent"
                         title={
                           u.id ===
                           currentUser?.id
@@ -613,17 +613,17 @@ export default function AdminUserManagementPage() {
 
       {/* Excel Preview Modal */}
       {previewOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-7xl max-h-[90vh] rounded-2xl shadow-xl flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-50 bg-black/40 dark:bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-900 border border-transparent dark:border-gray-700 w-full max-w-7xl max-h-[90vh] rounded-2xl shadow-xl flex flex-col overflow-hidden">
 
             {/* Modal Header */}
-            <div className="flex items-start justify-between px-5 py-4 border-b border-gray-100">
+            <div className="flex items-start justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Preview Imported Users
                 </h2>
 
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {previewFileName} · {previewRows.length} user(s)
                 </p>
               </div>
@@ -632,14 +632,14 @@ export default function AdminUserManagementPage() {
                 type="button"
                 onClick={closePreview}
                 disabled={importing}
-                className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg disabled:opacity-40"
+                className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg disabled:opacity-40"
               >
                 <X size={18} />
               </button>
             </div>
 
             {/* Rules */}
-            <div className="px-5 py-3 bg-violet-50 border-b border-violet-100 text-xs text-violet-700">
+            <div className="px-5 py-3 bg-violet-50 dark:bg-violet-950/50 border-b border-violet-100 dark:border-violet-900 text-xs text-violet-700 dark:text-violet-300">
               These users are not saved yet. Review the data first.
               When you click <strong>Save Users</strong>, new users will be
               created with role <strong>faculty</strong> and default password
@@ -649,8 +649,8 @@ export default function AdminUserManagementPage() {
             {/* Preview Table */}
             <div className="flex-1 overflow-auto">
               <table className="min-w-[1150px] w-full text-xs">
-                <thead className="sticky top-0 bg-gray-50 z-10">
-                  <tr className="text-left text-gray-500 border-b border-gray-100">
+                <thead className="sticky top-0 bg-gray-50 dark:bg-gray-800 z-10">
+                  <tr className="text-left text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-700">
                     <th className="px-3 py-3">
                       #
                     </th>
@@ -686,49 +686,49 @@ export default function AdminUserManagementPage() {
                     (row, index) => (
                       <tr
                         key={`${row.email}-${index}`}
-                        className="border-b border-gray-50 hover:bg-gray-50/60"
+                        className="border-b border-gray-50 dark:border-gray-800 hover:bg-gray-50/60 dark:hover:bg-gray-800/50"
                       >
-                        <td className="px-3 py-2 text-gray-400">
+                        <td className="px-3 py-2 text-gray-400 dark:text-gray-500">
                           {index + 1}
                         </td>
 
-                        <td className="px-3 py-2 font-medium text-gray-700">
+                        <td className="px-3 py-2 font-medium text-gray-700 dark:text-gray-200">
                           {row.shortCode ||
                             '—'}
                         </td>
 
-                        <td className="px-3 py-2 text-gray-800">
+                        <td className="px-3 py-2 text-gray-800 dark:text-gray-200">
                           {row.name ||
                             '—'}
                         </td>
 
-                        <td className="px-3 py-2 text-gray-600">
+                        <td className="px-3 py-2 text-gray-600 dark:text-gray-400">
                           {row.email ||
                             '—'}
                         </td>
 
-                        <td className="px-3 py-2 text-gray-600">
+                        <td className="px-3 py-2 text-gray-600 dark:text-gray-400">
                           {row.designation ||
                             '—'}
                         </td>
 
-                        <td className="px-3 py-2 text-gray-600">
+                        <td className="px-3 py-2 text-gray-600 dark:text-gray-400">
                           {row.mobile ||
                             '—'}
                         </td>
 
-                        <td className="px-3 py-2 text-gray-600">
+                        <td className="px-3 py-2 text-gray-600 dark:text-gray-400">
                           {row.department ||
                             '—'}
                         </td>
 
                         <td className="px-3 py-2">
-                          <span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-700">
+                          <span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300">
                             faculty
                           </span>
                         </td>
 
-                        <td className="px-3 py-2 font-mono text-gray-600">
+                        <td className="px-3 py-2 font-mono text-gray-600 dark:text-gray-400">
                           1234
                         </td>
                       </tr>
@@ -739,10 +739,10 @@ export default function AdminUserManagementPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-between gap-3 px-5 py-4 border-t border-gray-100 bg-white">
-              <p className="text-xs text-gray-500">
+            <div className="flex items-center justify-between gap-3 px-5 py-4 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 Total users ready to import:{' '}
-                <strong className="text-gray-800">
+                <strong className="text-gray-800 dark:text-gray-200">
                   {previewRows.length}
                 </strong>
               </p>
@@ -752,7 +752,7 @@ export default function AdminUserManagementPage() {
                   type="button"
                   onClick={closePreview}
                   disabled={importing}
-                  className="px-4 py-2 border border-gray-200 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                  className="px-4 py-2 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -764,7 +764,7 @@ export default function AdminUserManagementPage() {
                     importing ||
                     !previewRows.length
                   }
-                  className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-lg disabled:bg-violet-300 transition"
+                  className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-lg disabled:bg-violet-300 dark:disabled:bg-violet-900 transition"
                 >
                   <Save size={16} />
 

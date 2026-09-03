@@ -27,15 +27,15 @@ export default function ProfilePage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       
 
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr]">
 
           {/* ================= LEFT ================= */}
-          <div className="border-b lg:border-b-0 lg:border-r border-gray-200 bg-gray-50/60 p-8">
+          <div className="border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-950/60 p-8">
             <div className="flex flex-col items-center text-center">
               
               {/* Photo */}
-              <div className="w-28 h-28 rounded-2xl overflow-hidden bg-white border border-gray-200 shadow-sm">
+              <div className="w-28 h-28 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-sm">
                 {profileImage ? (
                   <img
                     src={profileImage}
@@ -51,12 +51,12 @@ export default function ProfilePage() {
               </div>
 
               {/* Name */}
-              <h2 className="mt-5 text-xl font-semibold text-gray-900">
+              <h2 className="mt-5 text-xl font-semibold text-gray-900 dark:text-gray-100">
                 {user?.name || "—"}
               </h2>
 
               {/* Email */}
-              <div className="flex items-center justify-center gap-1.5 mt-2 text-sm text-gray-500 max-w-full">
+              <div className="flex items-center justify-center gap-1.5 mt-2 text-sm text-gray-500 dark:text-gray-400 max-w-full">
                 <Mail size={14} className="flex-shrink-0" />
                 <span className="break-all">
                   {user?.email || "—"}
@@ -65,7 +65,7 @@ export default function ProfilePage() {
 
               {/* Department badge */}
               {user?.department && (
-                <span className="mt-4 inline-flex items-center px-3 py-1 rounded-full bg-violet-50 border border-violet-100 text-violet-700 text-xs font-medium">
+                <span className="mt-4 inline-flex items-center px-3 py-1 rounded-full bg-violet-50 border border-violet-100 text-violet-700 dark:bg-violet-950/60 dark:border-violet-900 dark:text-violet-300 text-xs font-medium">
                   {user.department}
                 </span>
               )}
@@ -75,7 +75,7 @@ export default function ProfilePage() {
           {/* ================= RIGHT ================= */}
           <div className="p-6 sm:p-8">
             <div className="mb-6">
-              <h3 className="text-base font-semibold text-gray-900">
+              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                 Profile Details
               </h3> 
             </div>
@@ -133,10 +133,13 @@ function InfoBox({ icon: Icon, label, value }) {
         rounded-xl
         border
         border-gray-200
+        dark:border-gray-700
         bg-white
+        dark:bg-gray-900
         p-4
         transition
         hover:border-violet-200
+        dark:hover:border-violet-800
         hover:shadow-sm
       "
     >
@@ -148,6 +151,8 @@ function InfoBox({ icon: Icon, label, value }) {
             rounded-lg
             bg-violet-50
             text-violet-600
+            dark:bg-violet-950/60
+            dark:text-violet-300
             flex
             items-center
             justify-center
@@ -158,11 +163,11 @@ function InfoBox({ icon: Icon, label, value }) {
         </div>
 
         <div className="min-w-0">
-          <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wide">
+          <p className="text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide">
             {label}
           </p>
 
-          <p className="mt-1 text-sm font-semibold text-gray-800 break-words">
+          <p className="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-200 break-words">
             {value || "Not provided"}
           </p>
         </div>

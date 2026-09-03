@@ -38,7 +38,7 @@ function MimeIcon({ mime, size = 18 }) {
     return <FileText size={size} className="text-rose-500" />;
   if (mime?.includes("word"))
     return <FileText size={size} className="text-blue-500" />;
-  return <File size={size} className="text-gray-400" />;
+  return <File size={size} className="text-gray-400 dark:text-gray-500" />;
 }
 
 export function FilePreviewPanel({ item, onClose, onRemove }) {
@@ -172,17 +172,17 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
       }}
     >
       <div
-        className="relative bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+        className="relative bg-white dark:bg-gray-900 border border-transparent dark:border-gray-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
         style={{ width: "820px", maxWidth: "95vw", height: "90vh" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top bar */}
-        <div className="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 flex-shrink-0">
+        <div className="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
           <MimeIcon mime={file.type} size={17} />
-          <span className="flex-1 text-sm font-medium text-gray-800 truncate min-w-0">
+          <span className="flex-1 text-sm font-medium text-gray-800 dark:text-gray-200 truncate min-w-0">
             {file.name}
           </span>
-          <span className="text-[11px] text-gray-400 tabular-nums flex-shrink-0">
+          <span className="text-[11px] text-gray-400 dark:text-gray-500 tabular-nums flex-shrink-0">
             {fmtSize(file.size)} · {ext}
           </span>
 
@@ -191,8 +191,8 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
               href={objectUrl}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-gray-500
-                         border border-gray-200 rounded-lg hover:bg-gray-50
+              className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-gray-500 dark:text-gray-400
+                         border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800
                          transition-colors flex-shrink-0"
             >
               <ExternalLink size={12} />
@@ -206,8 +206,8 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
                 onRemove();
                 onClose();
               }}
-              className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-red-500
-                         border border-red-100 rounded-lg hover:bg-red-50
+              className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-red-500 dark:text-red-400
+                         border border-red-100 dark:border-red-900 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40
                          transition-colors flex-shrink-0"
             >
               <Trash2 size={12} />
@@ -217,34 +217,34 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
 
           <button
             onClick={onClose}
-            className="ml-1 p-1.5 rounded-lg hover:bg-gray-100 text-gray-400
-                       hover:text-gray-600 transition-colors flex-shrink-0"
+            className="ml-1 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 dark:text-gray-500
+                       hover:text-gray-600 dark:hover:text-gray-200 transition-colors flex-shrink-0"
             aria-label="Close"
           >
             <X size={16} />
           </button>
         </div>
 
-        <div className="flex-1 overflow-auto bg-gray-100 flex flex-col items-center min-h-0">
+        <div className="flex-1 overflow-auto bg-gray-100 dark:bg-gray-950 flex flex-col items-center min-h-0">
           {loadingBlob ? (
             <div className="flex items-center justify-center py-24">
               <Loader2 size={32} className="text-violet-500 animate-spin" />
             </div>
           ) : isPdf && objectUrl ? (
             pdfError ? (
-              <div className="flex flex-col items-center gap-3 text-gray-400 py-16 text-center">
+              <div className="flex flex-col items-center gap-3 text-gray-400 dark:text-gray-500 py-16 text-center">
                 <FileText size={40} className="text-rose-400" />
-                <p className="text-sm font-medium text-gray-600">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
                   Could not render PDF
                 </p>
-                <p className="text-[11px] text-gray-400 break-all max-w-xs">
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 break-all max-w-xs">
                   {pdfError}
                 </p>
                 <a
                   href={objectUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-xs text-violet-600 underline underline-offset-2"
+                  className="text-xs text-violet-600 dark:text-violet-400 underline underline-offset-2"
                 >
                   Open in new tab ↗
                 </a>
@@ -289,14 +289,14 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
             )
           ) : isExcel ? (
             <div className="w-full overflow-auto p-4">
-              <table className="min-w-full border border-gray-300 text-sm">
+              <table className="min-w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 text-sm">
                 <tbody>
                   {excelData.map((row, i) => (
                     <tr key={i}>
                       {row.map((cell, j) => (
                         <td
                           key={j}
-                          className="border border-gray-300 px-3 py-2 whitespace-nowrap"
+                          className="border border-gray-300 dark:border-gray-700 px-3 py-2 whitespace-nowrap"
                         >
                           {cell?.toString()}
                         </td>
@@ -315,10 +315,10 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
               />
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-2 text-gray-400 py-16">
+            <div className="flex flex-col items-center gap-2 text-gray-400 dark:text-gray-500 py-16">
               <MimeIcon mime={file.type} size={48} />
-              <p className="text-sm text-gray-400">Preview not available</p>
-              <p className="text-[11px] text-gray-300">{ext} file</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500">Preview not available</p>
+              <p className="text-[11px] text-gray-300 dark:text-gray-400">{ext} file</p>
             </div>
           )}
         </div>
@@ -326,24 +326,24 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
         {isPdf && !pdfError && (
           <div
             className="flex items-center justify-between gap-4 px-5 py-2.5
-                       border-t border-gray-100 bg-white flex-shrink-0"
+                       border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 flex-shrink-0"
           >
             <div className="flex items-center gap-1.5">
               <button
                 onClick={prevPage}
                 disabled={pageNumber <= 1}
-                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400
                            disabled:opacity-30 transition-colors"
               >
                 <ChevronLeft size={15} />
               </button>
-              <span className="text-xs text-gray-500 tabular-nums min-w-[64px] text-center">
+              <span className="text-xs text-gray-500 dark:text-gray-400 tabular-nums min-w-[64px] text-center">
                 {numPages ? `${pageNumber} / ${numPages}` : "…"}
               </span>
               <button
                 onClick={nextPage}
                 disabled={!numPages || pageNumber >= numPages}
-                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400
                            disabled:opacity-30 transition-colors"
               >
                 <ChevronRight size={15} />
@@ -354,18 +354,18 @@ export function FilePreviewPanel({ item, onClose, onRemove }) {
               <button
                 onClick={zoomOut}
                 disabled={scale <= 0.5}
-                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400
                            disabled:opacity-30 transition-colors"
               >
                 <ZoomOut size={14} />
               </button>
-              <span className="text-xs text-gray-500 tabular-nums w-10 text-center">
+              <span className="text-xs text-gray-500 dark:text-gray-400 tabular-nums w-10 text-center">
                 {Math.round(scale * 100)}%
               </span>
               <button
                 onClick={zoomIn}
                 disabled={scale >= 3.0}
-                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400
                            disabled:opacity-30 transition-colors"
               >
                 <ZoomIn size={14} />

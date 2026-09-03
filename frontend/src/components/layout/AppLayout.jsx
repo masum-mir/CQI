@@ -19,7 +19,7 @@ export function AppLayout({ children }) {
     HELP_BY_PATH["/"];
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-gray-50">
+    <div className="flex flex-col h-screen overflow-hidden bg-gray-50 dark:bg-gray-950">
 
       {/* Navbar */}
       <Navbar />
@@ -35,6 +35,7 @@ export function AppLayout({ children }) {
               inset-0
               top-14
               bg-black/30
+              dark:bg-black/50
               z-30
               lg:hidden
             "

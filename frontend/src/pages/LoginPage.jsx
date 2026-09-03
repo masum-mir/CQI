@@ -81,7 +81,7 @@ console.log("user data: ", user);
   }
 
   return (
-    <div className="min-h-screen flex bg-[#FBFAF7]">
+    <div className="min-h-screen flex bg-[#FBFAF7] dark:bg-gray-950">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap');
 
@@ -162,14 +162,14 @@ console.log("user data: ", user);
             <div className="w-11 h-11 rounded-md bg-[#131B3A] flex items-center justify-center mb-3">
               <span className="cqi-serif text-[#C9A227] text-lg font-semibold">C</span>
             </div>
-            <h1 className="cqi-serif text-xl text-[#1E2433]">CQI System</h1>
+            <h1 className="cqi-serif text-xl text-[#1E2433] dark:text-gray-100">CQI System</h1>
           </div>
 
           <div className="hidden lg:block mb-8">
-            <h2 className="cqi-serif text-2xl text-[#1E2433]">
+            <h2 className="cqi-serif text-2xl text-[#1E2433] dark:text-gray-100">
               {isRegister ? 'Create your account' : 'Welcome back'}
             </h2>
-            <p className="cqi-sans text-sm text-[#6B7280] mt-1">
+            <p className="cqi-sans text-sm text-[#6B7280] dark:text-gray-400 mt-1">
               {isRegister
                 ? 'Set up faculty access to the CQI dashboard'
                 : 'Log in to continue to your dashboard'}
@@ -192,14 +192,14 @@ console.log("user data: ", user);
                       <img
                         src={form.profileImage}
                         alt="Profile preview"
-                        className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+                        className="w-20 h-20 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700"
                       />
                     ) : (
-                      <div className="w-20 h-20 rounded-full bg-gray-50 border-2 border-dashed border-gray-300 flex items-center justify-center group-hover:border-violet-400 transition">
-                        <User size={26} className="text-gray-300" />
+                      <div className="w-20 h-20 rounded-full bg-gray-50 dark:bg-gray-900 border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center group-hover:border-violet-400 transition">
+                        <User size={26} className="text-gray-300 dark:text-gray-600" />
                       </div>
                     )}
-                    <span className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center border-2 border-white">
+                    <span className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center border-2 border-white dark:border-gray-950">
                       <Camera size={12} className="text-white" />
                     </span>
                   </button>
@@ -213,7 +213,7 @@ console.log("user data: ", user);
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">
+                  <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
                     Full name
                   </label>
                   <input
@@ -223,13 +223,13 @@ console.log("user data: ", user);
                     required
                     autoFocus
                     placeholder="Jane Doe"
-                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-violet-400"
+                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-400 text-sm outline-none focus:ring-2 focus:ring-violet-400"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">
+                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
                       Initial code
                     </label>
                     <input
@@ -238,11 +238,11 @@ console.log("user data: ", user);
                       onChange={set('shortCode')}
                       required
                       placeholder="RDA"
-                      className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-violet-400"
+                      className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-400 text-sm outline-none focus:ring-2 focus:ring-violet-400"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">
+                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
                       Employee ID
                     </label>
                     <input
@@ -251,14 +251,14 @@ console.log("user data: ", user);
                       onChange={set('employeeId')}
                       required
                       placeholder="EMP-042"
-                      className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-violet-400"
+                      className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-400 text-sm outline-none focus:ring-2 focus:ring-violet-400"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">
+                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
                       Designation
                     </label>
                     <input
@@ -267,11 +267,11 @@ console.log("user data: ", user);
                       onChange={set('designation')}
                       required
                       placeholder="Senior Lecturer"
-                      className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-violet-400"
+                      className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-400 text-sm outline-none focus:ring-2 focus:ring-violet-400"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">
+                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
                       Department
                     </label>
                     <input
@@ -280,7 +280,7 @@ console.log("user data: ", user);
                       onChange={set('department')}
                       required
                       placeholder="CSE"
-                      className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-violet-400"
+                      className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-400 text-sm outline-none focus:ring-2 focus:ring-violet-400"
                     />
                   </div>
                 </div>
@@ -288,7 +288,7 @@ console.log("user data: ", user);
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
                 Email
               </label>
               <input
@@ -298,12 +298,12 @@ console.log("user data: ", user);
                 required
                 autoFocus={!isRegister}
                 placeholder="you@example.com"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-violet-400"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-400 text-sm outline-none focus:ring-2 focus:ring-violet-400"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
                 Password
               </label>
               <div className="relative">
@@ -314,12 +314,12 @@ console.log("user data: ", user);
                   required
                   minLength={isRegister ? 4 : undefined}
                   placeholder="••••••••"
-                  className="w-full px-3 py-2.5 pr-10 rounded-lg border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-violet-400"
+                  className="w-full px-3 py-2.5 pr-10 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-400 text-sm outline-none focus:ring-2 focus:ring-violet-400"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-200"
                   tabIndex={-1}
                   title={showPassword ? 'Hide password' : 'Show password'}
                 >
@@ -329,13 +329,13 @@ console.log("user data: ", user);
             </div>
 
             {isRegister && (
-              <p className="text-[11px] text-gray-400 -mt-2">
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 -mt-2">
                 New accounts are created with the Faculty role. Contact an admin for elevated access.
               </p>
             )}
 
             {error && (
-              <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg">
+              <p className="text-xs text-red-600 bg-red-50 dark:bg-red-950/40 dark:text-red-300 px-3 py-2 rounded-lg">
                 {error}
               </p>
             )}
@@ -343,7 +343,7 @@ console.log("user data: ", user);
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-violet-600 hover:bg-violet-700 disabled:bg-violet-300 text-white text-sm font-semibold rounded-lg transition"
+              className="w-full py-2.5 bg-violet-600 hover:bg-violet-700 disabled:bg-violet-300 dark:disabled:bg-violet-900 text-white text-sm font-semibold rounded-lg transition"
             >
               {loading
                 ? isRegister
@@ -356,9 +356,9 @@ console.log("user data: ", user);
           </form>
 
           <div className="flex items-center gap-3 my-5">
-            <div className="flex-1 border-t border-gray-200" />
-            <span className="text-[11px] text-gray-400 cqi-sans">or</span>
-            <div className="flex-1 border-t border-gray-200" />
+            <div className="flex-1 border-t border-gray-200 dark:border-gray-800" />
+            <span className="text-[11px] text-gray-400 dark:text-gray-500 cqi-sans">or</span>
+            <div className="flex-1 border-t border-gray-200 dark:border-gray-800" />
           </div>
 
           <div className="flex justify-center">
@@ -372,7 +372,7 @@ console.log("user data: ", user);
             />
           </div>
 
-          <p className="text-center text-xs text-gray-500 mt-6 cqi-sans">
+          <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-6 cqi-sans">
             {isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
             <button
               onClick={() => {
@@ -381,7 +381,7 @@ console.log("user data: ", user);
                 setForm(EMPTY_FORM)
                 setShowPassword(false)
               }}
-              className="text-violet-600 font-semibold hover:underline"
+              className="text-violet-600 dark:text-violet-400 font-semibold hover:underline"
             >
               {isRegister ? 'Login' : 'Register'}
             </button>

@@ -6,6 +6,8 @@ import {
   GraduationCap,
   User,
   ChevronDown,
+  Moon,
+  Sun,
 } from "lucide-react";
 
 import { useUIStore } from "@/store/uiStore";
@@ -14,7 +16,7 @@ import { useAuthContext } from "@/context/AuthContext";
 export function Navbar() {
   const navigate = useNavigate();
 
-  const { toggleSidebar } = useUIStore();
+  const { toggleSidebar, theme, toggleTheme } = useUIStore();
   const { user, logout } = useAuthContext();
 
   const [profileOpen, setProfileOpen] = useState(false);
@@ -80,8 +82,10 @@ export function Navbar() {
       className="
         h-14
         bg-white
+        dark:bg-gray-900
         border-b
         border-gray-200
+        dark:border-gray-800
         flex
         items-center
         justify-between
@@ -100,7 +104,9 @@ export function Navbar() {
             p-1.5
             rounded-lg
             hover:bg-gray-100
+            dark:hover:bg-gray-800
             text-gray-500
+            dark:text-gray-300
             transition-colors
             lg:hidden
           "
@@ -130,11 +136,11 @@ export function Navbar() {
           </div>
 
           <div>
-            <p className="font-semibold text-gray-900 text-sm leading-tight">
+            <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight">
               CQI
             </p>
 
-            <p className="hidden sm:block text-[10px] text-gray-400 leading-tight">
+            <p className="hidden sm:block text-[10px] text-gray-400 dark:text-gray-500 leading-tight">
               Course Quality Improvement
             </p>
           </div>
@@ -142,11 +148,22 @@ export function Navbar() {
       </div>
 
       {/* Right */}
-      {user && (
-        <div
-          ref={profileRef}
-          className="relative"
+      <div className="flex items-center gap-1">
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100 transition-colors"
+          aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
         >
+          {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+
+        {user && (
+          <div
+            ref={profileRef}
+            className="relative"
+          >
           {/* Profile Trigger */}
           <button
             type="button"
@@ -161,6 +178,7 @@ export function Navbar() {
               py-1.5
               rounded-xl
               hover:bg-gray-50
+              dark:hover:bg-gray-800
               transition-colors
             "
             aria-label="Open profile menu"
@@ -168,11 +186,11 @@ export function Navbar() {
           >
             {/* User text */}
             <div className="hidden sm:block text-right">
-              <p className="text-sm font-medium text-gray-700 leading-tight max-w-[180px] truncate">
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-200 leading-tight max-w-[180px] truncate">
                 {user?.name || "User"}
               </p>
 
-              <p className="text-[11px] text-gray-400 capitalize leading-tight">
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 capitalize leading-tight">
                 {user?.role || ""}
               </p>
             </div>
@@ -185,8 +203,10 @@ export function Navbar() {
                 rounded-full
                 overflow-hidden
                 bg-violet-100
+                dark:bg-violet-950
                 ring-2
                 ring-violet-100
+                dark:ring-violet-900
                 flex
                 items-center
                 justify-center
@@ -227,6 +247,7 @@ export function Navbar() {
                 hidden
                 sm:block
                 text-gray-400
+                dark:text-gray-500
                 transition-transform
                 duration-200
                 ${
@@ -248,11 +269,14 @@ export function Navbar() {
                 mt-2
                 w-72
                 bg-white
+                dark:bg-gray-900
                 border
                 border-gray-100
+                dark:border-gray-700
                 rounded-2xl
                 shadow-xl
                 shadow-gray-200/60
+                dark:shadow-black/40
                 overflow-hidden
                 z-[100]
               "
@@ -265,8 +289,11 @@ export function Navbar() {
                   bg-gradient-to-br
                   from-violet-50
                   to-white
+                  dark:from-violet-950/60
+                  dark:to-gray-900
                   border-b
                   border-gray-100
+                  dark:border-gray-800
                 "
               >
                 <div className="flex items-center gap-3">
@@ -277,6 +304,7 @@ export function Navbar() {
                       rounded-full
                       overflow-hidden
                       bg-violet-100
+                      dark:bg-violet-950
                       flex
                       items-center
                       justify-center
@@ -312,11 +340,11 @@ export function Navbar() {
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-gray-800 truncate">
+                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
                       {user?.name || "User"}
                     </p>
 
-                    <p className="text-xs text-gray-500 truncate mt-0.5">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
                       {user?.email || ""}
                     </p>
 
@@ -330,6 +358,8 @@ export function Navbar() {
                           rounded-full
                           bg-violet-100
                           text-violet-700
+                          dark:bg-violet-950
+                          dark:text-violet-300
                           text-[10px]
                           font-medium
                           capitalize
@@ -357,8 +387,11 @@ export function Navbar() {
                     rounded-xl
                     text-left
                     text-gray-700
+                    dark:text-gray-200
                     hover:bg-violet-50
                     hover:text-violet-700
+                    dark:hover:bg-violet-950/60
+                    dark:hover:text-violet-300
                     transition-colors
                   "
                 >
@@ -368,6 +401,7 @@ export function Navbar() {
                       h-8
                       rounded-lg
                       bg-gray-100
+                      dark:bg-gray-800
                       flex
                       items-center
                       justify-center
@@ -387,7 +421,7 @@ export function Navbar() {
               </div>
 
               {/* Logout */}
-              <div className="p-2 border-t border-gray-100">
+              <div className="p-2 border-t border-gray-100 dark:border-gray-800">
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -402,6 +436,8 @@ export function Navbar() {
                     text-left
                     text-red-500
                     hover:bg-red-50
+                    dark:text-red-400
+                    dark:hover:bg-red-950/40
                     transition-colors
                   "
                 >
@@ -411,6 +447,7 @@ export function Navbar() {
                       h-8
                       rounded-lg
                       bg-red-50
+                      dark:bg-red-950/40
                       flex
                       items-center
                       justify-center
@@ -430,8 +467,9 @@ export function Navbar() {
               </div>
             </div>
           )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </header>
   );
 }

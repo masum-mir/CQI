@@ -90,9 +90,9 @@ function NavItem({ to, icon: Icon, label, exact, onClick }) {
         `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm
          transition-colors mx-2
          ${
-           isActive
-             ? "bg-violet-50 text-violet-700 font-medium"
-             : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+            isActive
+              ? "bg-violet-50 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300 font-medium"
+              : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
          }`
       }
     >
@@ -122,8 +122,10 @@ export function Sidebar() {
     <aside
       className={`
         bg-white
+        dark:bg-gray-900
         border-r
         border-gray-200
+        dark:border-gray-800
         w-56
         flex-shrink-0
         flex-col
@@ -164,7 +166,7 @@ export function Sidebar() {
       {/* Navigation */}
       <div className="py-3 flex-1">
         <div className="mb-4">
-          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider px-5 mb-1">
+          <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-5 mb-1">
             Main
           </p>
 
@@ -179,8 +181,8 @@ export function Sidebar() {
       </div>
 
       {/* User role */}
-      <div className="px-5 py-3 border-t border-gray-100">
-        <p className="text-[10px] text-gray-400 uppercase">
+      <div className="px-5 py-3 border-t border-gray-100 dark:border-gray-800">
+        <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase">
           {user?.role || ""}
         </p>
       </div>

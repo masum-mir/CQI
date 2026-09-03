@@ -161,7 +161,7 @@ export default function FacultyCourseHistoryPage() {
     <div className="max-w-3xl mx-auto py-8 px-4">
       <div className="flex items-center gap-2 mb-6">
         {/* <BookOpen size={18} className="text-indigo-500" /> */}
-        <h1 className="text-lg font-semibold text-gray-900">
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
           Faculty course history
         </h1>
       </div>
@@ -170,41 +170,41 @@ export default function FacultyCourseHistoryPage() {
       <div className="relative mb-6">
         <button
           onClick={() => setDropdownOpen((v) => !v)}
-          className="w-full flex items-center justify-between gap-2 px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm hover:border-gray-300 transition-colors"
+          className="w-full flex items-center justify-between gap-2 px-3.5 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
         >
           <span
             className={
-              selectedFaculty ? "text-gray-800 font-medium" : "text-gray-400"
+              selectedFaculty ? "text-gray-800 dark:text-gray-200 font-medium" : "text-gray-400 dark:text-gray-500"
             }
           >
             {selectedFaculty ? selectedFaculty.name : "Select a faculty member"}
           </span>
-          <ChevronDown size={16} className="text-gray-400" />
+          <ChevronDown size={16} className="text-gray-400 dark:text-gray-500" />
         </button>
 
         {dropdownOpen && (
-          <div className="absolute z-10 mt-1.5 w-full bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden">
-            <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100">
-              <Search size={14} className="text-gray-300" />
+          <div className="absolute z-10 mt-1.5 w-full bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl shadow-lg dark:shadow-black/40 overflow-hidden">
+            <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 dark:border-gray-800">
+              <Search size={14} className="text-gray-300 dark:text-gray-600" />
               <input
                 autoFocus
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search by name or short code..."
-                className="w-full text-sm outline-none placeholder:text-gray-300"
+                className="w-full bg-transparent text-sm text-gray-900 dark:text-gray-100 outline-none placeholder:text-gray-300 dark:placeholder:text-gray-600"
               />
             </div>
 
             <div className="max-h-64 overflow-y-auto">
               {facultyLoading && (
-                <div className="flex items-center gap-2 text-sm text-gray-400 px-3.5 py-3">
+                <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 px-3.5 py-3">
                   <Loader2 size={14} className="animate-spin" /> Loading
                   faculty...
                 </div>
               )}
 
               {!facultyLoading && filteredFaculty.length === 0 && (
-                <p className="text-sm text-gray-400 px-3.5 py-3">
+                <p className="text-sm text-gray-400 dark:text-gray-500 px-3.5 py-3">
                   No faculty found.
                 </p>
               )}
@@ -218,11 +218,11 @@ export default function FacultyCourseHistoryPage() {
                       setDropdownOpen(false);
                       setQuery("");
                     }}
-                    className="w-full flex items-center justify-between px-3.5 py-2.5 text-sm hover:bg-gray-50 text-left"
+                    className="w-full flex items-center justify-between px-3.5 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 text-left"
                   >
-                    <span className="text-gray-800">{f.name}</span>
+                    <span className="text-gray-800 dark:text-gray-200">{f.name}</span>
                     {f.shortCode && (
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
                         {f.shortCode}
                       </span>
                     )}
@@ -235,18 +235,18 @@ export default function FacultyCourseHistoryPage() {
 
       {/* empty state before any faculty picked */}
       {!selectedFaculty && (
-        <div className="text-center py-12 border border-dashed border-gray-200 rounded-xl">
-          <p className="text-sm font-medium text-gray-600">
+        <div className="text-center py-12 border border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
             Pick a faculty member
           </p>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
             Their teaching load will show up here, grouped by semester.
           </p>
         </div>
       )}
 
       {selectedFaculty && coursesLoading && (
-        <div className="flex items-center gap-2 text-sm text-gray-400 py-10 justify-center">
+        <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 py-10 justify-center">
           <Loader2 size={16} className="animate-spin" /> Loading courses...
         </div>
       )}
@@ -256,9 +256,9 @@ export default function FacultyCourseHistoryPage() {
       )}
 
       {selectedFaculty && !coursesLoading && !error && groups.length === 0 && (
-        <div className="text-center py-12 border border-dashed border-gray-200 rounded-xl">
-          <p className="text-sm font-medium text-gray-600">No courses found</p>
-          <p className="text-xs text-gray-400 mt-1">
+        <div className="text-center py-12 border border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-300">No courses found</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
             {selectedFaculty.name} hasn't been assigned any course yet.
           </p>
         </div>
@@ -274,7 +274,7 @@ export default function FacultyCourseHistoryPage() {
                 className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium border transition-colors ${
                   activeSemester === semester
                     ? "bg-indigo-600 text-white border-indigo-600"
-                    : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
+                    : "bg-white text-gray-500 border-gray-200 hover:border-gray-300 dark:bg-gray-900 dark:text-gray-400 dark:border-gray-700 dark:hover:border-gray-600"
                 }`}
               >
                 {semester}
@@ -294,7 +294,7 @@ export default function FacultyCourseHistoryPage() {
               return (
                 <div
                   key={c.id}
-                  className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-gray-200 hover:shadow-sm transition-all"
+                  className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-sm transition-all"
                 >
                   <button
                     onClick={() => toggleCourse(c)}
@@ -302,28 +302,28 @@ export default function FacultyCourseHistoryPage() {
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs text-gray-400">
+                        <span className="font-mono text-xs text-gray-400 dark:text-gray-500">
                           {c.courseCode}
                         </span>
                       </div>
-                      <p className="text-sm font-medium text-gray-800 truncate">
+                      <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
                         {c.title}
                       </p>
                     </div>
-                    <span className="flex-shrink-0 flex items-center gap-1 text-[11px] font-medium px-2 py-1">
+                    <span className="flex-shrink-0 flex items-center gap-1 text-[11px] font-medium text-gray-700 dark:text-gray-300 px-2 py-1">
                       Section - {c.section}
                     </span>
                     {isOpen ? (
-                      <ChevronDown size={14} className="text-gray-400 flex-shrink-0" />
+                      <ChevronDown size={14} className="text-gray-400 dark:text-gray-500 flex-shrink-0" />
                     ) : (
-                      <ChevronRight size={14} className="text-gray-400 flex-shrink-0" />
+                      <ChevronRight size={14} className="text-gray-400 dark:text-gray-500 flex-shrink-0" />
                     )}
                   </button>
 
                   {isOpen && (
-                    <div className="px-3.5 pb-3.5 border-t border-gray-100 pt-3">
+                    <div className="px-3.5 pb-3.5 border-t border-gray-100 dark:border-gray-800 pt-3">
                       {detail?.loading ? (
-                        <div className="flex items-center gap-2 text-xs text-gray-400 py-2">
+                        <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 py-2">
                           <Loader2 size={13} className="animate-spin" />
                           Loading file status…
                         </div>
@@ -333,7 +333,7 @@ export default function FacultyCourseHistoryPage() {
                         <div className="flex flex-col gap-3">
                           {detail?.checklist.map((cat) => (
                             <div key={cat.label}>
-                              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-1">
+                              <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">
                                 {cat.label}
                               </p>
                               <ul className="flex flex-col gap-1">
@@ -350,14 +350,14 @@ export default function FacultyCourseHistoryPage() {
                                     ) : (
                                       <Circle
                                         size={13}
-                                        className="text-gray-300 flex-shrink-0"
+                                        className="text-gray-300 dark:text-gray-600 flex-shrink-0"
                                       />
                                     )}
                                     <span
                                       className={
                                         item.uploaded
-                                          ? "text-gray-700"
-                                          : "text-gray-400"
+                                          ? "text-gray-700 dark:text-gray-300"
+                                          : "text-gray-400 dark:text-gray-500"
                                       }
                                     >
                                       {item.title}
@@ -365,8 +365,8 @@ export default function FacultyCourseHistoryPage() {
                                     <span
                                       className={`ml-auto text-[10px] font-medium ${
                                         item.uploaded
-                                          ? "text-emerald-600"
-                                          : "text-red-500"
+                                          ? "text-emerald-600 dark:text-emerald-400"
+                                          : "text-red-500 dark:text-red-400"
                                       }`}
                                     >
                                       {item.uploaded ? "Uploaded" : "Incomplete"}
